@@ -1,0 +1,153 @@
+# Fairway
+
+Aplicación de golf para encontrar compañeros, organizar partidas y registrar scores. Comienza en León, Guanajuato; los clubes y perfiles guardan ciudad para ampliar el catálogo.
+
+**Estado honesto:** el proyecto compila y las reglas críticas tienen pruebas de PostgreSQL. Todavía no hay un proyecto real de Supabase conectado. Sin variables de entorno aparece una demostración identificada; sus perfiles, reputaciones, partidas y rondas son ficticios. Los likes demo solo cambian la vista durante la sesión. No se simulan conversaciones, registros, mensajes, solicitudes ni guardados reales. Con Supabase configurado desaparecen los datos demo y se usan exclusivamente datos de tu proyecto.
+
+## 1. Abrir en tu computadora
+
+Estos pasos se hacen una sola vez. No necesitas modificar código.
+
+1. Instala la versión LTS de [Node.js](https://nodejs.org/). Cierra y abre Terminal después de instalarla.
+2. Abre Terminal y copia estas líneas, una por una:
+
+```bash
+cd /Users/rodrigocalderonknight/Matrix/fairway
+npx --yes pnpm@10.28.2 install
+npx --yes pnpm@10.28.2 dev
+```
+
+3. Abre `http://localhost:3000` en tu navegador. Mantén Terminal abierta mientras usas la aplicación. Para detenerla, pulsa `Control + C`.
+
+Para abrirla otra vez, repite `cd ...` y el comando que termina en `dev`. Si el puerto está ocupado, Next.js imprimirá otra dirección.
+
+## 2. Crear y conectar Supabase
+
+Supabase proporciona el inicio de sesión, la base de datos, el almacenamiento privado de fotografías y el chat en tiempo real.
+
+1. Ve a [Supabase Dashboard](https://supabase.com/dashboard), crea una cuenta y pulsa **New project**.
+2. Crea el proyecto `Fairway`. Guarda la contraseña de la base de datos en tu gestor de contraseñas. No hace falta compartirla con esta aplicación.
+3. Cuando el proyecto esté listo, entra en **SQL Editor → New query**.
+4. Abre en tu editor el primer archivo de la lista siguiente, copia **todo** su contenido al editor SQL y pulsa **Run**. Repite con el segundo y luego el tercero. Ejecuta cada archivo una sola vez, en este orden:
+
+   - `supabase/migrations/202610150001_fairway.sql`
+   - `supabase/migrations/202610150002_integrity.sql`
+   - `supabase/migrations/202610150003_invitations.sql`
+
+   Si aparece un error, detente y conserva el texto del error. No desactives RLS para solucionarlo. Las migraciones incluyen transacciones para evitar instalaciones parciales.
+
+5. En la configuración del proyecto busca **Project URL** y **API Keys → Publishable key**. En proyectos antiguos, la clave equivalente se llama `anon`.
+6. En la carpeta `fairway`, crea el archivo `.env.local`. Puedes duplicar `.env.example` y cambiarle el nombre. Pega los dos valores:
+
+```dotenv
+NEXT_PUBLIC_SUPABASE_URL=https://TU-PROYECTO.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=TU-CLAVE-PUBLICA
+```
+
+**No uses la clave secret ni service_role.** La clave pública está diseñada para usarse en el navegador; las políticas de PostgreSQL son las que protegen los datos. `.env.local` está excluido de Git.
+
+7. En **Authentication → URL Configuration**, configura inicialmente `http://localhost:3000` como Site URL y agrega `http://localhost:3000/**` a las URL de redirección permitidas. Al publicar, agrega también tu dominio de Vercel y actualiza Site URL.
+8. En **Authentication → Providers → Email**, mantén habilitada la confirmación por correo. Antes de un lanzamiento público configura tu propio SMTP, límites de envío y protección antiabuso en Supabase.
+9. Detén el servidor con `Control + C` y vuelve a ejecutar `npx --yes pnpm@10.28.2 dev`.
+10. Crea una cuenta desde Fairway, confirma el correo y completa tu perfil. El catálogo inicial de clubes estará disponible, pero no habrá personas reales hasta que se registren.
+
+Realtime queda preparado por las migraciones para `messages` y `notifications`. Si se modificó la configuración de publicación, confirma que ambas tablas estén incluidas en `supabase_realtime`. Las imágenes usan un bucket **privado**, URLs temporales y políticas por usuario.
+
+## 3. Qué está implementado
+
+- Registro con correo y contraseña, confirmación, login, recuperación y cambio de contraseña mediante Supabase Auth. Alta limitada a 18+ tanto en formulario como en base de datos.
+- Perfil editable, foto y galería de hasta 6 imágenes, club declarado, handicap declarado opcional, disponibilidad, modalidades, estilos y preferencias.
+- Descubrimiento con filtros combinables y guardados en base de datos, búsqueda, favoritos y decisiones persistentes. Un perfil decidido deja de aparecer en recomendaciones; sigue siendo accesible desde favoritos si se guardó.
+- Compatibilidad determinista de 0 a 100 y razones visibles. Club: 30; al menos un día compartido: 30; misma modalidad: 20; diferencia de handicap de hasta 8: 10; mismo estilo: 10. Los factores desconocidos no suman puntos.
+- Match mutuo atómico, conversación privada y mensajes en tiempo real. Los clientes no pueden insertar matches, participantes o mensajes directamente para saltarse las reglas.
+- Partidas de 2 a 4 jugadores, solicitudes, aprobación/rechazo por el organizador, control transaccional del cupo, estados y chat grupal de participantes confirmados.
+- Partidas públicas, para matches o por invitación. El organizador envía una invitación desde el detalle; el destinatario ve la partida y solicita su lugar. La invitación de Fairway no autoriza acceso al club ni reserva tee times.
+- Scorecard de 9 o 18 hoyos, ida y vuelta, golpes, par, índice, distancia, putts, fairway y GIR opcionales. Borrador, finalización, edición, publicación y privacidad por ronda. Los resultados se normalizan además en `hole_scores`.
+- Configuración de recorridos, tees y hoyos desde administración. Si se elige un tee configurado, PostgreSQL comprueba par, distancia e índice contra el catálogo. En captura manual los datos quedan no verificados; los pars vacíos no se inventan.
+- Historial y estadísticas calculadas desde rondas finalizadas: promedio, mejor/peor ronda, birdies, pars, promedio por tipo de par, putts, GIR, fairways y rendimiento por club, con gráfica y filtros temporales.
+- Evaluaciones por puntualidad, respeto, ritmo y convivencia. Solo pueden evaluar participantes confirmados de una misma partida finalizada; la pareja no puede evaluarse dos veces para esa partida.
+- Base de comunidad: publicaciones de texto y scores, comentarios, reacciones, solicitud de seguimiento y aprobación de seguidores. Orden por fecha; filtros de feed por siguiendo, club y ciudad.
+- Notificaciones en la aplicación de matches, mensajes, solicitudes y cambios de partidas; categorías configurables. Disponibilidad temporal consultada solo antes de su vencimiento y calendario de partidas.
+- Bloqueo, reportes, privacidad de perfil y scores, eliminación de cuenta y limpieza previa de imágenes desde Storage.
+- Panel administrativo con comprobación de rol en PostgreSQL para clubes, recorridos, tees, hoyos, reportes, verificación, publicaciones y suspensión. Los formularios de configuración avanzada usan JSON para esta primera versión.
+
+## 4. Crear tu administrador
+
+Primero registra y confirma tu cuenta normalmente. Después, **solo desde SQL Editor de Supabase**, ejecuta esto reemplazando el correo por el tuyo:
+
+```sql
+update public.account_roles
+set is_admin = true
+where user_id = (select id from auth.users where email = 'tu-correo@ejemplo.com');
+```
+
+Actualiza Fairway. Aparecerá Administración en el menú lateral. Nunca otorgues permisos administrativos desde una pantalla pública. Un usuario normal no puede cambiar sus roles ni autoverificarse.
+
+Los clubes están precargados como **no verificados**. Club de Golf La Hacienda tiene ciudad pendiente de confirmación; el nombre no implica que se haya verificado su ubicación en León. No hay direcciones, tarifas, distancias o pars oficiales inventados. Las imágenes de clubes son ilustrativas.
+
+Para cargar un campo real: agrega un recorrido con el `club_id`, agrega un tee con el `course_id` y luego cada hoyo con su `tee_id`. Usa únicamente datos proporcionados o confirmados por el campo. Marca recorrido y tee verificados solo después de comprobarlos. Las membresías de jugadores permanecen declaradas hasta definir y aplicar un procedimiento de verificación real.
+
+## 5. Publicar en Vercel
+
+1. Sube esta carpeta a un repositorio de GitHub. Si no conoces Git, puedes usar la aplicación [GitHub Desktop](https://desktop.github.com/) para agregar una carpeta existente y publicarla. No incluyas `.env.local` ni `node_modules`.
+2. En [Vercel](https://vercel.com/new), selecciona **Add New → Project** e importa el repositorio.
+3. Si el repositorio contiene la carpeta Matrix completa, selecciona `fairway` como **Root Directory**. Si contiene solo este proyecto, usa la raíz del repositorio.
+4. Deja Next.js como framework. La compilación es `pnpm build`. El proyecto produce una exportación `out` que se comunica con Supabase. No necesita un servidor Next para guardar información.
+5. Antes del primer despliegue, añade en **Environment Variables** las mismas dos variables del archivo `.env.local`.
+6. Pulsa Deploy. Copia el dominio resultante a **Authentication → URL Configuration** de Supabase y permite el dominio con `/**` como redirección.
+7. Si cambias las variables, vuelve a desplegar: las variables públicas se incorporan durante la compilación, no después.
+
+La vista publicada mediante Sites es privada para el propietario. Una prueba entre distintas personas necesita un despliegue accesible para ellas, por ejemplo Vercel. El dominio y las credenciales no se inventan ni se conectan automáticamente.
+
+## 6. Comprobar que funciona
+
+En Terminal, dentro de la carpeta del proyecto:
+
+```bash
+npx --yes pnpm@10.28.2 typecheck
+npx --yes pnpm@10.28.2 test
+npx --yes pnpm@10.28.2 build
+```
+
+Las pruebas de PostgreSQL usan PGlite local y esquemas de prueba para `auth` y `storage`. Verifican migraciones, mayoría de edad, escalamiento de permisos, matches, chats, solicitudes, cupos, evaluaciones, privacidad de scores, bloqueos y acceso anónimo. **No sustituyen una prueba contra tu instancia real de Supabase**, su correo, Storage ni Realtime.
+
+Prueba de aceptación con Supabase:
+
+1. Crea dos cuentas de prueba mayores de edad con correos que controles; confirma ambos correos y completa sus perfiles.
+2. Desde la primera cuenta da like a la segunda. Todavía no debe haber conversación. Devuelve el like desde la segunda; ambas verán el match y podrán escribir.
+3. Crea una partida futura desde la primera cuenta. La segunda solicita unirse y permanece pendiente hasta aprobación. Al aprobarla aparece el chat grupal.
+4. Registra una ronda privada con 9 hoyos. No debe ser visible desde la otra cuenta. Publica una ronda pública y confirma que aparece en Comunidad.
+5. Tras la hora de una partida realmente compartida, su organizador la finaliza. Los participantes confirmados podrán evaluarse una sola vez.
+6. Bloquea a un participante y confirma que desaparecen su perfil y el acceso al chat mutuo.
+7. Prueba recuperación de contraseña por correo, carga de fotos, cambio de visibilidad y eliminación de una cuenta exclusivamente de prueba.
+
+## 7. Arquitectura y archivos
+
+- `app/`: Next.js App Router, metadatos y estilos con variables de diseño.
+- `components/fairway-app.tsx`: estructura, navegación adaptable y composición de pantallas.
+- `components/forms.tsx`: registro, perfil, partidas y evaluaciones.
+- `components/scorecard.tsx`: captura de hoyos y selección de configuración real.
+- `components/stats.tsx`: métricas y gráfica Recharts.
+- `components/community.tsx`, `settings.tsx`, `ui.tsx`: comunidad, ajustes, administración y primitivas reutilizables. Los diálogos accesibles usan Radix.
+- `lib/domain.ts`: tipos, validación Zod, compatibilidad, filtros y cálculos puros.
+- `lib/use-fairway.ts`: sesión, carga de datos, operaciones y suscripciones.
+- `lib/supabase.ts`: cliente público con RLS; no utiliza claves privilegiadas.
+- `lib/demo.ts`: ejemplos claramente separados de datos reales.
+- `supabase/migrations/`: esquema relacional, funciones transaccionales y políticas.
+- `tests/`: cálculos y reglas de seguridad verificadas con PostgreSQL.
+
+El frontend usa una entrada App Router y navegación por fragmentos (`#descubrir`, `#partidas`, etc.). Los registros viven en PostgreSQL, nunca solamente en localStorage. Supabase administra la persistencia de la sesión. Esta versión usa React, TypeScript, formularios React Hook Form/Zod, Radix, Lucide y Recharts. El diseño se implementa con CSS modular por componentes y tokens; Tailwind está disponible como dependencia, sin ser necesario para compilar estos estilos. Está preparado para Vercel y para hosting estático con Supabase externo.
+
+## 8. Límites y trabajo posterior
+
+El núcleo del MVP está implementado y probado localmente. Falta configurar Supabase y ejecutar la aceptación real con dos cuentas, incluyendo correo, Storage y Realtime. La revisión visual de escritorio se realizó en Chrome; la revisión interactiva completa y móvil no pudo completarse por indisponibilidad del control de ventanas durante esta sesión.
+
+Antes de un lanzamiento público: completar el aviso de privacidad con datos del responsable y canal ARCO; configurar SMTP y protección antiabuso en Auth; verificar el catálogo de clubes y campos; definir operación de moderación y verificación; hacer revisión de seguridad contra el proyecto real. El consentimiento actual explica el uso básico de datos y no sustituye ese aviso completo.
+
+Quedan para fases posteriores: Google OAuth, retos, push, recomendaciones avanzadas, integración con clubes, subida de fotos a publicaciones, guardado de publicaciones, compartir perfiles/invitaciones dentro del chat, evolución histórica del handicap declarado y filtros de descubrimiento por hora, experiencia o múltiples clubes. La disponibilidad rápida sí permite fechas y horarios. El directorio no anuncia conteos totales públicos: solo perfiles visibles bajo RLS. Los logros actuales son Primera ronda, 10 rondas y Primer birdie, derivados de registros.
+
+La membresía declarada no concede acceso a un club. No existe integración con World Handicap System ni cálculo de un handicap oficial. El handicap declarado se mantiene separado de las estadísticas internas.
+
+Fotos de demostración e imágenes ilustrativas: Unsplash. No representan a usuarios registrados ni verifican la identidad o membresía de nadie.
+
+Referencias técnicas: [Next.js static exports](https://nextjs.org/docs/app/guides/static-exports), [Supabase RLS](https://supabase.com/docs/guides/database/postgres/row-level-security), [Supabase Postgres Changes](https://supabase.com/docs/guides/realtime/postgres-changes).
