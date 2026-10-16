@@ -8,11 +8,10 @@ import {
   ChevronRight,
   Clock3,
   Eye,
+  Flag,
   Heart,
   ImagePlus,
   LoaderCircle,
-  Pause,
-  Play,
   Plus,
   RefreshCw,
   Trash2,
@@ -29,6 +28,7 @@ import {
   type Story,
 } from "@/lib/stories";
 import { useStories } from "@/lib/use-stories";
+import { StoryFrame, StoryEngagement, StoryOptions } from "./story-frame";
 
 function PersonAvatar({ photo, name }: { photo?: string; name: string }) {
   return (
@@ -449,6 +449,8 @@ function StoryViewer({
   const [ready, setReady] = useState(false);
   const [error, setError] = useState("");
   const [paused, setPaused] = useState(false);
+  const [holding, setHolding] = useState(false);
+  const [options, setOptions] = useState(false);
   const [hidden, setHidden] = useState(
     typeof document !== "undefined" && document.hidden,
   );
@@ -458,6 +460,7 @@ function StoryViewer({
   const [busy, setBusy] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [retry, setRetry] = useState(0);
+  const viewerRef = useRef<HTMLDivElement>(null);
   const seen = useRef(false);
   const next = useRef(onNext);
   next.current = onNext;
@@ -522,7 +525,17 @@ function StoryViewer({
     };
   }, [ready, hidden, own, storyId, retry]);
   useEffect(() => {
-    if (!ready || paused || hidden || activity || confirmDelete || error)
+    if (
+      !ready ||
+      paused ||
+      holding ||
+      hidden ||
+      activity ||
+      options ||
+      confirmDelete ||
+      busy ||
+      error
+    )
       return;
     let previous = performance.now();
     const interval = setInterval(() => {
@@ -532,7 +545,17 @@ function StoryViewer({
       setProgress((value) => Math.min(100, value + delta));
     }, 50);
     return () => clearInterval(interval);
-  }, [ready, paused, hidden, activity, confirmDelete, error]);
+  }, [
+    ready,
+    paused,
+    holding,
+    hidden,
+    activity,
+    options,
+    confirmDelete,
+    busy,
+    error,
+  ]);
   useEffect(() => {
     if (progress >= 100) next.current();
   }, [progress]);
@@ -598,11 +621,42 @@ function StoryViewer({
     >
       <Dialog.Portal>
         <Dialog.Overlay className="story-viewer-overlay" />
+        <div className="story-viewer-signature" aria-hidden="true">
+          <Flag size={23} strokeWidth={1.4} />
+          <span>
+            fairway<em>.</em>
+          </span>
+          <small>HISTORIAS</small>
+        </div>
         <Dialog.Content
           className="story-viewer"
+          ref={viewerRef}
+          onOpenAutoFocus={(event) => {
+            event.preventDefault();
+            viewerRef.current?.focus();
+          }}
           aria-describedby="story-viewer-description"
+          onEscapeKeyDown={(event) => {
+            if (busy || activity || options || confirmDelete) {
+              event.preventDefault();
+              if (!busy) {
+                setActivity(false);
+                setOptions(false);
+                setConfirmDelete(false);
+              }
+            }
+          }}
           onKeyDown={(e) => {
-            if (activity || confirmDelete) return;
+            if (activity || options || confirmDelete) return;
+            if (
+              e.key === " " &&
+              !(e.target as HTMLElement).closest(
+                "button, a, input, textarea, select, summary",
+              )
+            ) {
+              e.preventDefault();
+              setPaused((value) => !value);
+            }
             if (e.key === "ArrowRight") {
               e.preventDefault();
               onNext();
@@ -636,79 +690,55 @@ function StoryViewer({
           >
             <ChevronRight />
           </button>
-          <div className="story-stage">
-            {src && story && (
-              <img
-                className="story-media"
-                src={src}
-                alt={
-                  story.caption ||
-                  `Momento de golf de ${author?.name || "un golfista"}`
-                }
-                onLoad={() => setReady(true)}
-                onError={() => {
-                  setError("No pudimos cargar la fotografía.");
-                  setReady(false);
-                }}
-              />
+          <StoryFrame
+            src={src}
+            caption={story?.caption || ""}
+            authorName={author?.name || "Golfista"}
+            avatar={author?.photo}
+            time={story ? storyTime(story.created_at) : ""}
+            audience={
+              story?.audience === "friends"
+                ? "Solo amigos"
+                : "Comunidad Fairway"
+            }
+            own={own}
+            progress={siblings.map((s) =>
+              s.id === storyId
+                ? progress
+                : s.created_at < (story?.created_at || "")
+                  ? 100
+                  : 0,
             )}
-            <div className="story-stage-shade" />
-            <div className="story-viewer-top">
-              <div className="story-progress" aria-hidden="true">
-                {siblings.map((s) => (
-                  <span key={s.id}>
-                    <i
-                      style={{
-                        width: `${s.id === storyId ? progress : s.created_at < (story?.created_at || "") ? 100 : 0}%`,
-                      }}
-                    />
-                  </span>
-                ))}
-              </div>
-              <div className="story-author">
-                <PersonAvatar
-                  photo={author?.photo}
-                  name={author?.name || "Golfista"}
+            paused={paused}
+            holding={holding}
+            busy={busy}
+            canPrevious={canPrevious}
+            optionsOpen={options}
+            onLoad={() => setReady(true)}
+            onError={() => {
+              setError("No pudimos cargar la fotografía.");
+              setReady(false);
+            }}
+            onPause={() => setPaused((value) => !value)}
+            onHold={setHolding}
+            onPrevious={onPrevious}
+            onNext={onNext}
+            onOptions={() => setOptions((value) => !value)}
+            onClose={onClose}
+            footer={
+              story ? (
+                <StoryEngagement
+                  own={own}
+                  liked={liked}
+                  views={views.length}
+                  likes={likes.length}
+                  disabled={busy || !ready || !!error}
+                  onLike={() => void like()}
+                  onActivity={() => setActivity(true)}
                 />
-                <div>
-                  <strong>
-                    {own ? "Tu historia" : author?.name || "Golfista"}
-                  </strong>
-                  <small>
-                    {story && storyTime(story.created_at)} ·{" "}
-                    {story?.audience === "friends" ? "Amigos" : "Fairway"}
-                  </small>
-                </div>
-                <button
-                  className="story-control"
-                  aria-label={paused ? "Reanudar historia" : "Pausar historia"}
-                  onClick={() => setPaused(!paused)}
-                >
-                  {paused ? <Play size={19} /> : <Pause size={19} />}
-                </button>
-                <Dialog.Close
-                  className="story-control"
-                  aria-label="Cerrar historia"
-                  disabled={busy}
-                >
-                  <X size={23} />
-                </Dialog.Close>
-              </div>
-            </div>
-            {story && (
-              <div className="story-tap-navigation">
-                <button
-                  aria-label="Anterior"
-                  disabled={!canPrevious || busy}
-                  onClick={onPrevious}
-                />
-                <button
-                  aria-label="Siguiente"
-                  disabled={busy}
-                  onClick={onNext}
-                />
-              </div>
-            )}
+              ) : null
+            }
+          >
             {(!story || error || !ready) && (
               <div className="story-load-state" role="status">
                 {!story ? (
@@ -742,63 +772,17 @@ function StoryViewer({
                 )}
               </div>
             )}
-            {story && (
-              <div className="story-viewer-bottom">
-                <p className="story-caption">{story.caption}</p>
-                <div className="story-viewer-actions">
-                  {own ? (
-                    <>
-                      <button
-                        className="story-activity-button"
-                        onClick={() => setActivity(true)}
-                      >
-                        <span>
-                          <Eye size={19} />
-                          {views.length}
-                        </span>
-                        <span>
-                          <Heart size={18} />
-                          {likes.length}
-                        </span>
-                        <small>
-                          Ver actividad
-                          <ChevronRight size={13} />
-                        </small>
-                      </button>
-                      <button
-                        className="story-control"
-                        aria-label="Eliminar historia"
-                        disabled={busy}
-                        onClick={() => setConfirmDelete(true)}
-                      >
-                        <Trash2 size={19} />
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <span className="story-like-note">
-                        Un buen momento merece un like.
-                      </span>
-                      <button
-                        className={`story-like ${liked ? "liked" : ""}`}
-                        aria-label={
-                          liked
-                            ? "Quitar like a la historia"
-                            : "Dar like a la historia"
-                        }
-                        aria-pressed={liked}
-                        disabled={busy || !ready || !!error}
-                        onClick={() => void like()}
-                      >
-                        <Heart
-                          size={25}
-                          fill={liked ? "currentColor" : "none"}
-                        />
-                      </button>
-                    </>
-                  )}
-                </div>
-              </div>
+            {options && (
+              <StoryOptions
+                audience={story?.audience || "members"}
+                own={own}
+                busy={busy}
+                onClose={() => setOptions(false)}
+                onDelete={() => {
+                  setOptions(false);
+                  setConfirmDelete(true);
+                }}
+              />
             )}
             {activity && own && (
               <div className="story-activity-sheet">
@@ -902,7 +886,10 @@ function StoryViewer({
                 </button>
               </div>
             )}
-          </div>
+          </StoryFrame>
+          <p className="story-keyboard-hint" aria-hidden="true">
+            ← → Cambiar de historia <span>·</span> Espacio para pausar
+          </p>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
