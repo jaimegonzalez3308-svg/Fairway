@@ -10,6 +10,7 @@ import {
   demoRounds,
 } from "./demo";
 import type { Profile, Club, Game, Round } from "./domain";
+import { authErrorMessage } from "./auth";
 const anonymousProfile: Profile = {
   id: "",
   name: "Mi cuenta",
@@ -156,11 +157,20 @@ export function useFairway() {
   }, []);
   useEffect(() => {
     if (!supabase) return;
-    supabase.auth.getSession().then(({ data }) => {
-      setUser(data.session?.user ?? null);
-      if (data.session?.user) void load(data.session.user);
-      else setLoading(false);
-    });
+    supabase.auth
+      .getSession()
+      .then(({ data, error }) => {
+        if (error) setError(authErrorMessage(error));
+        setUser(data.session?.user ?? null);
+        if (data.session?.user) void load(data.session.user);
+        else setLoading(false);
+      })
+      .catch(() => {
+        setError(
+          "No se pudo recuperar la sesión. Revisa tu conexión y recarga la página.",
+        );
+        setLoading(false);
+      });
     const { data } = supabase.auth.onAuthStateChange((_e, s) => {
       setUser(s?.user ?? null);
       if (s?.user) setTimeout(() => void load(s.user), 0);

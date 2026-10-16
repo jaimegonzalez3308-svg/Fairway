@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,6 +8,7 @@ import { Button, Field } from "./ui";
 import { supabase } from "@/lib/supabase";
 import { days, profileSchema, type Profile, type Game } from "@/lib/domain";
 import type { FairwayData } from "@/lib/use-fairway";
+import { authErrorMessage, authRedirectUrl } from "@/lib/auth";
 const authSchema = z.object({
   email: z.email("Escribe un correo válido."),
   password: z.string().min(10, "Usa al menos 10 caracteres."),
@@ -15,16 +16,26 @@ const authSchema = z.object({
 export function AuthForm({
   data,
   onDone,
+  initialMessage = "",
 }: {
   data: FairwayData;
   onDone: () => void;
+  initialMessage?: string;
 }) {
   const [signup, setSignup] = useState(false),
     [busy, setBusy] = useState(false),
-    [message, setMessage] = useState("");
+    [message, setMessage] = useState(initialMessage),
+    [resendBusy, setResendBusy] = useState(false),
+    [resendWait, setResendWait] = useState(0);
+  useEffect(() => {
+    if (resendWait <= 0) return;
+    const timer = setTimeout(() => setResendWait((value) => value - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [resendWait]);
   const {
     register,
     handleSubmit,
+    getValues,
     formState: { errors },
   } = useForm<z.infer<typeof authSchema>>({
     resolver: zodResolver(authSchema),
@@ -60,12 +71,12 @@ export function AuthForm({
                 ...values,
                 options: {
                   data: { name: fd.get("name"), age },
-                  emailRedirectTo: window.location.origin + "/",
+                  emailRedirectTo: authRedirectUrl(window.location.origin),
                 },
               })
             : await supabase.auth.signInWithPassword(values);
           setBusy(false);
-          if (result.error) setMessage(result.error.message);
+          if (result.error) setMessage(authErrorMessage(result.error));
           else if (signup && !result.data.session)
             setMessage(
               "Revisa tu correo y confirma tu cuenta antes de iniciar sesión.",
@@ -119,7 +130,7 @@ export function AuthForm({
             {message}
           </div>
         )}
-        <Button disabled={busy || !supabase}>
+        <Button disabled={busy || resendBusy || !supabase}>
           {busy ? "Conectando…" : signup ? "Crear cuenta" : "Iniciar sesión"}
           <ArrowRight size={17} />
         </Button>
@@ -132,6 +143,49 @@ export function AuthForm({
           }}
         >
           {signup ? "Ya tengo cuenta" : "¿Primera vez aquí? Crea tu cuenta"}
+        </button>
+        <button
+          type="button"
+          className="text-button"
+          disabled={!supabase || busy || resendBusy || resendWait > 0}
+          onClick={async () => {
+            const email = getValues("email").trim();
+            if (!z.email().safeParse(email).success || !supabase) {
+              setMessage(
+                "Escribe primero el correo con el que creaste tu cuenta.",
+              );
+              return;
+            }
+            setResendBusy(true);
+            try {
+              const { error } = await supabase.auth.resend({
+                type: "signup",
+                email,
+                options: {
+                  emailRedirectTo: authRedirectUrl(window.location.origin),
+                },
+              });
+              if (error) setMessage(authErrorMessage(error));
+              else {
+                setMessage(
+                  "Si tu cuenta está pendiente de confirmar, recibirás un correo nuevo. Abre únicamente el más reciente. Si ya confirmaste tu cuenta, inicia sesión.",
+                );
+                setResendWait(60);
+              }
+            } catch {
+              setMessage(
+                "No se pudo conectar. Revisa tu conexión e intenta de nuevo.",
+              );
+            } finally {
+              setResendBusy(false);
+            }
+          }}
+        >
+          {resendBusy
+            ? "Solicitando correo…"
+            : resendWait > 0
+              ? `Puedes solicitar otro correo en ${resendWait} s`
+              : "Reenviar correo de confirmación"}
         </button>
         {!signup && (
           <button
@@ -147,11 +201,12 @@ export function AuthForm({
               }
               const { error } = await supabase.auth.resetPasswordForEmail(
                 input.value,
-                { redirectTo: window.location.origin + "/?recovery=1" },
+                { redirectTo: authRedirectUrl(window.location.origin, true) },
               );
               setMessage(
-                error?.message ||
-                  "Si existe la cuenta, recibirás un enlace de recuperación.",
+                error
+                  ? authErrorMessage(error)
+                  : "Si existe la cuenta, recibirás un enlace de recuperación.",
               );
             }}
           >

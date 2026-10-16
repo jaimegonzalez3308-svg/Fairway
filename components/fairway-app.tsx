@@ -40,6 +40,7 @@ import {
 } from "lucide-react";
 import { useFairway } from "@/lib/use-fairway";
 import { supabase } from "@/lib/supabase";
+import { authReturnError, routeFromHash } from "@/lib/auth";
 import {
   compatibility,
   matchesFilters,
@@ -74,6 +75,7 @@ export default function FairwayApp() {
   const data = useFairway();
   const [page, setPage] = useState("descubrir"),
     [modal, setModal] = useState<string | null>(null),
+    [authNotice, setAuthNotice] = useState(""),
     [selected, setSelected] = useState<Profile | null>(null),
     [game, setGame] = useState<Game | null>(null),
     [round, setRound] = useState<Round | undefined>(),
@@ -109,21 +111,39 @@ export default function FairwayApp() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
   useEffect(() => {
-    const p = location.hash.slice(1);
-    if (
-      [
-        ...navigation,
-        ...extras,
-        { id: "ajustes" },
-        { id: "hoy" },
-        { id: "admin" },
-        { id: "inicio" },
-      ].some((n) => n.id === p)
-    )
-      setPage(p);
-    const change = () => setPage(location.hash.slice(1) || "descubrir");
+    const routes = [
+      ...navigation,
+      ...extras,
+      { id: "ajustes" },
+      { id: "hoy" },
+      { id: "admin" },
+      { id: "inicio" },
+    ].map((n) => n.id);
+    const recovery =
+      new URLSearchParams(location.search).get("recovery") === "1";
+    const handleReturnError = () => {
+      const message = authReturnError(location.hash, location.search);
+      if (!message) return false;
+      setAuthNotice(message);
+      setModal("auth");
+      setPage("descubrir");
+      const cleaned = new URL(location.href);
+      cleaned.hash = "descubrir";
+      for (const key of ["error", "error_code", "error_description"])
+        cleaned.searchParams.delete(key);
+      window.history.replaceState(
+        null,
+        "",
+        cleaned.pathname + cleaned.search + cleaned.hash,
+      );
+      return true;
+    };
+    const change = () => {
+      if (!handleReturnError())
+        setPage(recovery ? "ajustes" : routeFromHash(location.hash, routes));
+    };
+    change();
     window.addEventListener("hashchange", change);
-    if (location.search.includes("recovery=1")) setPage("ajustes");
     return () => window.removeEventListener("hashchange", change);
   }, []);
   useEffect(() => {
@@ -1105,7 +1125,9 @@ export default function FairwayApp() {
         <Modal title="Bienvenido a Fairway" onClose={close}>
           <AuthForm
             data={data}
+            initialMessage={authNotice}
             onDone={() => {
+              setAuthNotice("");
               close();
               go("perfil");
             }}

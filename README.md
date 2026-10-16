@@ -158,3 +158,17 @@ Referencias técnicas: [Next.js static exports](https://nextjs.org/docs/app/guid
 Se agregaron Club de Golf Los Naranjos, El Molino Golf Club y Villaseca Hotel & Golf. Se consultaron los sitios oficiales de [Los Naranjos](https://clublosnaranjos.com.mx/), [El Molino](https://www.elmolinogolfclub.com/quienes-somos) y [Villaseca](https://www.villaseca.com.mx/). Se conserva `verified = false`: consultar un sitio web no verifica membresías, autorización de acceso ni la configuración de tees y hoyos. Villaseca figura como Alrededores de León mientras se confirma su ubicación exacta.
 
 Para una base ya instalada, ejecuta **solo** `supabase/migrations/202610150004_clubs.sql` en SQL Editor. Es idempotente: no duplica nombres existentes ni sobrescribe su información. No vuelvas a ejecutar el instalador inicial en un proyecto que ya tiene tablas. Las pantallas de perfil, filtros, partidas, disponibilidad y scores toman las opciones de la misma tabla `clubs`; actualizar esa tabla actualiza el catálogo para todos al recargar.
+
+## Si el correo abre localhost o dice otp_expired
+
+El ajuste de destino del correo se hace en **Supabase → Authentication → URL Configuration**; no se cambia con SQL ni publicando el frontend:
+
+- Site URL: `https://fairway-leon-golf.honeyring4.chatgpt.site`
+- Redirect URLs: agregar `https://fairway-leon-golf.honeyring4.chatgpt.site/` y `https://fairway-leon-golf.honeyring4.chatgpt.site/**` sin borrar destinos que todavía utilices.
+- Guardar los cambios. Mantener activada la confirmación por correo.
+
+Fairway pasa `emailRedirectTo` en el alta y al reenviar confirmaciones, y `redirectTo` en la recuperación. Supabase debe permitir esos destinos. Un enlace anterior no se corrige retroactivamente: entra en la web pública, escribe el mismo correo y pulsa **Reenviar correo de confirmación**. Abre solo el mensaje más reciente. Si la cuenta ya se confirmó antes de caer en localhost, puedes iniciar sesión directamente con tu contraseña. No hace falta borrar la cuenta ni registrarla de nuevo.
+
+El error `otp_expired` puede indicar un enlace vencido o que ya se utilizó. La app muestra ese caso y permite solicitar otra confirmación; no muestra tokens ni usa mensajes arbitrarios de la URL. Los fragmentos de sesión tampoco se interpretan como pantallas de navegación.
+
+Si personalizaste la plantilla **Confirm signup**, revisa que use el enlace de verificación de Supabase (`{{ .ConfirmationURL }}`) y no un enlace directo a localhost. No desactives Confirm Email como solución. Referencias: [Redirect URLs](https://supabase.com/docs/guides/auth/redirect-urls), [Reenviar confirmación](https://supabase.com/docs/reference/javascript/auth-resend).
