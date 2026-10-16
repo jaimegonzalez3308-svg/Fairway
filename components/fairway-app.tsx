@@ -75,6 +75,9 @@ import { useFriends, profileWithPhoto } from "@/lib/use-friends";
 import { sharedProfileId } from "@/lib/profile-share";
 import { Friends, FriendshipActions } from "./friends";
 import { ProfileQR } from "./profile-qr";
+import { Parties } from "./parties";
+import { GameJoinActions } from "./game-join-actions";
+import { gameIsUpcoming } from "@/lib/parties";
 const navigation = [
   { id: "descubrir", label: "Descubrir", icon: Compass },
   { id: "partidas", label: "Partidas", icon: Flag },
@@ -107,7 +110,6 @@ export default function FairwayApp() {
     [activeChat, setActiveChat] = useState<string | null>(null),
     [message, setMessage] = useState(""),
     [profileTab, setProfileTab] = useState("Información"),
-    [calendar, setCalendar] = useState(false),
     [reviewTarget, setReviewTarget] = useState<Profile | null>(null),
     [busy, setBusy] = useState(false);
   const chatEnd = useRef<HTMLDivElement>(null);
@@ -849,7 +851,7 @@ export default function FairwayApp() {
                   </div>
                   <div className="game-grid">
                     {data.games
-                      .filter((g) => g.status === "open")
+                      .filter((g) => g.status === "open" && gameIsUpcoming(g))
                       .slice(0, 2)
                       .map((g) => (
                         <GameCard
@@ -866,91 +868,14 @@ export default function FairwayApp() {
                 </>
               )}
               {page === "partidas" && (
-                <>
-                  <SectionHeading
-                    eyebrow="UN PLAN QUE SIEMPRE SE ANTOJA"
-                    title="Tu próxima ronda empieza aquí."
-                    description="Encuentra un grupo, comparte el campo y disfruta el juego."
-                    action={
-                      <Button onClick={() => setModal("create-game")}>
-                        <Plus size={17} />
-                        Crear partida
-                      </Button>
-                    }
-                  />
-                  <div className="toolbar">
-                    <div className="tabs">
-                      <button
-                        className={!calendar ? "active" : ""}
-                        onClick={() => setCalendar(false)}
-                      >
-                        Partidas disponibles
-                      </button>
-                      <button
-                        className={calendar ? "active" : ""}
-                        onClick={() => setCalendar(true)}
-                      >
-                        <CalendarDays size={15} />
-                        Calendario
-                      </button>
-                    </div>
-                    <span className="muted">Hora de León · UTC−6</span>
-                  </div>
-                  {calendar ? (
-                    <div className="panel calendar-list">
-                      {data.games
-                        .filter(
-                          (g) => !["cancelled", "finished"].includes(g.status),
-                        )
-                        .map((g) => (
-                          <button
-                            className="calendar-row"
-                            key={g.id}
-                            onClick={() => {
-                              setGame(g);
-                              setModal("game");
-                            }}
-                          >
-                            <span className="calendar-date">
-                              <strong>{new Date(g.starts_at).getDate()}</strong>
-                              {new Date(g.starts_at).toLocaleDateString(
-                                "es-MX",
-                                { month: "short" },
-                              )}
-                            </span>
-                            <div>
-                              <strong>{clubName(g.club_id)}</strong>
-                              <small>
-                                {timeFormat(g.starts_at)} · {g.holes} hoyos ·{" "}
-                                {g.format}
-                              </small>
-                            </div>
-                            <ChevronRight size={18} />
-                          </button>
-                        ))}
-                    </div>
-                  ) : (
-                    <div className="game-grid">
-                      {data.games.map((g) => (
-                        <GameCard
-                          key={g.id}
-                          game={g}
-                          club={clubName(g.club_id)}
-                          onOpen={() => {
-                            setGame(g);
-                            setModal("game");
-                          }}
-                        />
-                      ))}
-                    </div>
-                  )}
-                  {!data.games.length && (
-                    <Empty
-                      title="Arma el primer foursome"
-                      description="Publica una partida y recibe solicitudes de otros golfistas."
-                    />
-                  )}
-                </>
+                <Parties
+                  data={data}
+                  onCreate={() => setModal("create-party")}
+                  onOpen={(g) => {
+                    setGame(g);
+                    setModal("game");
+                  }}
+                />
               )}
               {page === "mensajes" && (
                 <>
@@ -1435,9 +1360,17 @@ export default function FairwayApp() {
           <ProfileForm data={data} onDone={close} />
         </Modal>
       )}
-      {modal === "create-game" && (
-        <Modal title="Arma tu próxima partida" onClose={close}>
+      {(modal === "create-game" || modal === "create-party") && (
+        <Modal
+          title={
+            modal === "create-party"
+              ? "Arma tu próxima party"
+              : "Arma tu próxima partida"
+          }
+          onClose={close}
+        >
           <GameForm
+            party={modal === "create-party"}
             data={data}
             onDone={() => {
               close();
@@ -1643,6 +1576,11 @@ export default function FairwayApp() {
             </p>
           </div>
           <div className="chips">
+            <span className="badge">
+              {currentGame.join_mode === "open"
+                ? "Party abierta · unión directa"
+                : "Con aprobación"}
+            </span>
             <span className="badge">{currentGame.format}</span>
             <span className="badge">{currentGame.kind}</span>
             <span className="badge">{statusLabel(currentGame.status)}</span>
@@ -1769,38 +1707,17 @@ export default function FairwayApp() {
                 </Button>
               </div>
             </>
-          ) : currentGame.participants?.some(
-              (p) => p.user_id === data.user?.id,
-            ) ? (
-            <div className="notice">
-              Tu estado:{" "}
-              {currentGame.participants.find((p) => p.user_id === data.user?.id)
-                ?.status === "confirmed"
-                ? "Confirmado"
-                : "Solicitud enviada"}
-            </div>
-          ) : (
-            currentGame.status === "open" && (
-              <Button
-                onClick={async () => {
-                  if (
-                    !data.demo &&
-                    !window.confirm(
-                      "Confirmo que gestionaré mi acceso válido con el club. Esta solicitud no equivale a una reserva ni autorización de entrada.",
-                    )
-                  )
-                    return;
-                  await data.run(
-                    () => supabase!.rpc("request_join", { g: currentGame.id }),
-                    "Solicitud enviada. El organizador debe aprobarla.",
-                  );
-                }}
-              >
-                Solicitar unirme
-                <ArrowRight size={17} />
-              </Button>
-            )
-          )}
+          ) : null}
+          <GameJoinActions
+            key={currentGame.id}
+            game={currentGame}
+            data={data}
+            onChat={(id) => {
+              setActiveChat(id);
+              close();
+              go("mensajes");
+            }}
+          />
           {currentGame.status === "finished" &&
             currentGame.participants?.some(
               (p) => p.user_id === data.user?.id && p.status === "confirmed",

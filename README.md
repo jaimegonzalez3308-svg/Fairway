@@ -37,6 +37,7 @@ Supabase proporciona el inicio de sesión, la base de datos, el almacenamiento p
    - `supabase/migrations/202610150005_guest_and_account_security.sql`
    - `supabase/migrations/202610150006_friends.sql`
    - `supabase/migrations/202610150007_stories.sql`
+   - `supabase/migrations/202610160008_open_parties.sql`
 
    Si aparece un error, detente y conserva el texto del error. No desactives RLS para solucionarlo. Las migraciones incluyen transacciones para evitar instalaciones parciales.
 
@@ -219,3 +220,19 @@ La caducidad no necesita un cron. La limpieza física de las fotos vencidas se i
 Pruebas con PGlite: expiración, fechas controladas por servidor, acceso anónimo, escrituras directas rechazadas, vistas únicas, autor excluido, likes idempotentes y reversibles, métricas privadas, audiencia de amistades aceptadas, bloqueo, privacidad, suspensión, políticas de Storage y cascadas. Tras aplicar la migración, falta comprobar la subida y las interacciones desde dos cuentas reales. La revisión visual del nuevo visor no pudo completarse porque el control nativo del navegador no devolvió una pantalla utilizable y el navegador integrado no está disponible.
 
 Referencias: [RLS de Storage](https://supabase.com/docs/guides/storage/security/access-control), [archivos privados y URLs firmadas](https://supabase.com/docs/guides/storage/serving/downloads).
+
+## Parties abiertas y planes a futuro
+
+**Partidas → Crear party** permite organizar una ronda para cualquier fecha futura. El formulario sugiere dentro de una semana y tiene accesos a mañana, una semana y dos semanas. Incluye campo, hora de León, 9/18 hoyos, 2–4 jugadores contando al organizador, formato, descripción y condiciones de acceso.
+
+- **Party abierta:** visible para todos los miembros con cuenta. Se unen directamente hasta llenar el grupo, quedan confirmados y entran al chat de la partida. No requiere match ni aprobación del organizador.
+- **Con aprobación:** conserva el flujo anterior de solicitudes. Puede ser pública, para matches o por invitación. Las partidas ya existentes mantienen este comportamiento.
+- **Explorar partidas:** muestra planes futuros, con filtros por campo, hoy, próximos siete días, días 7–14 o una fecha exacta. El filtro inicial muestra solo lugares disponibles. También hay vista de calendario.
+- **Mis planes:** reúne las partidas organizadas y las solicitudes o lugares propios. Incluye planes anteriores cuando el filtro es cualquier fecha.
+- Los participantes pueden salir de una partida futura activa o cancelar una solicitud. Salir libera el cupo y retira el acceso al chat; una party llena se reabre. El organizador cancela su partida en lugar de salir.
+
+**Activación:** ejecutar una sola vez `supabase/migrations/202610160008_open_parties.sql` después de las migraciones anteriores. Se proporciona también como **Agregar parties abiertas Fairway.sql** en Matrix. No volver a ejecutar el instalador inicial. La interfaz comprueba que exista `games.join_mode`: si falta, sigue funcionando la creación de partidas futuras con aprobación y muestra que la incorporación directa aún no está activada.
+
+El control de cupo y los cambios de membresía ocurren en PostgreSQL con bloqueo de la fila de la partida. Los clientes no escriben participantes ni miembros del chat directamente. Las incorporaciones son idempotentes, respetan bloqueos y cuentas suspendidas y se cierran al comenzar/cancelar/finalizar. Una solicitud rechazada no puede convertirse en incorporación directa. Unirse a Fairway no reserva tee times ni autoriza el acceso al club: cada jugador confirma que gestionará su acceso.
+
+La sección vuelve a consultar las partidas cada 30 segundos mientras esté visible y al volver a la pestaña; también tiene Actualizar. No depende de agregar tablas a Realtime. Las pruebas de PostgreSQL cubren incorporación para dentro de una semana sin match, cupo lleno, duplicados, aprobación anterior, rechazo, invitaciones, suspensión, bloqueos, salidas, reapertura y acceso al chat. Se comprueban las fechas y límites de filtros en la zona de León, también cerca de medianoche y al cambiar de año. Falta la aceptación con cuentas reales tras activar la migración.

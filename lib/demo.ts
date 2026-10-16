@@ -1,4 +1,5 @@
 import { Profile, Club, Game, Round } from "./domain";
+import { golfDateAfter } from "./parties";
 export const clubs: Club[] = [
   {
     id: "campestre",
@@ -140,7 +141,7 @@ export const demoGames: Game[] = [
     id: "game-demo-1",
     host_id: "demo-1",
     club_id: "campestre",
-    starts_at: "2026-10-17T08:30:00-06:00",
+    starts_at: `${golfDateAfter(1)}T08:30:00-06:00`,
     holes: 18,
     capacity: 4,
     format: "Casual",
@@ -159,13 +160,15 @@ export const demoGames: Game[] = [
     id: "game-demo-2",
     host_id: "demo-2",
     club_id: "bosque",
-    starts_at: "2026-10-18T09:00:00-06:00",
+    starts_at: `${golfDateAfter(7)}T09:00:00-06:00`,
+    join_mode: "open",
     holes: 9,
     capacity: 4,
     format: "Stroke play",
     kind: "social",
     privacy: "public",
-    description: "Nueve hoyos para desconectar y disfrutar la mañana.",
+    description:
+      "La próxima semana, nueve hoyos para desconectar. Únete al grupo y armamos el plan.",
     access_conditions:
       "Cada participante debe confirmar su acceso con el club.",
     status: "open",

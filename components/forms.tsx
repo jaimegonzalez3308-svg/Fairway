@@ -3,12 +3,21 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Mail, ArrowRight, Upload, ShieldCheck } from "lucide-react";
+import {
+  Mail,
+  ArrowRight,
+  Upload,
+  ShieldCheck,
+  Users,
+  Check,
+  CalendarDays,
+} from "lucide-react";
 import { Button, Field } from "./ui";
 import { supabase } from "@/lib/supabase";
 import { days, profileSchema, type Profile, type Game } from "@/lib/domain";
 import type { FairwayData } from "@/lib/use-fairway";
 import { authErrorMessage, authRedirectUrl } from "@/lib/auth";
+import { golfDate, golfDateAfter } from "@/lib/parties";
 const authSchema = z.object({
   email: z.email("Escribe un correo válido."),
   password: z.string().min(10, "Usa al menos 10 caracteres."),
@@ -499,21 +508,29 @@ export function ProfileForm({
 export function GameForm({
   data,
   onDone,
+  party = false,
 }: {
   data: FairwayData;
   onDone: () => void;
+  party?: boolean;
 }) {
   const [busy, setBusy] = useState(false);
+  const [joinMode, setJoinMode] = useState(
+    party && data.partiesAvailable ? "open" : "request",
+  );
+  const [date, setDate] = useState(golfDateAfter(7));
+  const [privacy, setPrivacy] = useState("public");
   return (
     <form
       className="form"
       onSubmit={async (e) => {
         e.preventDefault();
+        if (busy) return;
         const f = new FormData(e.currentTarget);
         const time = new Date(
           f.get("date") + "T" + f.get("time") + ":00-06:00",
         );
-        if (time <= new Date()) {
+        if (Number.isNaN(time.getTime()) || time <= new Date()) {
           data.notify("Elige una fecha y hora futuras.");
           return;
         }
@@ -528,16 +545,72 @@ export function GameForm({
               capacity: Number(f.get("capacity")),
               format: f.get("format"),
               kind: f.get("kind"),
-              privacy: f.get("privacy"),
+              privacy: joinMode === "open" ? "public" : f.get("privacy"),
+              ...(data.partiesAvailable ? { join_mode: joinMode } : {}),
               description: f.get("description"),
               access_conditions: f.get("access"),
             }),
-          "Partida publicada. Tú apruebas las solicitudes de acceso.",
+          joinMode === "open"
+            ? "Party publicada. Cualquier miembro puede unirse mientras haya lugar."
+            : "Partida publicada. Tú apruebas las solicitudes de acceso.",
         );
         setBusy(false);
         if (ok) onDone();
       }}
     >
+      <div className="party-form-intro">
+        <span>
+          <CalendarDays size={19} />
+        </span>
+        <div>
+          <strong>Un buen plan empieza con tiempo.</strong>
+          <p>Elige un día, abre tu grupo y deja que llegue la compañía.</p>
+        </div>
+      </div>
+      <fieldset className="party-mode-picker">
+        <legend>¿Cómo se une la gente?</legend>
+        <label className={joinMode === "open" ? "selected" : ""}>
+          <input
+            type="radio"
+            name="join-mode"
+            value="open"
+            checked={joinMode === "open"}
+            disabled={!data.partiesAvailable || busy}
+            onChange={() => {
+              setJoinMode("open");
+              setPrivacy("public");
+            }}
+          />
+          <Users size={20} />
+          <span>
+            <strong>Party abierta</strong>
+            <small>
+              Cualquier miembro se une al instante, hasta llenar el grupo.
+            </small>
+          </span>
+        </label>
+        <label className={joinMode === "request" ? "selected" : ""}>
+          <input
+            type="radio"
+            name="join-mode"
+            value="request"
+            checked={joinMode === "request"}
+            disabled={busy}
+            onChange={() => setJoinMode("request")}
+          />
+          <Check size={20} />
+          <span>
+            <strong>Con aprobación</strong>
+            <small>Recibes solicitudes y eliges a tus compañeros.</small>
+          </span>
+        </label>
+      </fieldset>
+      {!data.partiesAvailable && (
+        <p className="party-activation-note">
+          La incorporación directa aún no está activada. Ya puedes organizar
+          partidas para cualquier fecha y aprobar solicitudes.
+        </p>
+      )}
       <Field label="Club / campo">
         <select name="club" required>
           {data.clubs.map((c) => (
@@ -549,10 +622,18 @@ export function GameForm({
       </Field>
       <div className="form-grid">
         <Field label="Fecha">
-          <input name="date" type="date" required />
+          <input
+            name="date"
+            type="date"
+            min={golfDate()}
+            value={date}
+            disabled={busy}
+            onChange={(e) => setDate(e.target.value)}
+            required
+          />
         </Field>
         <Field label="Hora (León)">
-          <input name="time" type="time" required />
+          <input name="time" type="time" defaultValue="08:00" required />
         </Field>
         <Field label="Hoyos">
           <select name="holes">
@@ -582,15 +663,43 @@ export function GameForm({
           </select>
         </Field>
       </div>
+      <div className="party-quick-dates" aria-label="Elegir fecha rápida">
+        {[
+          [1, "Mañana"],
+          [7, "En una semana"],
+          [14, "En dos semanas"],
+        ].map(([days, label]) => (
+          <button
+            type="button"
+            key={days}
+            className={date === golfDateAfter(Number(days)) ? "active" : ""}
+            disabled={busy}
+            onClick={() => setDate(golfDateAfter(Number(days)))}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
       <Field label="Privacidad">
-        <select name="privacy">
-          <option value="public">Pública</option>
+        <select
+          name="privacy"
+          value={privacy}
+          onChange={(e) => setPrivacy(e.target.value)}
+          disabled={joinMode === "open" || busy}
+        >
+          <option value="public">Visible para todos los miembros</option>
           <option value="matches">Solo mis matches</option>
           <option value="invite">Por invitación</option>
         </select>
       </Field>
       <Field label="Descripción">
-        <textarea name="description" required maxLength={1000} rows={3} />
+        <textarea
+          name="description"
+          placeholder="Por ejemplo: ronda relajada el próximo sábado, todos los niveles son bienvenidos."
+          required
+          maxLength={1000}
+          rows={3}
+        />
       </Field>
       <Field label="Condiciones de acceso al club">
         <textarea
@@ -604,7 +713,13 @@ export function GameForm({
         Fairway organiza compañeros. La reserva del tee time y la autorización
         de acceso se gestionan directamente con el club.
       </div>
-      <Button disabled={busy}>{busy ? "Publicando…" : "Crear partida"}</Button>
+      <Button disabled={busy}>
+        {busy
+          ? "Publicando…"
+          : joinMode === "open"
+            ? "Publicar party abierta"
+            : "Publicar partida"}
+      </Button>
     </form>
   );
 }

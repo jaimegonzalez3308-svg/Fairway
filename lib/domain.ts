@@ -69,6 +69,7 @@ export type Game = {
   format: string;
   kind: string;
   privacy: string;
+  join_mode?: "open" | "request";
   description: string;
   access_conditions: string;
   status: string;

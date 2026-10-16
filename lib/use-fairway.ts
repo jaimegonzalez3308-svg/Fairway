@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "./supabase";
 import {
@@ -64,6 +64,9 @@ export function useFairway() {
     [notifications, setNotifications] = useState<Notification[]>([]),
     [admin, setAdmin] = useState(false);
   const [publicDirectoryLive, setPublicDirectoryLive] = useState(false);
+  const [partiesAvailable, setPartiesAvailable] = useState(!supabase);
+  const currentUserId = useRef(user?.id);
+  currentUserId.current = user?.id;
   const demo = !supabase;
   useEffect(() => {
     if (!supabase || user) return;
@@ -123,8 +126,11 @@ export function useFairway() {
           .eq("user_id", u.id)
           .single(),
         supabase.rpc("rating_summary"),
+        supabase.from("games").select("join_mode").limit(0),
       ]);
-      const failed = r.find((x) => x.error);
+      // La actualización de parties es opcional para las bases existentes.
+      setPartiesAvailable(!r[11].error);
+      const failed = r.slice(0, 11).find((x) => x.error);
       if (failed?.error) throw failed.error;
       const all = r[0].data as Profile[];
       const own = all.find((x) => x.id === u.id);
@@ -187,6 +193,7 @@ export function useFairway() {
           "No se pudo recuperar la sesión. Revisa tu conexión y recarga la página.",
         );
         setLoading(false);
+        setPartiesAvailable(false);
       });
     const { data } = supabase.auth.onAuthStateChange((_e, s) => {
       setUser(s?.user ?? null);
@@ -203,11 +210,23 @@ export function useFairway() {
         setRounds([]);
         setConversations([]);
         setMessages([]);
+        setPartiesAvailable(false);
         setLoading(false);
       }
     });
     return () => data.subscription.unsubscribe();
   }, [load]);
+  const refreshGames = useCallback(async () => {
+    const userId = user?.id;
+    if (!supabase || !userId) return false;
+    const result = await supabase
+      .from("games")
+      .select("*,participants:game_participants(user_id,status)")
+      .order("starts_at");
+    if (currentUserId.current !== userId || result.error) return false;
+    setGames(result.data as Game[]);
+    return true;
+  }, [user?.id]);
   useEffect(() => {
     if (!supabase || !user) return;
     const channel = supabase
@@ -328,6 +347,8 @@ export function useFairway() {
     notifications,
     admin,
     publicDirectoryLive,
+    partiesAvailable,
+    refreshGames,
     run,
     decide,
     favorite,
