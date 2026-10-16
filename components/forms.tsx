@@ -509,16 +509,18 @@ export function GameForm({
   data,
   onDone,
   party = false,
+  initialDate,
 }: {
   data: FairwayData;
-  onDone: () => void;
+  onDone: (date?: string) => void;
+  initialDate?: string;
   party?: boolean;
 }) {
   const [busy, setBusy] = useState(false);
   const [joinMode, setJoinMode] = useState(
     party && data.partiesAvailable ? "open" : "request",
   );
-  const [date, setDate] = useState(golfDateAfter(7));
+  const [date, setDate] = useState(initialDate || golfDateAfter(7));
   const [privacy, setPrivacy] = useState("public");
   return (
     <form
@@ -555,7 +557,7 @@ export function GameForm({
             : "Partida publicada. Tú apruebas las solicitudes de acceso.",
         );
         setBusy(false);
-        if (ok) onDone();
+        if (ok) onDone(date);
       }}
     >
       <div className="party-form-intro">

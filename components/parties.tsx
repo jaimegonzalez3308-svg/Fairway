@@ -4,7 +4,6 @@ import {
   ArrowUpRight,
   CalendarDays,
   Check,
-  ChevronRight,
   Clock,
   Flag,
   LayoutGrid,
@@ -13,13 +12,13 @@ import {
   Users,
 } from "lucide-react";
 import { Button, Empty, SectionHeading } from "./ui";
+import { PartyMonthCalendar } from "./party-month-calendar";
 import type { FairwayData } from "@/lib/use-fairway";
 import type { Game } from "@/lib/domain";
 import { dateFormat, timeFormat } from "@/lib/utils";
 import {
   gameIsUpcoming,
   gameSeats,
-  golfDate,
   golfDateAfter,
   matchesPartyPeriod,
   partyDateLabel,
@@ -30,17 +29,21 @@ export function Parties({
   data,
   onCreate,
   onOpen,
+  calendarDate,
+  onCalendarDateChange,
 }: {
   data: FairwayData;
-  onCreate: () => void;
+  onCreate: (date?: string) => void;
+  calendarDate: string;
+  onCalendarDateChange: (date: string) => void;
   onOpen: (game: Game) => void;
 }) {
   const [tab, setTab] = useState("explore");
-  const [calendar, setCalendar] = useState(false);
+  const [calendar, setCalendar] = useState(true);
   const [period, setPeriod] = useState<PartyPeriod>("all");
   const [date, setDate] = useState(golfDateAfter(7));
   const [club, setClub] = useState("");
-  const [openOnly, setOpenOnly] = useState(true);
+  const [openOnly, setOpenOnly] = useState(false);
   const [now, setNow] = useState(new Date());
   const [refreshing, setRefreshing] = useState(false);
   const refreshGames = data.refreshGames;
@@ -48,7 +51,7 @@ export function Parties({
     const refresh = () => {
       if (document.hidden) return;
       setNow(new Date());
-      void refreshGames();
+      if (!calendar) void refreshGames();
     };
     const timer = setInterval(refresh, 30000);
     document.addEventListener("visibilitychange", refresh);
@@ -56,7 +59,7 @@ export function Parties({
       clearInterval(timer);
       document.removeEventListener("visibilitychange", refresh);
     };
-  }, [refreshGames]);
+  }, [refreshGames, calendar]);
   const mine = (g: Game) =>
     g.host_id === data.user?.id ||
     g.participants?.some(
@@ -82,72 +85,73 @@ export function Parties({
       }
       return a.starts_at.localeCompare(b.starts_at);
     });
-  const dates = [...new Set(visible.map((g) => golfDate(g.starts_at)))];
   return (
     <>
       <SectionHeading
         eyebrow="LA BUENA COMPAÑÍA SE PLANEA"
         title="Ponle fecha a tu próxima ronda."
-        description="Arma una party para mañana, la próxima semana o el día que quieras. Tu grupo empieza aquí."
+        description="Explora las parties del mes, elige un día y encuentra tu próxima ronda. También puedes organizar la tuya."
         action={
-          <Button onClick={onCreate}>
+          <Button onClick={() => onCreate()}>
             <Plus size={17} />
             Crear party
           </Button>
         }
       />
-      <section
-        className="party-planner-hero"
-        aria-label="Organiza una party con anticipación"
-      >
-        <div className="party-planner-copy">
-          <span className="party-hero-eyebrow">
-            <span className="live-dot" /> UN PLAN ABIERTO A BUENA COMPAÑÍA
-          </span>
-          <h2>
-            Una fecha.
-            <br />
-            Un campo. <em>Tu próximo grupo.</em>
-          </h2>
-          <p>
-            Publica tu ronda con anticipación. Los demás ven los lugares
-            disponibles y se unen a tu party.
-          </p>
-          <Button onClick={onCreate}>
-            Armar mi party
-            <ArrowUpRight size={17} />
-          </Button>
-        </div>
-        <div className="party-planner-illustration" aria-hidden="true">
-          <div className="party-calendar-leaf">
-            <span>LA PRÓXIMA SEMANA</span>
-            <strong>{golfDateAfter(7).slice(-2)}</strong>
-            <small>
-              {new Intl.DateTimeFormat("es-MX", {
-                month: "long",
-                timeZone: "America/Mexico_City",
-              }).format(new Date(`${golfDateAfter(7)}T12:00:00-06:00`))}
-            </small>
+      {!calendar && (
+        <section
+          className="party-planner-hero"
+          aria-label="Organiza una party con anticipación"
+        >
+          <div className="party-planner-copy">
+            <span className="party-hero-eyebrow">
+              <span className="live-dot" /> UN PLAN ABIERTO A BUENA COMPAÑÍA
+            </span>
+            <h2>
+              Una fecha.
+              <br />
+              Un campo. <em>Tu próximo grupo.</em>
+            </h2>
+            <p>
+              Publica tu ronda con anticipación. Los demás ven los lugares
+              disponibles y se unen a tu party.
+            </p>
+            <Button onClick={() => onCreate()}>
+              Armar mi party
+              <ArrowUpRight size={17} />
+            </Button>
           </div>
-          <div className="party-hero-group">
-            <span>
-              <Flag size={20} />
-            </span>
-            <span>
-              <Users size={19} />
-            </span>
-            <span>
-              <Plus size={18} />
-            </span>
-            <span>
-              <Plus size={18} />
-            </span>
+          <div className="party-planner-illustration" aria-hidden="true">
+            <div className="party-calendar-leaf">
+              <span>LA PRÓXIMA SEMANA</span>
+              <strong>{golfDateAfter(7).slice(-2)}</strong>
+              <small>
+                {new Intl.DateTimeFormat("es-MX", {
+                  month: "long",
+                  timeZone: "America/Mexico_City",
+                }).format(new Date(`${golfDateAfter(7)}T12:00:00-06:00`))}
+              </small>
+            </div>
+            <div className="party-hero-group">
+              <span>
+                <Flag size={20} />
+              </span>
+              <span>
+                <Users size={19} />
+              </span>
+              <span>
+                <Plus size={18} />
+              </span>
+              <span>
+                <Plus size={18} />
+              </span>
+            </div>
+            <div className="party-hero-note">
+              <Check size={13} /> El plan lo pones tú.
+            </div>
           </div>
-          <div className="party-hero-note">
-            <Check size={13} /> El plan lo pones tú.
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
       <div className="party-board-heading">
         <div className="tabs">
           <button
@@ -171,40 +175,44 @@ export function Parties({
             aria-pressed={!calendar}
           >
             <LayoutGrid size={17} />
+            <span>Tarjetas</span>
           </button>
           <button
             className={calendar ? "active" : ""}
             onClick={() => setCalendar(true)}
-            aria-label="Ver calendario"
+            aria-label="Ver calendario mensual"
             aria-pressed={calendar}
           >
             <CalendarDays size={17} />
+            <span>Calendario</span>
           </button>
         </div>
       </div>
-      <div className="party-filters panel">
-        <div className="party-date-filters" aria-label="Filtrar por fecha">
-          {(
-            [
-              ["all", "Cualquier fecha"],
-              ["today", "Hoy"],
-              ["week", "Próximos 7 días"],
-              ["next-week", "En 7–14 días"],
-              ["date", "Elegir día"],
-            ] as [PartyPeriod, string][]
-          ).map(([value, label]) => (
-            <button
-              key={value}
-              className={period === value ? "active" : ""}
-              aria-pressed={period === value}
-              onClick={() => setPeriod(value)}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+      <div className={`party-filters panel ${calendar ? "is-month" : ""}`}>
+        {!calendar && (
+          <div className="party-date-filters" aria-label="Filtrar por fecha">
+            {(
+              [
+                ["all", "Cualquier fecha"],
+                ["today", "Hoy"],
+                ["week", "Próximos 7 días"],
+                ["next-week", "En 7–14 días"],
+                ["date", "Elegir día"],
+              ] as [PartyPeriod, string][]
+            ).map(([value, label]) => (
+              <button
+                key={value}
+                className={period === value ? "active" : ""}
+                aria-pressed={period === value}
+                onClick={() => setPeriod(value)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
         <div className="party-filter-fields">
-          {period === "date" && (
+          {!calendar && period === "date" && (
             <label>
               <span>Fecha de la ronda</span>
               <input
@@ -240,111 +248,81 @@ export function Parties({
               Solo con lugares
             </label>
           )}
-          <button
-            className="party-refresh"
-            disabled={refreshing || data.demo}
-            aria-label="Actualizar partidas"
-            onClick={async () => {
-              setRefreshing(true);
-              try {
-                if (!(await refreshGames()))
-                  data.notify(
-                    "No pudimos actualizar las partidas. Revisa tu conexión.",
-                  );
-              } finally {
-                setRefreshing(false);
-              }
-            }}
-          >
-            <RefreshCw size={15} />
-            {refreshing ? "Actualizando…" : "Actualizar"}
-          </button>
+          {!calendar && (
+            <button
+              className="party-refresh"
+              disabled={refreshing || data.demo}
+              aria-label="Actualizar partidas"
+              onClick={async () => {
+                setRefreshing(true);
+                try {
+                  if (!(await refreshGames()))
+                    data.notify(
+                      "No pudimos actualizar las partidas. Revisa tu conexión.",
+                    );
+                } finally {
+                  setRefreshing(false);
+                }
+              }}
+            >
+              <RefreshCw size={15} />
+              {refreshing ? "Actualizando…" : "Actualizar"}
+            </button>
+          )}
         </div>
       </div>
-      <div className="party-results-heading">
-        <strong>
-          {visible.length} {visible.length === 1 ? "plan" : "planes"}
-          {tab === "mine" ? " en tu agenda" : " para compartir el campo"}
-        </strong>
-        <span>
-          <Clock size={12} />
-          Hora de León · UTC−6
-        </span>
-      </div>
-      {!visible.length ? (
-        <Empty
-          title={
-            tab === "mine"
-              ? "Tu próxima ronda está por escribirse."
-              : "Todavía hay espacio para un nuevo plan."
-          }
-          description={
-            tab === "mine"
-              ? "Aquí aparecerán las partidas que organices y aquellas a las que te unas. Prueba otra fecha si ya tienes un plan."
-              : "No hay partidas con estos filtros. Elige otra fecha o publica tu propia party."
-          }
-          action={
-            <Button variant="outline" onClick={onCreate}>
-              <Plus size={16} />
-              Crear un plan
-            </Button>
-          }
+      {calendar ? (
+        <PartyMonthCalendar
+          data={data}
+          selectedDate={calendarDate}
+          onDateChange={onCalendarDateChange}
+          onCreate={onCreate}
+          onOpen={onOpen}
+          mine={tab === "mine"}
+          club={club}
+          openOnly={tab === "mine" ? false : openOnly}
+          now={now}
         />
-      ) : calendar ? (
-        <div className="party-calendar-list">
-          {dates.map((day) => (
-            <section key={day}>
-              <h3>
-                {new Intl.DateTimeFormat("es-MX", {
-                  weekday: "long",
-                  day: "numeric",
-                  month: "long",
-                  timeZone: "America/Mexico_City",
-                }).format(new Date(`${day}T12:00:00-06:00`))}
-              </h3>
-              <div className="panel">
-                {visible
-                  .filter((g) => golfDate(g.starts_at) === day)
-                  .map((g) => (
-                    <button
-                      className="party-calendar-row"
-                      key={g.id}
-                      onClick={() => onOpen(g)}
-                    >
-                      <span className="party-calendar-hour">
-                        {timeFormat(g.starts_at)}
-                      </span>
-                      <div>
-                        <strong>
-                          {data.clubs.find((c) => c.id === g.club_id)?.name ||
-                            "Campo"}
-                        </strong>
-                        <small>
-                          {g.join_mode === "open"
-                            ? "Party abierta"
-                            : "Con aprobación"}{" "}
-                          · {g.holes} hoyos · {gameSeats(g).remaining} lugares
-                          libres
-                        </small>
-                      </div>
-                      <ChevronRight size={18} />
-                    </button>
-                  ))}
-              </div>
-            </section>
-          ))}
-        </div>
       ) : (
-        <div className="party-card-grid">
-          {visible.map((game) => (
-            <PartyCard
-              key={game.id}
-              game={game}
-              data={data}
-              onOpen={() => onOpen(game)}
+        <>
+          <div className="party-results-heading">
+            <strong>
+              {visible.length} {visible.length === 1 ? "plan" : "planes"}
+              {tab === "mine" ? " en tu agenda" : " para compartir el campo"}
+            </strong>
+            <span>
+              <Clock size={12} />
+              Hora de León · UTC−6
+            </span>
+          </div>
+          {!visible.length ? (
+            <Empty
+              title={
+                tab === "mine"
+                  ? "Tu próxima ronda está por escribirse."
+                  : "Todavía hay espacio para un nuevo plan."
+              }
+              description="No hay partidas con estos filtros. Elige otra fecha o publica tu propia party."
+              action={
+                <Button variant="outline" onClick={() => onCreate()}>
+                  <Plus size={16} />
+                  Crear un plan
+                </Button>
+              }
             />
-          ))}
-        </div>
+          ) : (
+            <div className="party-card-grid">
+              {visible.map((game) => (
+                <PartyCard
+                  key={game.id}
+                  game={game}
+                  data={data}
+                  onOpen={() => onOpen(game)}
+                />
+              ))}
+            </div>
+          )}
+        </>
       )}
     </>
   );

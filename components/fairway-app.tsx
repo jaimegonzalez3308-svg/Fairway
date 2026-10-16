@@ -77,7 +77,7 @@ import { Friends, FriendshipActions } from "./friends";
 import { ProfileQR } from "./profile-qr";
 import { Parties } from "./parties";
 import { GameJoinActions } from "./game-join-actions";
-import { gameIsUpcoming } from "@/lib/parties";
+import { gameIsUpcoming, golfDate } from "@/lib/parties";
 const navigation = [
   { id: "descubrir", label: "Descubrir", icon: Compass },
   { id: "partidas", label: "Partidas", icon: Flag },
@@ -101,6 +101,8 @@ export default function FairwayApp() {
     [gateFeature, setGateFeature] = useState("perfil"),
     [selected, setSelected] = useState<Profile | null>(null),
     [game, setGame] = useState<Game | null>(null),
+    [partyDate, setPartyDate] = useState<string | undefined>(),
+    [partyCalendarDate, setPartyCalendarDate] = useState(() => golfDate()),
     [round, setRound] = useState<Round | undefined>(),
     [filters, setFilters] = useState<Filters>(initialFilters),
     [draftFilters, setDraftFilters] = useState<Filters>(initialFilters),
@@ -395,8 +397,35 @@ export default function FairwayApp() {
               ?.user_id,
         )?.name || "Tu match";
   }
-  const currentGame =
-    (game && data.games.find((g) => g.id === game.id)) || game;
+  const selectedGameId = game?.id;
+  useEffect(() => {
+    if (modal !== "game" || !selectedGameId || !supabase || !data.user) return;
+    let current = true;
+    const loaded = data.games.find((g) => g.id === selectedGameId);
+    if (loaded) setGame(loaded);
+    async function refreshDetails() {
+      if (document.hidden) return;
+      const result = await supabase!
+        .from("games")
+        .select("*,participants:game_participants(user_id,status)")
+        .eq("id", selectedGameId)
+        .maybeSingle();
+      if (!current || result.error) return;
+      if (result.data) setGame(result.data as Game);
+      else {
+        setGame(null);
+        setModal(null);
+        data.notify("Esta partida ya no está disponible.");
+      }
+    }
+    void refreshDetails();
+    const timer = setInterval(() => void refreshDetails(), 15000);
+    return () => {
+      current = false;
+      clearInterval(timer);
+    };
+  }, [modal, selectedGameId, data.user?.id, data.games, data.notify]);
+  const currentGame = game;
   return (
     <div className="app-shell">
       <aside className={cn("sidebar", mobileOpen && "open")}>
@@ -870,7 +899,12 @@ export default function FairwayApp() {
               {page === "partidas" && (
                 <Parties
                   data={data}
-                  onCreate={() => setModal("create-party")}
+                  calendarDate={partyCalendarDate}
+                  onCalendarDateChange={setPartyCalendarDate}
+                  onCreate={(date) => {
+                    setPartyDate(date);
+                    setModal("create-party");
+                  }}
                   onOpen={(g) => {
                     setGame(g);
                     setModal("game");
@@ -1371,8 +1405,10 @@ export default function FairwayApp() {
         >
           <GameForm
             party={modal === "create-party"}
+            initialDate={modal === "create-party" ? partyDate : undefined}
             data={data}
-            onDone={() => {
+            onDone={(date) => {
+              if (date) setPartyCalendarDate(date);
               close();
               go("partidas");
             }}

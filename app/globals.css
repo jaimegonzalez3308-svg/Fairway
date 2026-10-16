@@ -5629,3 +5629,539 @@ h1 {
     font-size: 9px;
   }
 }
+
+/* Monthly party calendar. */
+.party-view-switch > button {
+  width: auto;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.party-view-switch > button > span {
+  font-size: 10px;
+}
+.party-filters.is-month .party-filter-fields {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+.party-month-panel {
+  overflow: hidden;
+}
+.party-month-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  padding: 25px 26px 18px;
+}
+.party-month-toolbar .eyebrow {
+  font-size: 8px;
+  letter-spacing: 1.6px;
+}
+.party-month-toolbar h2 {
+  margin-top: 7px;
+  text-transform: capitalize;
+  font-size: 28px;
+  font-weight: 500;
+}
+.party-month-toolbar p {
+  font-size: 11px;
+  color: #8c987e;
+  margin-top: 5px;
+}
+.party-month-navigation {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.party-month-navigation button {
+  display: grid;
+  place-items: center;
+  min-width: 35px;
+  height: 35px;
+  border-radius: 8px;
+  color: #70875d;
+}
+.party-month-navigation button:hover {
+  background: #edf2e5;
+}
+.party-month-navigation .party-month-today {
+  padding: 0 15px;
+  border: 1px solid #dfe6d7;
+  font-size: 11px;
+  margin-right: 5px;
+}
+.party-month-arrow {
+  border: 1px solid #e5eadf;
+}
+.party-month-legend {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 0 26px 20px;
+  color: #8b977f;
+}
+.party-month-legend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+}
+.party-month-legend i,
+.party-day-mobile-dots i {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #b8bfaf;
+}
+.party-month-legend .available,
+.party-day-mobile-dots .available {
+  background: #7c9e61;
+}
+.party-month-legend .full,
+.party-day-mobile-dots .full {
+  background: #c6a467;
+}
+.party-month-legend small {
+  margin-left: auto;
+  font-size: 9px;
+}
+.party-month-grid {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.party-month-grid th {
+  text-align: left;
+  padding: 11px 12px;
+  font-size: 10px;
+  font-weight: 500;
+  color: #89987c;
+  background: #f6f8f1;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.party-month-grid th abbr {
+  text-decoration: none;
+}
+.party-month-grid td {
+  padding: 0 5px 6px;
+  vertical-align: top;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: white;
+}
+.party-month-grid td:last-child {
+  border-right: 0;
+}
+.party-month-grid td.outside-month {
+  background: #fafbf7;
+}
+.party-month-grid td.selected-day {
+  background: #f0f5e9;
+  box-shadow: inset 0 0 0 1px #9bb583;
+}
+.party-day-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2px;
+  width: 100%;
+  min-height: 43px;
+  padding: 6px 3px;
+  border-radius: 6px;
+}
+.party-day-button:hover {
+  background: #eff3e6;
+}
+.party-day-number {
+  display: grid;
+  place-items: center;
+  width: 27px;
+  height: 27px;
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: #526c43;
+  border-radius: 50%;
+}
+.outside-month .party-day-number {
+  color: #bcc5b1;
+}
+.party-month-grid .today .party-day-number {
+  color: white;
+  background: var(--forest);
+}
+.party-day-total {
+  color: #8b9c7c;
+  font-size: 9px;
+  padding-right: 2px;
+}
+.party-day-total > span {
+  display: none;
+}
+.party-day-events {
+  min-height: 69px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 3px;
+}
+.party-month-event {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  text-align: left;
+  padding: 6px;
+  width: 100%;
+  min-width: 0;
+  border-radius: 5px;
+  background: #edf3e6;
+  color: #53743e;
+}
+.party-month-event:hover {
+  background: #e2edd6;
+}
+.party-month-event.full {
+  background: #f5efdf;
+  color: #9b8050;
+}
+.party-month-event.past,
+.party-month-event.closed {
+  background: #f0f1ec;
+  color: #929a88;
+}
+.party-month-event.closed strong {
+  text-decoration: line-through;
+}
+.party-event-dot {
+  flex-shrink: 0;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  align-self: flex-start;
+  margin-top: 3px;
+}
+.party-month-event > span:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.party-month-event time {
+  font-size: 9px;
+  white-space: nowrap;
+}
+.party-month-event strong {
+  font-size: 10px;
+  font-weight: 450;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.party-day-more {
+  font-size: 9px;
+  color: #7b9169;
+  align-self: flex-start;
+  padding: 4px 6px;
+}
+.party-day-mobile-dots {
+  display: none;
+}
+.party-month-instructions {
+  padding: 15px 25px;
+  font-size: 10px;
+  color: #8b997e;
+  line-height: 1.7;
+  background: #fafbf7;
+}
+.party-month-error {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding: 13px 25px;
+  font-size: 11px;
+  color: #a17d4d;
+  background: #f7f0e4;
+}
+.party-month-error button {
+  text-decoration: underline;
+  white-space: nowrap;
+}
+.party-day-agenda {
+  margin-top: 28px;
+}
+.party-day-agenda-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 17px;
+}
+.party-day-agenda-heading .eyebrow {
+  font-size: 8px;
+  letter-spacing: 1.4px;
+}
+.party-day-agenda-heading h3 {
+  font-size: 20px;
+  font-weight: 500;
+  text-transform: capitalize;
+  margin-top: 7px;
+}
+.party-day-agenda-heading p {
+  font-size: 11px;
+  color: #8b987f;
+  margin-top: 5px;
+}
+.party-day-agenda-heading .button {
+  font-size: 10px;
+  white-space: nowrap;
+}
+.party-day-empty {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 30px 25px;
+}
+.party-day-empty > span {
+  display: grid;
+  place-items: center;
+  width: 57px;
+  height: 57px;
+  flex-shrink: 0;
+  border-radius: 15px;
+  background: #f0f3e8;
+  color: #98ad83;
+}
+.party-day-empty strong {
+  font-size: 13px;
+  font-weight: 500;
+}
+.party-day-empty p {
+  font-size: 11px;
+  color: #92a084;
+  margin-top: 6px;
+}
+.party-day-agenda-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.party-day-agenda-card {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 24px;
+}
+.party-agenda-time {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  min-width: 68px;
+  color: #849b70;
+}
+.party-agenda-time strong {
+  font-size: 14px;
+  font-weight: 500;
+  color: #526f40;
+  white-space: nowrap;
+}
+.party-agenda-time small {
+  font-size: 10px;
+}
+.party-agenda-info {
+  border-left: 1px solid var(--line);
+  padding-left: 22px;
+  min-width: 0;
+  flex: 1;
+}
+.party-agenda-tags {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 9px;
+  color: #9aab8c;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.party-agenda-status {
+  border-radius: 5px;
+  padding: 4px 7px;
+  background: #edf2e4;
+  color: #78925e;
+}
+.party-agenda-status.full {
+  background: #f4eddf;
+  color: #a38b59;
+}
+.party-agenda-status.past,
+.party-agenda-status.closed {
+  background: #edefe8;
+  color: #9aa28f;
+}
+.party-agenda-info h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.3px;
+}
+.party-agenda-info p {
+  font-size: 11px;
+  line-height: 1.7;
+  color: #8a997c;
+  margin-top: 6px;
+  overflow-wrap: anywhere;
+}
+.party-agenda-info > small {
+  display: block;
+  margin-top: 9px;
+  font-size: 10px;
+}
+.party-agenda-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-shrink: 0;
+  font-size: 10px;
+  color: #5e7c46;
+  background: #edf2e6;
+  border-radius: 8px;
+  padding: 12px;
+}
+@media (max-width: 760px) {
+  .party-board-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .party-view-switch {
+    align-self: flex-end;
+  }
+  .party-month-toolbar {
+    padding: 21px 17px 16px;
+    gap: 10px;
+  }
+  .party-month-toolbar h2 {
+    font-size: 22px;
+  }
+  .party-month-navigation {
+    gap: 3px;
+  }
+  .party-month-navigation button {
+    min-width: 31px;
+    height: 34px;
+  }
+  .party-month-navigation .party-month-today {
+    padding: 0 10px;
+    margin-right: 0;
+  }
+  .party-month-legend {
+    padding: 0 17px 17px;
+    gap: 10px;
+  }
+  .party-month-legend > span {
+    font-size: 9px;
+  }
+  .party-month-legend small {
+    width: 100%;
+    margin-left: 0;
+  }
+  .party-month-grid th {
+    padding: 11px 6px;
+    text-align: center;
+    font-size: 10px;
+  }
+  .party-month-grid td {
+    padding: 0 3px 7px;
+    height: 82px;
+  }
+  .party-day-button {
+    flex-direction: column;
+    justify-content: flex-start;
+    min-height: 56px;
+    padding: 6px 0 2px;
+    gap: 4px;
+  }
+  .party-day-events {
+    display: none;
+  }
+  .party-day-mobile-dots {
+    display: flex;
+    justify-content: center;
+    gap: 3px;
+    padding-top: 6px;
+  }
+  .party-day-mobile-dots i {
+    width: 4px;
+    height: 4px;
+  }
+  .party-month-instructions {
+    font-size: 10px;
+    padding: 14px 17px;
+  }
+  .party-day-agenda-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .party-day-agenda-heading h3 {
+    font-size: 19px;
+  }
+  .party-day-agenda-card {
+    padding: 18px;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+  .party-agenda-time {
+    min-width: 56px;
+  }
+  .party-agenda-info {
+    padding-left: 15px;
+  }
+  .party-agenda-action {
+    width: 100%;
+  }
+  .party-day-empty {
+    padding: 23px 19px;
+    gap: 13px;
+  }
+  .party-day-empty > span {
+    width: 43px;
+    height: 43px;
+  }
+}
+@media (max-width: 400px) {
+  .party-month-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .party-month-navigation {
+    align-self: flex-end;
+  }
+  .party-day-number {
+    font-size: 11px;
+    width: 25px;
+    height: 25px;
+  }
+  .party-month-grid td {
+    padding-left: 1px;
+    padding-right: 1px;
+  }
+}
+@media (max-width: 760px) {
+  .party-day-total {
+    font-size: 8px;
+    padding-right: 0;
+  }
+  .party-day-total > span {
+    display: inline;
+  }
+}
