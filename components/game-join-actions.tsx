@@ -58,12 +58,36 @@ export function GameJoinActions({
             </div>
           </div>
         )}
-        {conversation && (
-          <Button variant="outline" onClick={() => onChat(conversation.id)}>
+        <div className="party-group-chat">
+          <span className="party-group-chat-icon">
+            <MessageCircle size={23} />
+          </span>
+          <div>
+            <strong>El chat de tu party</strong>
+            <p>
+              {conversation
+                ? `${conversation.conversation_members.length} ${conversation.conversation_members.length === 1 ? "participante" : "participantes"} en el grupo.`
+                : "Un espacio privado para organizar esta ronda."}{" "}
+              Los jugadores confirmados se agregan automáticamente.
+            </p>
+          </div>
+          <Button
+            disabled={busy}
+            onClick={async () => {
+              if (busy) return;
+              setBusy(true);
+              try {
+                const id = await data.partyChat(game.id);
+                if (id) onChat(id);
+              } finally {
+                setBusy(false);
+              }
+            }}
+          >
             <MessageCircle size={16} />
-            Abrir chat del grupo
+            {busy ? "Abriendo…" : "Abrir chat de la party"}
           </Button>
-        )}
+        </div>
         {canLeave && (
           <button
             className="party-leave-button"
@@ -106,7 +130,7 @@ export function GameJoinActions({
       <div className="party-membership-actions">
         <div className="notice">
           Solicitud enviada. El organizador debe aprobarla para confirmar tu
-          lugar.
+          lugar. Al ser aprobado también entrarás al chat de la party.
         </div>
         {canLeave && (
           <Button
@@ -165,12 +189,16 @@ export function GameJoinActions({
           if (busy) return;
           setBusy(true);
           try {
-            await data.run(
+            const ok = await data.run(
               () => supabase!.rpc("request_join", { g: game.id }),
               direct
                 ? "¡Ya estás en la party! Tu lugar está confirmado."
                 : "Solicitud enviada. El organizador debe aprobarla.",
             );
+            if (ok && direct) {
+              const id = await data.partyChat(game.id);
+              if (id) onChat(id);
+            }
           } finally {
             setBusy(false);
           }

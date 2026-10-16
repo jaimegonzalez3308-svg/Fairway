@@ -97,6 +97,49 @@ test("parties: cupos, incorporación directa, chat, salidas y aprobación en Pos
   const party = await create();
   let chat = "";
   await t.test(
+    "crear una party crea exactamente un chat privado con su organizador, sin mensajes inventados",
+    async () => {
+      await as(a);
+      const rows = await db.query<{ id: string }>(
+        "select id from conversations where game_id=$1",
+        [party],
+      );
+      assert.equal(rows.rows.length, 1);
+      chat = rows.rows[0].id;
+      const members = await db.query<{ user_id: string }>(
+        "select user_id from conversation_members where conversation_id=$1",
+        [chat],
+      );
+      assert.deepEqual(members.rows, [{ user_id: a }]);
+      assert.equal(
+        (
+          await db.query("select * from messages where conversation_id=$1", [
+            chat,
+          ])
+        ).rows.length,
+        0,
+      );
+      await as(d);
+      assert.equal(
+        (
+          await db.query("select * from conversations where game_id=$1", [
+            party,
+          ])
+        ).rows.length,
+        0,
+      );
+      await assert.rejects(
+        db.query("select send_message($1,'No soy participante')", [chat]),
+        /no autorizada/,
+      );
+      await db.exec("reset role");
+      await assert.rejects(
+        db.query("insert into conversations(game_id) values($1)", [party]),
+        /duplicate key/,
+      );
+    },
+  );
+  await t.test(
     "las parties abiertas deben ser públicas; anónimos no se incorporan",
     async () => {
       await assert.rejects(create("open", "invite"), /check constraint/);
@@ -162,6 +205,66 @@ test("parties: cupos, incorporación directa, chat, salidas y aprobación en Pos
     },
   );
   await t.test(
+    "el organizador y los participantes confirmados comparten el mismo historial; cada party tiene un chat distinto",
+    async () => {
+      await as(a);
+      assert.equal(
+        (
+          await db.query("select * from messages where conversation_id=$1", [
+            chat,
+          ])
+        ).rows.length,
+        1,
+      );
+      await db.query("select send_message($1,'Nos encontramos en recepción')", [
+        chat,
+      ]);
+      await as(c);
+      assert.equal(
+        (
+          await db.query("select * from messages where conversation_id=$1", [
+            chat,
+          ])
+        ).rows.length,
+        2,
+      );
+      assert.equal(
+        (
+          await db.query(
+            "select * from conversation_members where conversation_id=$1",
+            [chat],
+          )
+        ).rows.length,
+        3,
+      );
+      const second = await create();
+      const secondChat = (
+        await db.query<{ id: string }>(
+          "select id from conversations where game_id=$1",
+          [second],
+        )
+      ).rows[0].id;
+      assert.notEqual(secondChat, chat);
+      assert.equal(
+        (
+          await db.query("select * from messages where conversation_id=$1", [
+            secondChat,
+          ])
+        ).rows.length,
+        0,
+      );
+      await as(c);
+      assert.equal(
+        (
+          await db.query("select * from conversations where id=$1", [
+            secondChat,
+          ])
+        ).rows.length,
+        0,
+      );
+    },
+  );
+  await t.test(
     "salir libera el lugar, reabre la party y revoca el chat; otro miembro puede ocuparlo",
     async () => {
       await as(b);
@@ -216,6 +319,22 @@ test("parties: cupos, incorporación directa, chat, salidas y aprobación en Pos
       await db.query("select manage_game($1,$2,'confirmed')", [id, b]);
       await as(b);
       assert.equal(await membership(id, b), "confirmed");
+      const approvedChat = (
+        await db.query<{ id: string }>(
+          "select id from conversations where game_id=$1",
+          [id],
+        )
+      ).rows[0];
+      assert.ok(approvedChat);
+      assert.equal(
+        (
+          await db.query(
+            "select * from conversation_members where conversation_id=$1 and user_id=$2",
+            [approvedChat.id, b],
+          )
+        ).rows.length,
+        1,
+      );
       await as(c);
       await join(id);
       await as(a);

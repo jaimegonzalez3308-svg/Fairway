@@ -32,7 +32,10 @@ export type Conversation = {
   match_id: string | null;
   game_id: string | null;
   conversation_members: { user_id: string; last_read_at: string }[];
+  game?: Pick<Game, "id" | "club_id" | "starts_at" | "holes" | "status"> | null;
 };
+const conversationSelect =
+  "*,conversation_members(user_id,last_read_at),game:games(id,club_id,starts_at,holes,status)";
 export type Message = {
   id: string;
   conversation_id: string;
@@ -92,9 +95,9 @@ export function useFairway() {
     const t = setTimeout(() => setToast(""), 5000);
     return () => clearTimeout(t);
   }, [toast]);
-  const load = useCallback(async (u: User) => {
-    if (!supabase) return;
-    setLoading(true);
+  const load = useCallback(async (u: User, quiet = false) => {
+    if (!supabase || currentUserId.current !== u.id) return;
+    if (!quiet) setLoading(true);
     setError("");
     try {
       const r = await Promise.all([
@@ -111,9 +114,7 @@ export function useFairway() {
           .order("played_at"),
         supabase.from("decisions").select("target_id").eq("actor_id", u.id),
         supabase.from("favorites").select("target_id").eq("user_id", u.id),
-        supabase
-          .from("conversations")
-          .select("*,conversation_members(user_id,last_read_at)"),
+        supabase.from("conversations").select(conversationSelect),
         supabase.from("messages").select("*").order("created_at"),
         supabase
           .from("notifications")
@@ -128,6 +129,7 @@ export function useFairway() {
         supabase.rpc("rating_summary"),
         supabase.from("games").select("join_mode").limit(0),
       ]);
+      if (currentUserId.current !== u.id) return;
       // La actualización de parties es opcional para las bases existentes.
       setPartiesAvailable(!r[11].error);
       const failed = r.slice(0, 11).find((x) => x.error);
@@ -152,6 +154,7 @@ export function useFairway() {
         rating: number;
         review_count: number;
       }[];
+      if (currentUserId.current !== u.id) return;
       setMe(photos.find((p) => p.id === u.id) || own);
       setProfiles(
         photos
@@ -168,6 +171,7 @@ export function useFairway() {
       setNotifications(r[8].data as Notification[]);
       setAdmin(!!r[9].data?.is_admin);
     } catch (e) {
+      if (currentUserId.current !== u.id) return;
       setError(
         e instanceof Error
           ? e.message
@@ -175,7 +179,7 @@ export function useFairway() {
               "No se pudieron cargar los datos.",
       );
     } finally {
-      setLoading(false);
+      if (!quiet && currentUserId.current === u.id) setLoading(false);
     }
   }, []);
   useEffect(() => {
@@ -184,6 +188,7 @@ export function useFairway() {
       .getSession()
       .then(({ data, error }) => {
         if (error) setError(authErrorMessage(error));
+        currentUserId.current = data.session?.user.id;
         setUser(data.session?.user ?? null);
         if (data.session?.user) void load(data.session.user);
         else setLoading(false);
@@ -196,6 +201,7 @@ export function useFairway() {
         setPartiesAvailable(false);
       });
     const { data } = supabase.auth.onAuthStateChange((_e, s) => {
+      currentUserId.current = s?.user.id;
       setUser(s?.user ?? null);
       if (s?.user) setTimeout(() => void load(s.user), 0);
       else {
@@ -227,6 +233,58 @@ export function useFairway() {
     setGames(result.data as Game[]);
     return true;
   }, [user?.id]);
+  const refreshConversations = useCallback(async () => {
+    const userId = user?.id;
+    if (!supabase || !userId) return;
+    const result = await supabase
+      .from("conversations")
+      .select(conversationSelect);
+    if (!result.error && currentUserId.current === userId)
+      setConversations(result.data as unknown as Conversation[]);
+  }, [user?.id]);
+  const partyChat = useCallback(
+    async (gameId: string) => {
+      const userId = user?.id;
+      if (!supabase || !userId) {
+        notify("Inicia sesión para abrir el chat de la party.");
+        return null;
+      }
+      try {
+        const result = await supabase
+          .from("conversations")
+          .select(conversationSelect)
+          .eq("game_id", gameId)
+          .maybeSingle();
+        if (currentUserId.current !== userId) return null;
+        if (result.error || !result.data) throw new Error("Chat no disponible");
+        const conversation = result.data as unknown as Conversation;
+        setConversations((rows) => [
+          ...rows.filter((row) => row.id !== conversation.id),
+          conversation,
+        ]);
+        return conversation.id;
+      } catch {
+        if (currentUserId.current === userId)
+          notify(
+            "No pudimos abrir el chat de la party. Revisa tu conexión y que tu lugar esté confirmado.",
+          );
+        return null;
+      }
+    },
+    [user?.id, notify],
+  );
+  useEffect(() => {
+    if (!user) return;
+    const visible = () => {
+      if (!document.hidden) void refreshConversations();
+    };
+    const timer = setInterval(visible, 20000);
+    document.addEventListener("visibilitychange", visible);
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener("visibilitychange", visible);
+    };
+  }, [user?.id, refreshConversations]);
   useEffect(() => {
     if (!supabase || !user) return;
     const channel = supabase
@@ -234,7 +292,7 @@ export function useFairway() {
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "messages" },
-        () => void load(user),
+        () => void load(user, true),
       )
       .on(
         "postgres_changes",
@@ -244,7 +302,7 @@ export function useFairway() {
           table: "notifications",
           filter: `user_id=eq.${user.id}`,
         },
-        () => void load(user),
+        () => void load(user, true),
       )
       .subscribe();
     return () => {
@@ -273,7 +331,7 @@ export function useFairway() {
         return false;
       }
       if (success) notify(success);
-      await load(user);
+      await load(user, true);
       return true;
     } catch (e) {
       notify(
@@ -349,6 +407,7 @@ export function useFairway() {
     publicDirectoryLive,
     partiesAvailable,
     refreshGames,
+    partyChat,
     run,
     decide,
     favorite,

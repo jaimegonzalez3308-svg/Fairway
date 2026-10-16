@@ -6165,3 +6165,110 @@ h1 {
     display: inline;
   }
 }
+
+/* A private chat follows each party and its confirmed roster. */
+.party-group-chat {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 12px;
+  padding: 20px;
+  border: 1px solid #dbe5d0;
+  border-radius: 12px;
+  background: #eef4e5;
+}
+.party-group-chat-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #dfe9d1;
+  color: #6c8b51;
+}
+.party-group-chat strong {
+  font-size: 14px;
+  font-weight: 550;
+}
+.modal .party-group-chat p {
+  margin: 6px 0 0;
+  font-size: 11px;
+  line-height: 1.8;
+  color: #849777;
+}
+.party-group-chat .button {
+  grid-column: 1/-1;
+  width: 100%;
+  margin-top: 4px;
+  font-size: 12px;
+}
+.party-chat-avatar {
+  color: #6e8f51;
+  background: #e5edd9;
+}
+.chat-contact-group-meta {
+  display: block;
+  margin-top: 5px;
+  font-size: 9px;
+  color: #a18f62;
+}
+.chat-title .party-chat-date {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  color: #839775;
+}
+.party-chat-roster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 5px;
+}
+.chat-title .party-chat-roster > span {
+  display: inline-flex;
+  padding: 5px 8px;
+  border: 1px solid #e3e9dc;
+  border-radius: 16px;
+  background: #f3f6ed;
+  font-size: 10px;
+  color: #839a70;
+}
+.party-chat-empty {
+  width: 100%;
+  margin: auto;
+  padding: 30px 15px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 15px;
+}
+.party-chat-empty > span {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: #eef3e5;
+  color: #99ae84;
+}
+.party-chat-empty > strong {
+  font-weight: 500;
+  font-size: 16px;
+}
+.party-chat-empty > p {
+  font-size: 11px;
+  color: #92a184;
+  max-width: 310px;
+  line-height: 1.85;
+}
+.chat-bubble .chat-sender-name {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #648047;
+}
+.chat-bubble.own .chat-sender-name {
+  color: #b3c69f;
+}

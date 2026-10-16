@@ -387,9 +387,13 @@ export default function FairwayApp() {
     setRound(undefined);
     setModal("score");
   }
-  function conversationName(c: (typeof data.conversations)[number]) {
+  function conversationGame(c?: (typeof data.conversations)[number]) {
+    return c?.game || data.games.find((g) => g.id === c?.game_id);
+  }
+  function conversationName(c?: (typeof data.conversations)[number]) {
+    if (!c) return "Conversación no disponible";
     return c.game_id
-      ? `Ronda · ${clubName(data.games.find((g) => g.id === c.game_id)?.club_id || null)}`
+      ? `Party · ${clubName(conversationGame(c)?.club_id || null)}`
       : allProfiles.find(
           (p) =>
             p.id ===
@@ -397,6 +401,12 @@ export default function FairwayApp() {
               ?.user_id,
         )?.name || "Tu match";
   }
+  function selectChat(id: string) {
+    if (activeChat !== id) setMessage("");
+    setActiveChat(id);
+  }
+  const currentChat = data.conversations.find((c) => c.id === activeChat);
+  const currentChatGame = conversationGame(currentChat);
   const selectedGameId = game?.id;
   useEffect(() => {
     if (modal !== "game" || !selectedGameId || !supabase || !data.user) return;
@@ -931,19 +941,36 @@ export default function FairwayApp() {
                         return (
                           <button
                             key={c.id}
-                            onClick={() => setActiveChat(c.id)}
+                            onClick={() => selectChat(c.id)}
                             className={cn(
                               "chat-contact",
                               activeChat === c.id && "active",
                             )}
                           >
-                            <div className="avatar">
-                              {conversationName(c)[0]}
+                            <div
+                              className={`avatar ${c.game_id ? "party-chat-avatar" : ""}`}
+                            >
+                              {c.game_id ? (
+                                <Users size={19} />
+                              ) : (
+                                conversationName(c)[0]
+                              )}
                             </div>
                             <div>
                               <strong>{conversationName(c)}</strong>
+                              {c.game_id && (
+                                <span className="chat-contact-group-meta">
+                                  {conversationGame(c)
+                                    ? `${dateFormat(conversationGame(c)!.starts_at)} · `
+                                    : ""}
+                                  {c.conversation_members.length} participantes
+                                </span>
+                              )}
                               <small>
-                                {last?.body || "Empieza la conversación"}
+                                {last?.body ||
+                                  (c.game_id
+                                    ? "Tu grupo ya tiene un espacio para coordinarse."
+                                    : "Empieza la conversación")}
                               </small>
                             </div>
                           </button>
@@ -957,22 +984,69 @@ export default function FairwayApp() {
                       )}
                     </aside>
                     <section className="chat-main">
-                      {activeChat ? (
+                      {currentChat ? (
                         <>
                           <div className="chat-title">
-                            <strong>
-                              {conversationName(
-                                data.conversations.find(
-                                  (c) => c.id === activeChat,
-                                )!,
-                              )}
-                            </strong>
+                            <strong>{conversationName(currentChat)}</strong>
+                            {currentChatGame && (
+                              <small className="party-chat-date">
+                                <CalendarDays size={13} />
+                                {dateFormat(currentChatGame.starts_at)} ·{" "}
+                                {timeFormat(currentChatGame.starts_at)} ·{" "}
+                                {currentChatGame.holes} hoyos
+                              </small>
+                            )}
                             <span>
-                              <ShieldCheck size={14} />
-                              Conversación con consentimiento
+                              {currentChat.game_id ? (
+                                <Users size={14} />
+                              ) : (
+                                <ShieldCheck size={14} />
+                              )}{" "}
+                              {currentChat.game_id
+                                ? `${currentChat.conversation_members.length} participantes confirmados · Chat privado`
+                                : "Conversación con consentimiento"}
                             </span>
+                            {currentChat.game_id && (
+                              <div
+                                className="party-chat-roster"
+                                aria-label="Participantes del chat"
+                              >
+                                {currentChat.conversation_members.map(
+                                  (member) => (
+                                    <span key={member.user_id}>
+                                      {member.user_id === data.user?.id
+                                        ? "Tú"
+                                        : allProfiles.find(
+                                            (p) => p.id === member.user_id,
+                                          )?.name || "Golfista"}
+                                    </span>
+                                  ),
+                                )}
+                              </div>
+                            )}
                           </div>
                           <div className="chat-messages">
+                            {currentChat.game_id &&
+                              !data.messages.some(
+                                (m) => m.conversation_id === activeChat,
+                              ) && (
+                                <div className="party-chat-empty">
+                                  <span>
+                                    <MessageCircle
+                                      size={29}
+                                      strokeWidth={1.4}
+                                    />
+                                  </span>
+                                  <strong>
+                                    El chat de tu party ya está listo.
+                                  </strong>
+                                  <p>
+                                    Aquí pueden coordinar la hora de encuentro y
+                                    los detalles de la ronda. Los jugadores
+                                    confirmados se incorporan automáticamente.
+                                  </p>
+                                </div>
+                              )}
                             {data.messages
                               .filter((m) => m.conversation_id === activeChat)
                               .map((m) => (
@@ -983,6 +1057,15 @@ export default function FairwayApp() {
                                   )}
                                   key={m.id}
                                 >
+                                  {currentChat.game_id && (
+                                    <strong className="chat-sender-name">
+                                      {m.sender_id === data.user?.id
+                                        ? "Tú"
+                                        : allProfiles.find(
+                                            (p) => p.id === m.sender_id,
+                                          )?.name || "Golfista"}
+                                    </strong>
+                                  )}
                                   {m.body}
                                   <small>{timeFormat(m.created_at)}</small>
                                 </div>
@@ -1407,10 +1490,14 @@ export default function FairwayApp() {
             party={modal === "create-party"}
             initialDate={modal === "create-party" ? partyDate : undefined}
             data={data}
-            onDone={(date) => {
-              if (date) setPartyCalendarDate(date);
+            onDone={async (date, gameId) => {
+              setPartyCalendarDate(date);
               close();
-              go("partidas");
+              const chatId = await data.partyChat(gameId);
+              if (chatId) {
+                selectChat(chatId);
+                go("mensajes");
+              } else go("partidas");
             }}
           />
         </Modal>
@@ -1626,6 +1713,16 @@ export default function FairwayApp() {
             <Info size={17} />
             {currentGame.access_conditions}
           </div>
+          <GameJoinActions
+            key={currentGame.id}
+            game={currentGame}
+            data={data}
+            onChat={(id) => {
+              selectChat(id);
+              close();
+              go("mensajes");
+            }}
+          />
           <h3>Jugadores confirmados</h3>
           {currentGame.participants
             ?.filter((p) => p.status === "confirmed")
@@ -1744,16 +1841,7 @@ export default function FairwayApp() {
               </div>
             </>
           ) : null}
-          <GameJoinActions
-            key={currentGame.id}
-            game={currentGame}
-            data={data}
-            onChat={(id) => {
-              setActiveChat(id);
-              close();
-              go("mensajes");
-            }}
-          />
+
           {currentGame.status === "finished" &&
             currentGame.participants?.some(
               (p) => p.user_id === data.user?.id && p.status === "confirmed",

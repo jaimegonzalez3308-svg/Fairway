@@ -512,7 +512,7 @@ export function GameForm({
   initialDate,
 }: {
   data: FairwayData;
-  onDone: (date?: string) => void;
+  onDone: (date: string, gameId: string) => void | Promise<void>;
   initialDate?: string;
   party?: boolean;
 }) {
@@ -537,9 +537,11 @@ export function GameForm({
           return;
         }
         setBusy(true);
+        const gameId = crypto.randomUUID();
         const ok = await data.run(
           () =>
             supabase!.from("games").insert({
+              id: gameId,
               host_id: data.user!.id,
               club_id: f.get("club"),
               starts_at: time.toISOString(),
@@ -553,11 +555,11 @@ export function GameForm({
               access_conditions: f.get("access"),
             }),
           joinMode === "open"
-            ? "Party publicada. Cualquier miembro puede unirse mientras haya lugar."
-            : "Partida publicada. Tú apruebas las solicitudes de acceso.",
+            ? "Party publicada con su chat privado. Quienes se unan entrarán al grupo."
+            : "Partida publicada con su chat privado. Los jugadores entrarán al aprobar su solicitud.",
         );
         setBusy(false);
-        if (ok) onDone(date);
+        if (ok) await onDone(date, gameId);
       }}
     >
       <div className="party-form-intro">
