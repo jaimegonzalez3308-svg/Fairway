@@ -36,6 +36,7 @@ Supabase proporciona el inicio de sesión, la base de datos, el almacenamiento p
    - `supabase/migrations/202610150004_clubs.sql`
    - `supabase/migrations/202610150005_guest_and_account_security.sql`
    - `supabase/migrations/202610150006_friends.sql`
+   - `supabase/migrations/202610150007_stories.sql`
 
    Si aparece un error, detente y conserva el texto del error. No desactives RLS para solucionarlo. Las migraciones incluyen transacciones para evitar instalaciones parciales.
 
@@ -200,3 +201,21 @@ En **Mi perfil → Mi código QR** se genera un QR PNG localmente con `qrcode`; 
 Pruebas adicionales con PostgreSQL: solicitudes duplicadas o cruzadas, autoaceptación, participantes ajenos, escrituras directas, aceptación, cancelación, rechazo, bloqueo en ambas direcciones, perfiles privados/suspendidos, búsqueda literal por nombre y cascada de eliminación. Un decodificador independiente (`jsQR`) comprueba que el QR generado contiene el enlace esperado. Falta probar solicitudes entre dos cuentas reales y escanear el QR con un teléfono tras aplicar la migración. Referencias: [RLS de Supabase](https://supabase.com/docs/guides/database/postgres/row-level-security), [funciones de base de datos](https://supabase.com/docs/guides/database/functions), [qrcode](https://github.com/soldair/node-qrcode).
 
 La revisión visual de estas pantallas queda pendiente: el control nativo de Chrome devolvió `cgWindowNotFound`. El servidor local sí respondió HTTP 200; TypeScript, la compilación y las pruebas de permisos y QR se comprobaron por separado.
+
+## Historias de 24 horas
+
+En **Comunidad → Crear historia** y **Mi perfil → Publicaciones** se puede seleccionar una foto JPG, PNG o WebP (hasta 10 MB), revisar la vista previa, añadir hasta 180 caracteres y compartir con miembros o solo con amistades aceptadas. El navegador normaliza la foto a JPEG de hasta 1600 px y 5 MB antes de subirla. Esta primera versión admite fotografías; todavía no admite video.
+
+Las historias se agrupan por persona con anillo para las no vistas y orden cronológico dentro de cada grupo. El visor vertical tiene barras de progreso, avance automático de siete segundos, pausa, botones y flechas del teclado. Se pausa al ocultar la pestaña y al consultar actividad. Los estados vacíos y los errores son reales; no se inventan historias, vistas ni likes. El listado se actualiza cada 30 segundos y la actividad abierta cada 15 segundos.
+
+El autor abre **Ver actividad** para consultar las personas que vieron o dieron like. Cada persona cuenta una sola vez; el autor no genera su propia vista ni puede darse like. La vista se registra cuando carga la imagen, con la pestaña visible. Los likes son reversibles. Los visitantes solo consultan sus propias interacciones; únicamente el autor tiene acceso a la lista completa. Los perfiles privados no publican historias a otras personas mientras su perfil siga privado. Bloqueos y suspensiones también restringen historias y métricas.
+
+**Activación en una base existente:** ejecutar una sola vez `supabase/migrations/202610150007_stories.sql`, después de las migraciones 001–006. La actualización añade tablas, funciones protegidas y el bucket privado `story-images`. No ejecutar de nuevo el instalador inicial. Mientras falte esta migración, la app permite ver el formulario y su vista previa, pero informa que las historias estarán disponibles pronto y no permite publicar.
+
+Las fechas las asigna PostgreSQL: las historias dejan de ser consultables por la API al cumplir exactamente 24 horas, también si el navegador manipula el reloj. La interfaz retira las historias vencidas cada segundo. Las fotos usan URLs firmadas de hasta 60 segundos, limitadas al tiempo restante; un enlace ya emitido puede seguir funcionando hasta su vencimiento aunque después cambien los permisos. Como con cualquier imagen compartida, no se pueden retirar copias ya descargadas. El autor conserva acceso de Storage para limpiar sus propios archivos.
+
+La caducidad no necesita un cron. La limpieza física de las fotos vencidas se intenta al volver a abrir historias con la cuenta del autor, en lotes de hasta 100 archivos; no se promete borrado físico inmediato al cumplirse 24 horas. Las filas vencidas permanecen inaccesibles bajo RLS hasta eliminarlas o borrar la cuenta. Eliminar una historia elimina sus métricas en cascada e intenta borrar la foto por la API de Storage. El flujo de eliminación de cuenta también limpia el bucket de historias antes de borrar la cuenta.
+
+Pruebas con PGlite: expiración, fechas controladas por servidor, acceso anónimo, escrituras directas rechazadas, vistas únicas, autor excluido, likes idempotentes y reversibles, métricas privadas, audiencia de amistades aceptadas, bloqueo, privacidad, suspensión, políticas de Storage y cascadas. Tras aplicar la migración, falta comprobar la subida y las interacciones desde dos cuentas reales. La revisión visual del nuevo visor no pudo completarse porque el control nativo del navegador no devolvió una pantalla utilizable y el navegador integrado no está disponible.
+
+Referencias: [RLS de Storage](https://supabase.com/docs/guides/storage/security/access-control), [archivos privados y URLs firmadas](https://supabase.com/docs/guides/storage/serving/downloads).

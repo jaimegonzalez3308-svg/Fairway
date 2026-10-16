@@ -132,21 +132,29 @@ export function DeleteAccountDialog({
           "Confirma primero el enlace del correo. Si venció, inicia una solicitud nueva.",
         );
       // Se valida la confirmación antes de eliminar cualquier fotografía.
-      let more = true;
-      while (more) {
-        const files = await supabase.storage
-          .from("profile-images")
-          .list(data.user.id, { limit: 100 });
-        if (files.error) throw files.error;
-        const paths = (files.data || [])
-          .filter((f) => f.name !== ".emptyFolderPlaceholder")
-          .map((f) => data.user!.id + "/" + f.name);
-        if (!paths.length) break;
-        const result = await supabase.storage
-          .from("profile-images")
-          .remove(paths);
-        if (result.error) throw result.error;
-        more = (files.data?.length || 0) === 100;
+      for (const bucket of ["profile-images", "story-images"]) {
+        let more = true;
+        while (more) {
+          const files = await supabase.storage
+            .from(bucket)
+            .list(data.user.id, { limit: 100 });
+          // Compatibilidad con proyectos que aún no han instalado historias.
+          if (
+            bucket === "story-images" &&
+            files.error &&
+            (String(files.error.statusCode) === "404" ||
+              /bucket.*not found/i.test(files.error.message))
+          )
+            break;
+          if (files.error) throw files.error;
+          const paths = (files.data || [])
+            .filter((f) => f.name !== ".emptyFolderPlaceholder")
+            .map((f) => data.user!.id + "/" + f.name);
+          if (!paths.length) break;
+          const result = await supabase.storage.from(bucket).remove(paths);
+          if (result.error) throw result.error;
+          more = (files.data?.length || 0) === 100;
+        }
       }
       const result = await supabase.rpc("delete_my_account");
       if (result.error) throw result.error;

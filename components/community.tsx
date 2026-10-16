@@ -11,6 +11,7 @@ import {
 import { Button, Empty } from "./ui";
 import { supabase } from "@/lib/supabase";
 import type { FairwayData } from "@/lib/use-fairway";
+import { Stories } from "./stories";
 type Post = {
   id: string;
   user_id: string;
@@ -50,6 +51,7 @@ export function Community({ data }: { data: FairwayData }) {
   const all = [data.me, ...data.profiles];
   return (
     <>
+      <Stories data={data} />
       <div className="tabs">
         {["Para ti", "Siguiendo", "Mi club", "León"].map((t) => (
           <button
