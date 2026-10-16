@@ -78,6 +78,7 @@ import { Parties } from "./parties";
 import { GameJoinActions } from "./game-join-actions";
 import { gameIsUpcoming, golfDate } from "@/lib/parties";
 import { SidebarIcon } from "./sidebar-icon";
+import { useIllustratedSidebarIcons } from "@/lib/appearance";
 const navigation = [
   { id: "descubrir", label: "Descubrir", icon: Compass },
   { id: "partidas", label: "Partidas", icon: Flag },
@@ -540,13 +541,17 @@ export default function FairwayApp() {
         </div>
         <span className="nav-caption">TU COMUNIDAD DE GOLF</span>
         <nav aria-label="Navegación principal">
-          {navigation.map(({ id, label }) => (
+          {navigation.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               className={cn("nav-item", page === id && "active")}
               onClick={() => go(id)}
             >
-              <SidebarIcon name={id} />
+              {useIllustratedSidebarIcons ? (
+                <SidebarIcon name={id} />
+              ) : (
+                <Icon size={20} strokeWidth={1.7} />
+              )}
               <span>{label}</span>
               {id === "mensajes" && unreadMessages > 0 && (
                 <span className="count">{unreadMessages}</span>
@@ -573,13 +578,17 @@ export default function FairwayApp() {
         <div className="nav-divider" />
         <span className="nav-caption">MI JUEGO</span>
         <nav aria-label="Mi juego">
-          {extras.map(({ id, label }) => (
+          {extras.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               className={cn("nav-item", page === id && "active")}
               onClick={() => go(id)}
             >
-              <SidebarIcon name={id} />
+              {useIllustratedSidebarIcons ? (
+                <SidebarIcon name={id} />
+              ) : (
+                <Icon size={19} strokeWidth={1.7} />
+              )}
               {label}
             </button>
           ))}

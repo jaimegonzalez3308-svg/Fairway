@@ -39,3 +39,7 @@ npx --yes pnpm@10.28.2 build
 Instalen la extensión **Live Share** de Microsoft en VS Code. Una persona abre Fairway, inicia la sesión de Live Share y envía el enlace a la otra. Para ver la aplicación, comparte el puerto que usa el servidor de desarrollo. Al terminar, el anfitrión revisa, crea el commit y hace push de los cambios de la sesión.
 
 Las migraciones de Supabase están en `supabase/migrations`; consulta el README y coordina su ejecución para no aplicar el mismo SQL dos veces.
+
+## Estilo de los iconos laterales
+
+Los iconos originales de contorno están activos. Para volver a los iconos ilustrados en verde salvia y dorado, cambia `useIllustratedSidebarIcons` a `true` en `lib/appearance.ts`, compila y publica. Los dibujos se conservan en `components/sidebar-icon.tsx` y sus colores en `app/globals.css`.
