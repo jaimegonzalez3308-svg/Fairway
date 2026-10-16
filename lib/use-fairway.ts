@@ -10,6 +10,22 @@ import {
   demoRounds,
 } from "./demo";
 import type { Profile, Club, Game, Round } from "./domain";
+const anonymousProfile: Profile = {
+  id: "",
+  name: "Mi cuenta",
+  city: "León",
+  age: 18,
+  handicap: null,
+  club_id: null,
+  bio: "",
+  availability: [],
+  holes: 18,
+  style: "social",
+  photo: "",
+  verified: false,
+  accepts_guests: false,
+  beginner_friendly: false,
+};
 export type Conversation = {
   id: string;
   match_id: string | null;
@@ -35,7 +51,7 @@ export function useFairway() {
     [loading, setLoading] = useState(!!supabase),
     [error, setError] = useState(""),
     [toast, setToast] = useState("");
-  const [me, setMe] = useState<Profile>(demoMe),
+  const [me, setMe] = useState<Profile>(supabase ? anonymousProfile : demoMe),
     [profiles, setProfiles] = useState<Profile[]>(supabase ? [] : demoProfiles),
     [clubs, setClubs] = useState<Club[]>(supabase ? [] : demoClubs),
     [games, setGames] = useState<Game[]>(supabase ? [] : demoGames),
@@ -149,6 +165,13 @@ export function useFairway() {
       setUser(s?.user ?? null);
       if (s?.user) setTimeout(() => void load(s.user), 0);
       else {
+        setMe(anonymousProfile);
+        setClubs([]);
+        setDecided([]);
+        setFavorites([]);
+        setNotifications([]);
+        setAdmin(false);
+        setError("");
         setProfiles([]);
         setGames([]);
         setRounds([]);

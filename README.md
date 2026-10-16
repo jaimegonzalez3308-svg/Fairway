@@ -2,7 +2,7 @@
 
 Aplicación de golf para encontrar compañeros, organizar partidas y registrar scores. Comienza en León, Guanajuato; los clubes y perfiles guardan ciudad para ampliar el catálogo.
 
-**Estado honesto:** el proyecto compila y las reglas críticas tienen pruebas de PostgreSQL. Todavía no hay un proyecto real de Supabase conectado. Sin variables de entorno aparece una demostración identificada; sus perfiles, reputaciones, partidas y rondas son ficticios. Los likes demo solo cambian la vista durante la sesión. No se simulan conversaciones, registros, mensajes, solicitudes ni guardados reales. Con Supabase configurado desaparecen los datos demo y se usan exclusivamente datos de tu proyecto.
+**Estado honesto:** el proyecto compila y las reglas críticas tienen pruebas de PostgreSQL. Se configuró el proyecto de Supabase proporcionado por el propietario y se comprobó que Auth responde y las tablas protegidas rechazan el acceso anónimo. Sin variables de entorno aparece una demostración identificada; sus perfiles, reputaciones, partidas y rondas son ficticios. Los likes demo solo cambian la vista durante la sesión. No se simulan conversaciones, registros, mensajes, solicitudes ni guardados reales. Con Supabase configurado desaparecen los datos demo y se usan exclusivamente datos de tu proyecto.
 
 ## 1. Abrir en tu computadora
 
@@ -46,7 +46,7 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=TU-CLAVE-PUBLICA
 
 **No uses la clave secret ni service_role.** La clave pública está diseñada para usarse en el navegador; las políticas de PostgreSQL son las que protegen los datos. `.env.local` está excluido de Git.
 
-7. En **Authentication → URL Configuration**, configura inicialmente `http://localhost:3000` como Site URL y agrega `http://localhost:3000/**` a las URL de redirección permitidas. Al publicar, agrega también tu dominio de Vercel y actualiza Site URL.
+7. Para la versión publicada actual, usa `https://fairway-leon-golf.honeyring4.chatgpt.site` como **Site URL** y agrega `https://fairway-leon-golf.honeyring4.chatgpt.site/**` a las redirecciones permitidas. Esto es necesario para volver a Fairway al confirmar tu correo o recuperar la contraseña. Para desarrollo, configura inicialmente `http://localhost:3000` como Site URL y agrega `http://localhost:3000/**` a las URL de redirección permitidas. Al publicar, agrega también tu dominio de Vercel y actualiza Site URL.
 8. En **Authentication → Providers → Email**, mantén habilitada la confirmación por correo. Antes de un lanzamiento público configura tu propio SMTP, límites de envío y protección antiabuso en Supabase.
 9. Detén el servidor con `Control + C` y vuelve a ejecutar `npx --yes pnpm@10.28.2 dev`.
 10. Crea una cuenta desde Fairway, confirma el correo y completa tu perfil. El catálogo inicial de clubes estará disponible, pero no habrá personas reales hasta que se registren.
@@ -140,7 +140,7 @@ El frontend usa una entrada App Router y navegación por fragmentos (`#descubrir
 
 ## 8. Límites y trabajo posterior
 
-El núcleo del MVP está implementado y probado localmente. Falta configurar Supabase y ejecutar la aceptación real con dos cuentas, incluyendo correo, Storage y Realtime. La revisión visual de escritorio se realizó en Chrome; la revisión interactiva completa y móvil no pudo completarse por indisponibilidad del control de ventanas durante esta sesión.
+El núcleo del MVP está implementado y probado localmente. Supabase ya está configurado. Falta ejecutar la aceptación real con dos cuentas, incluyendo confirmación por correo, Storage y Realtime. La revisión visual de escritorio se realizó en Chrome; la revisión interactiva completa y móvil no pudo completarse por indisponibilidad del control de ventanas durante esta sesión.
 
 Antes de un lanzamiento público: completar el aviso de privacidad con datos del responsable y canal ARCO; configurar SMTP y protección antiabuso en Auth; verificar el catálogo de clubes y campos; definir operación de moderación y verificación; hacer revisión de seguridad contra el proyecto real. El consentimiento actual explica el uso básico de datos y no sustituye ese aviso completo.
 

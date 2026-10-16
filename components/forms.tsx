@@ -58,7 +58,10 @@ export function AuthForm({
           const result = signup
             ? await supabase.auth.signUp({
                 ...values,
-                options: { data: { name: fd.get("name"), age } },
+                options: {
+                  data: { name: fd.get("name"), age },
+                  emailRedirectTo: window.location.origin + "/",
+                },
               })
             : await supabase.auth.signInWithPassword(values);
           setBusy(false);

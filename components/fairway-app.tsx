@@ -89,6 +89,19 @@ export default function FairwayApp() {
     [reviewTarget, setReviewTarget] = useState<Profile | null>(null),
     [busy, setBusy] = useState(false);
   const chatEnd = useRef<HTMLDivElement>(null);
+  const onboarded = useRef<string | null>(null);
+  useEffect(() => {
+    if (
+      data.user &&
+      !data.loading &&
+      data.me.id === data.user.id &&
+      data.me.availability.length === 0 &&
+      onboarded.current !== data.user.id
+    ) {
+      onboarded.current = data.user.id;
+      setModal("edit-profile");
+    }
+  }, [data.user, data.loading, data.me]);
   function go(p: string) {
     setPage(p);
     setMobileOpen(false);
@@ -1095,7 +1108,6 @@ export default function FairwayApp() {
             onDone={() => {
               close();
               go("perfil");
-              setModal("edit-profile");
             }}
           />
         </Modal>
