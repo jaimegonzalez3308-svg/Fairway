@@ -28,11 +28,12 @@ Supabase proporciona el inicio de sesión, la base de datos, el almacenamiento p
 1. Ve a [Supabase Dashboard](https://supabase.com/dashboard), crea una cuenta y pulsa **New project**.
 2. Crea el proyecto `Fairway`. Guarda la contraseña de la base de datos en tu gestor de contraseñas. No hace falta compartirla con esta aplicación.
 3. Cuando el proyecto esté listo, entra en **SQL Editor → New query**.
-4. Abre en tu editor el primer archivo de la lista siguiente, copia **todo** su contenido al editor SQL y pulsa **Run**. Repite con el segundo y luego el tercero. Ejecuta cada archivo una sola vez, en este orden:
+4. Abre en tu editor el primer archivo de la lista siguiente, copia **todo** su contenido al editor SQL y pulsa **Run**. Repite con los siguientes archivos en orden. Ejecuta cada archivo una sola vez, en este orden:
 
    - `supabase/migrations/202610150001_fairway.sql`
    - `supabase/migrations/202610150002_integrity.sql`
    - `supabase/migrations/202610150003_invitations.sql`
+   - `supabase/migrations/202610150004_clubs.sql`
 
    Si aparece un error, detente y conserva el texto del error. No desactives RLS para solucionarlo. Las migraciones incluyen transacciones para evitar instalaciones parciales.
 
@@ -151,3 +152,9 @@ La membresía declarada no concede acceso a un club. No existe integración con 
 Fotos de demostración e imágenes ilustrativas: Unsplash. No representan a usuarios registrados ni verifican la identidad o membresía de nadie.
 
 Referencias técnicas: [Next.js static exports](https://nextjs.org/docs/app/guides/static-exports), [Supabase RLS](https://supabase.com/docs/guides/database/postgres/row-level-security), [Supabase Postgres Changes](https://supabase.com/docs/guides/realtime/postgres-changes).
+
+## Catálogo adicional: Los Naranjos, El Molino y Villaseca
+
+Se agregaron Club de Golf Los Naranjos, El Molino Golf Club y Villaseca Hotel & Golf. Se consultaron los sitios oficiales de [Los Naranjos](https://clublosnaranjos.com.mx/), [El Molino](https://www.elmolinogolfclub.com/quienes-somos) y [Villaseca](https://www.villaseca.com.mx/). Se conserva `verified = false`: consultar un sitio web no verifica membresías, autorización de acceso ni la configuración de tees y hoyos. Villaseca figura como Alrededores de León mientras se confirma su ubicación exacta.
+
+Para una base ya instalada, ejecuta **solo** `supabase/migrations/202610150004_clubs.sql` en SQL Editor. Es idempotente: no duplica nombres existentes ni sobrescribe su información. No vuelvas a ejecutar el instalador inicial en un proyecto que ya tiene tablas. Las pantallas de perfil, filtros, partidas, disponibilidad y scores toman las opciones de la misma tabla `clubs`; actualizar esa tabla actualiza el catálogo para todos al recargar.

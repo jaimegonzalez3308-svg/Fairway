@@ -1578,8 +1578,8 @@ export default function FairwayApp() {
               .
             </li>
             <li>
-              Ejecuta los tres archivos de <code>supabase/migrations</code> en
-              orden en el editor SQL.
+              Ejecuta los archivos de <code>supabase/migrations</code> en orden
+              en el editor SQL.
             </li>
             <li>
               Copia la URL y la clave pública a <code>.env.local</code>. Usa{" "}

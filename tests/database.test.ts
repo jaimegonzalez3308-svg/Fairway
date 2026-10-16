@@ -11,6 +11,7 @@ test("migraciones y reglas del MVP se ejecutan en PostgreSQL real (PGlite)", asy
     "202610150001_fairway.sql",
     "202610150002_integrity.sql",
     "202610150003_invitations.sql",
+    "202610150004_clubs.sql",
   ]) {
     const sql = (
       await readFile(
@@ -34,6 +35,43 @@ test("migraciones y reglas del MVP se ejecutan en PostgreSQL real (PGlite)", asy
   const scalar = async (sql: string) =>
     (await db.query<Record<string, unknown>>(sql)).rows[0];
   const club = (await scalar("select id from clubs limit 1"))!.id as string;
+  await t.test(
+    "el catálogo adicional es idempotente y conserva los clubes existentes",
+    async () => {
+      const migration = await readFile(
+        new URL(
+          "../supabase/migrations/202610150004_clubs.sql",
+          import.meta.url,
+        ),
+        "utf8",
+      );
+      const before = (
+        await db.query(
+          "select id,name,description,verified from clubs order by name",
+        )
+      ).rows;
+      await db.exec(migration);
+      const after = (
+        await db.query(
+          "select id,name,description,verified from clubs order by name",
+        )
+      ).rows;
+      assert.deepEqual(after, before);
+      for (const name of [
+        "Club de Golf Los Naranjos",
+        "El Molino Golf Club",
+        "Villaseca Hotel & Golf",
+      ]) {
+        const result = await db.query<{ verified: boolean }>(
+          "select verified from clubs where name=$1",
+          [name],
+        );
+        assert.equal(result.rows.length, 1);
+        assert.equal(result.rows[0].verified, false);
+      }
+      assert.equal(before.length, 6);
+    },
+  );
   let chat = "",
     gid = "";
   await t.test("un menor no puede crear perfil mediante signup", async () => {

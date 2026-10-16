@@ -24,6 +24,33 @@ export const clubs: Club[] = [
     description: null,
     access_info: null,
   },
+  {
+    id: "naranjos",
+    name: "Club de Golf Los Naranjos",
+    city: "León",
+    verified: false,
+    description:
+      "Club de golf en León, Guanajuato. Acceso, tarifas y condiciones de membresía pendientes de confirmar.",
+    access_info: null,
+  },
+  {
+    id: "molino",
+    name: "El Molino Golf Club",
+    city: "León",
+    verified: false,
+    description:
+      "Club de golf en León, Guanajuato. Acceso, tarifas y condiciones de membresía pendientes de confirmar.",
+    access_info: null,
+  },
+  {
+    id: "villaseca",
+    name: "Villaseca Hotel & Golf",
+    city: "Alrededores de León",
+    verified: false,
+    description:
+      "Hotel y golf en las cercanías de León. Ubicación exacta y condiciones de acceso al campo pendientes de confirmar.",
+    access_info: null,
+  },
 ];
 export const demoMe: Profile = {
   id: "demo-me",
