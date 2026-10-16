@@ -24,7 +24,6 @@ import {
   Clock,
   Check,
   CheckCheck,
-  Menu,
   Settings as SettingsIcon,
   LogOut,
   ShieldCheck,
@@ -109,17 +108,74 @@ export default function FairwayApp() {
     [tab, setTab] = useState("Para ti"),
     [search, setSearch] = useState(""),
     [mobileOpen, setMobileOpen] = useState(false),
+    [sidebarCollapsed, setSidebarCollapsed] = useState(false),
+    [isMobile, setIsMobile] = useState(false),
     [activeChat, setActiveChat] = useState<string | null>(null),
     [message, setMessage] = useState(""),
     [profileTab, setProfileTab] = useState("Información"),
     [reviewTarget, setReviewTarget] = useState<Profile | null>(null),
     [busy, setBusy] = useState(false);
   const chatEnd = useRef<HTMLDivElement>(null);
+  const sidebarRef = useRef<HTMLElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const sidebarVisible = isMobile ? mobileOpen : !sidebarCollapsed;
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 740px)");
+    function syncViewport() {
+      setIsMobile(media.matches);
+      setMobileOpen(false);
+    }
+    syncViewport();
+    media.addEventListener("change", syncViewport);
+    return () => media.removeEventListener("change", syncViewport);
+  }, []);
+
+  useEffect(() => {
+    if (!isMobile || !mobileOpen) return;
+    const sidebar = sidebarRef.current;
+    if (!sidebar) return;
+    const focusable = () =>
+      Array.from(
+        sidebar.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), [tabindex="0"]',
+        ),
+      ).filter((element) => element.getClientRects().length > 0);
+    (focusable()[0] ?? sidebar).focus();
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setMobileOpen(false);
+      } else if (event.key === "Tab") {
+        const elements = focusable();
+        const first = elements[0];
+        const last = elements.at(-1);
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last?.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first?.focus();
+        }
+      }
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      if (
+        sidebar.contains(document.activeElement) ||
+        document.activeElement === document.body
+      )
+        menuButtonRef.current?.focus();
+    };
+  }, [isMobile, mobileOpen]);
+
   const onboarded = useRef<string | null>(null);
   const lastPublicPage = useRef("descubrir");
   const deletionReturn = useRef(false);
   const sharedProfileHandled = useRef<string | null>(null);
   function openAuth(mode: "login" | "signup" = "login") {
+    setMobileOpen(false);
     setAuthMode(mode);
     setModal("auth");
   }
@@ -136,6 +192,7 @@ export default function FairwayApp() {
       return;
     }
     setModal(null);
+    setMobileOpen(false);
     setPage("inicio");
     window.history.replaceState(null, "", location.pathname + "#inicio");
     data.notify("Cerraste sesión. Nos vemos pronto en el green.");
@@ -437,14 +494,44 @@ export default function FairwayApp() {
   }, [modal, selectedGameId, data.user?.id, data.games, data.notify]);
   const currentGame = game;
   return (
-    <div className="app-shell">
-      <aside className={cn("sidebar", mobileOpen && "open")}>
-        <a className="brand" href="#descubrir" onClick={() => go("descubrir")}>
-          <span className="brand-mark">
-            <Flag size={26} strokeWidth={1.6} />
-          </span>
-          fairway<span className="brand-dot">.</span>
-        </a>
+    <div
+      className={cn(
+        "app-shell",
+        sidebarCollapsed && "sidebar-collapsed",
+        mobileOpen && "mobile-sidebar-open",
+      )}
+    >
+      <aside
+        id="fairway-sidebar"
+        ref={sidebarRef}
+        className={cn("sidebar", mobileOpen && "open")}
+        inert={!sidebarVisible}
+        aria-hidden={!sidebarVisible}
+        role={isMobile ? "dialog" : undefined}
+        aria-modal={isMobile && mobileOpen ? true : undefined}
+        aria-label="Menú de navegación"
+        tabIndex={-1}
+      >
+        <div className="sidebar-heading">
+          <button
+            type="button"
+            className="icon-btn sidebar-close"
+            aria-label="Cerrar menú"
+            onClick={() => setMobileOpen(false)}
+          >
+            <X size={21} />
+          </button>
+          <a
+            className="brand"
+            href="#descubrir"
+            onClick={() => go("descubrir")}
+          >
+            <span className="brand-mark">
+              <Flag size={26} strokeWidth={1.6} />
+            </span>
+            fairway<span className="brand-dot">.</span>
+          </a>
+        </div>
         <div className="sidebar-city">
           <MapPin size={14} />
           León, Guanajuato
@@ -558,22 +645,37 @@ export default function FairwayApp() {
           </button>
         </div>
       </aside>
-      {mobileOpen && (
-        <button
-          className="sidebar-scrim"
-          aria-label="Cerrar menú"
-          onClick={() => setMobileOpen(false)}
-        />
-      )}
-      <div className="workspace">
+      <button
+        type="button"
+        className={cn("sidebar-scrim", mobileOpen && "visible")}
+        aria-label="Cerrar menú"
+        aria-hidden={!mobileOpen}
+        tabIndex={-1}
+        inert={!mobileOpen}
+        onClick={() => setMobileOpen(false)}
+      />
+      <div className="workspace" inert={isMobile && mobileOpen}>
         <header className="topbar">
           <div className="breadcrumb">
             <button
-              className="icon-btn mobile-menu"
-              aria-label="Abrir menú"
-              onClick={() => setMobileOpen(true)}
+              type="button"
+              ref={menuButtonRef}
+              className="icon-btn sidebar-toggle"
+              aria-label={sidebarVisible ? "Ocultar menú" : "Mostrar menú"}
+              title={sidebarVisible ? "Ocultar menú" : "Mostrar menú"}
+              aria-expanded={sidebarVisible}
+              aria-controls="fairway-sidebar"
+              onClick={() =>
+                isMobile
+                  ? setMobileOpen((open) => !open)
+                  : setSidebarCollapsed((collapsed) => !collapsed)
+              }
             >
-              <Menu size={22} />
+              <span className="sidebar-toggle-lines" aria-hidden="true">
+                <span />
+                <span />
+                <span />
+              </span>
             </button>
             <span>Mi comunidad</span>
             <ChevronRight size={13} />
@@ -1381,7 +1483,11 @@ export default function FairwayApp() {
           </footer>
         </main>
       </div>
-      <nav className="mobile-nav" aria-label="Navegación móvil">
+      <nav
+        className="mobile-nav"
+        aria-label="Navegación móvil"
+        inert={isMobile && mobileOpen}
+      >
         {navigation
           .filter(({ id }) => id !== "comunidad")
           .map(({ id, label, icon: Icon }) => (
