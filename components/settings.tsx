@@ -6,9 +6,13 @@ import { supabase } from "@/lib/supabase";
 export function Settings({
   data,
   onEdit,
+  onLogout,
+  onDelete,
 }: {
   data: FairwayData;
   onEdit: () => void;
+  onLogout: () => void;
+  onDelete: () => void;
 }) {
   const [prefs, setPrefs] = useState<Record<string, boolean>>({}),
     [followers, setFollowers] = useState<{ user_id: string }[]>([]),
@@ -39,6 +43,11 @@ export function Settings({
         <Button variant="outline" onClick={onEdit}>
           Editar perfil y privacidad
         </Button>
+        <div className="button-row">
+          <Button variant="outline" onClick={onLogout}>
+            Cerrar sesión
+          </Button>
+        </div>
         <hr />
         <h3>Notificaciones</h3>
         {[
@@ -150,44 +159,12 @@ export function Settings({
             Eliminará tu perfil y los datos asociados. Esta acción no se puede
             deshacer.
           </p>
-          <Button
-            variant="outline"
-            onClick={async () => {
-              if (!supabase || !data.user) {
-                data.notify("Inicia sesión para gestionar tu cuenta.");
-                return;
-              }
-              if (
-                window.prompt(
-                  "Escribe ELIMINAR para confirmar la eliminación definitiva de tu cuenta.",
-                ) !== "ELIMINAR"
-              )
-                return;
-              const { data: files, error: listError } = await supabase.storage
-                .from("profile-images")
-                .list(data.user.id, { limit: 1000 });
-              if (listError) {
-                data.notify(listError.message);
-                return;
-              }
-              if (files?.length) {
-                const { error: removeError } = await supabase.storage
-                  .from("profile-images")
-                  .remove(files.map((f) => data.user!.id + "/" + f.name));
-                if (removeError) {
-                  data.notify(removeError.message);
-                  return;
-                }
-              }
-              const { error } = await supabase.rpc("delete_my_account");
-              if (error) data.notify(error.message);
-              else {
-                await supabase.auth.signOut();
-                data.notify("Tu cuenta fue eliminada.");
-              }
-            }}
-          >
-            Eliminar mi cuenta
+          <p>
+            Te pediremos tu contraseña y una confirmación nueva por correo antes
+            del borrado definitivo.
+          </p>
+          <Button variant="outline" onClick={onDelete}>
+            Solicitar eliminación de cuenta
           </Button>
         </div>
       </div>

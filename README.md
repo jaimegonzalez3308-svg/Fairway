@@ -34,6 +34,7 @@ Supabase proporciona el inicio de sesión, la base de datos, el almacenamiento p
    - `supabase/migrations/202610150002_integrity.sql`
    - `supabase/migrations/202610150003_invitations.sql`
    - `supabase/migrations/202610150004_clubs.sql`
+   - `supabase/migrations/202610150005_guest_and_account_security.sql`
 
    Si aparece un error, detente y conserva el texto del error. No desactives RLS para solucionarlo. Las migraciones incluyen transacciones para evitar instalaciones parciales.
 
@@ -98,7 +99,7 @@ Para cargar un campo real: agrega un recorrido con el `club_id`, agrega un tee c
 6. Pulsa Deploy. Copia el dominio resultante a **Authentication → URL Configuration** de Supabase y permite el dominio con `/**` como redirección.
 7. Si cambias las variables, vuelve a desplegar: las variables públicas se incorporan durante la compilación, no después.
 
-La vista publicada mediante Sites es privada para el propietario. Una prueba entre distintas personas necesita un despliegue accesible para ellas, por ejemplo Vercel. El dominio y las credenciales no se inventan ni se conectan automáticamente.
+La versión de Sites en `https://fairway-leon-golf.honeyring4.chatgpt.site` es pública. Los datos privados siguen protegidos por Supabase y requieren iniciar sesión.
 
 ## 6. Comprobar que funciona
 
@@ -172,3 +173,15 @@ Fairway pasa `emailRedirectTo` en el alta y al reenviar confirmaciones, y `redir
 El error `otp_expired` puede indicar un enlace vencido o que ya se utilizó. La app muestra ese caso y permite solicitar otra confirmación; no muestra tokens ni usa mensajes arbitrarios de la URL. Los fragmentos de sesión tampoco se interpretan como pantallas de navegación.
 
 Si personalizaste la plantilla **Confirm signup**, revisa que use el enlace de verificación de Supabase (`{{ .ConfirmationURL }}`) y no un enlace directo a localhost. No desactives Confirm Email como solución. Referencias: [Redirect URLs](https://supabase.com/docs/guides/auth/redirect-urls), [Reenviar confirmación](https://supabase.com/docs/reference/javascript/auth-resend).
+
+## Acceso público y eliminación segura de cuenta
+
+Sin cuenta se puede abrir Inicio, Descubrir (presentación de las funciones), Clubes y Privacidad. Las demás secciones muestran un diálogo con fondo difuminado y opciones para iniciar sesión o crear una cuenta. Los perfiles y conversaciones requieren autenticación. El directorio público consulta solo las columnas públicas de clubes; si faltan permisos muestra un catálogo de referencia claramente identificado.
+
+El menú de la cuenta y Configuración incluyen Cerrar sesión y Eliminar mi cuenta. La eliminación requiere contraseña actual, un nuevo enlace de correo y confirmación final escribiendo ELIMINAR. El enlace no elimina nada por sí solo. La solicitud vence en 15 minutos. La base de datos comprueba sesiones reales y evidencia firmada de autenticación; la validación no depende solo del navegador. Este flujo admite las cuentas actuales de correo y contraseña, sin teléfono asociado.
+
+**Base ya instalada:** ejecutar solo `supabase/migrations/202610150005_guest_and_account_security.sql` (también disponible en Matrix como `Actualizar acceso y seguridad Fairway.sql`). No volver a ejecutar el instalador inicial. Mientras no se ejecute esta actualización, la nueva interfaz no permite iniciar una eliminación; la función anterior del servidor aún debe sustituirse con esta migración.
+
+En Supabase → Authentication → URL Configuration deben estar permitidos el sitio público y `https://fairway-leon-golf.honeyring4.chatgpt.site/**`, incluido el regreso `/?delete_account=1`. Mantener habilitados Email y Magic Link, con la plantilla Magic Link usando `{{ .ConfirmationURL }}`. Supabase envía su correo de enlace de acceso para verificar la identidad; Fairway explica el propósito antes y después del envío.
+
+Las pruebas locales cubren permisos de columnas del directorio, solicitudes de eliminación, contraseña reciente, sesiones antiguas, sesiones de otro usuario, correo cambiado, teléfono, vencimiento, cancelación, borrado completo y pérdida de acceso de tokens antiguos. No se han enviado correos ni eliminado cuentas reales para probar este flujo. Falta probarlo con una cuenta desechable en la instancia real tras instalar la migración. Referencias: [Sesiones de Supabase](https://supabase.com/docs/guides/auth/sessions), [campos del JWT](https://supabase.com/docs/guides/auth/jwt-fields), [enlaces de acceso por correo](https://supabase.com/docs/reference/javascript/auth-signinwithotp).

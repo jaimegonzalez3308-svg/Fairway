@@ -17,12 +17,14 @@ export function AuthForm({
   data,
   onDone,
   initialMessage = "",
+  initialMode = "login",
 }: {
   data: FairwayData;
   onDone: () => void;
   initialMessage?: string;
+  initialMode?: "login" | "signup";
 }) {
-  const [signup, setSignup] = useState(false),
+  const [signup, setSignup] = useState(initialMode === "signup"),
     [busy, setBusy] = useState(false),
     [message, setMessage] = useState(initialMessage),
     [resendBusy, setResendBusy] = useState(false),

@@ -63,7 +63,24 @@ export function useFairway() {
     [messages, setMessages] = useState<Message[]>([]),
     [notifications, setNotifications] = useState<Notification[]>([]),
     [admin, setAdmin] = useState(false);
+  const [publicDirectoryLive, setPublicDirectoryLive] = useState(false);
   const demo = !supabase;
+  useEffect(() => {
+    if (!supabase || user) return;
+    let current = true;
+    void supabase
+      .from("clubs")
+      .select("id,name,city,verified,description,access_info")
+      .order("name")
+      .then(({ data, error }) => {
+        if (!current) return;
+        setPublicDirectoryLive(!error);
+        setClubs(error ? demoClubs : (data as Club[]));
+      });
+    return () => {
+      current = false;
+    };
+  }, [user]);
   const notify = useCallback((s: string) => {
     setToast(s);
   }, []);
@@ -176,7 +193,6 @@ export function useFairway() {
       if (s?.user) setTimeout(() => void load(s.user), 0);
       else {
         setMe(anonymousProfile);
-        setClubs([]);
         setDecided([]);
         setFavorites([]);
         setNotifications([]);
@@ -311,6 +327,7 @@ export function useFairway() {
     messages,
     notifications,
     admin,
+    publicDirectoryLive,
     run,
     decide,
     favorite,

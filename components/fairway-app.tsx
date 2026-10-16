@@ -37,6 +37,8 @@ import {
   Info,
   Globe,
   TrendingUp,
+  Trash2,
+  LockKeyhole,
 } from "lucide-react";
 import { useFairway } from "@/lib/use-fairway";
 import { supabase } from "@/lib/supabase";
@@ -59,6 +61,15 @@ import { Scorecard } from "./scorecard";
 import { Stats } from "./stats";
 import { Community } from "./community";
 import { Settings, Admin } from "./settings";
+import {
+  AccountRequired,
+  ClubDirectory,
+  GuestDiscover,
+  LockedPreview,
+  PublicPrivacy,
+} from "./guest-experience";
+import { DeleteAccountDialog } from "./delete-account";
+import { requiresAccount } from "@/lib/access";
 const navigation = [
   { id: "descubrir", label: "Descubrir", icon: Compass },
   { id: "partidas", label: "Partidas", icon: Flag },
@@ -76,6 +87,8 @@ export default function FairwayApp() {
   const [page, setPage] = useState("descubrir"),
     [modal, setModal] = useState<string | null>(null),
     [authNotice, setAuthNotice] = useState(""),
+    [authMode, setAuthMode] = useState<"login" | "signup">("login"),
+    [gateFeature, setGateFeature] = useState("perfil"),
     [selected, setSelected] = useState<Profile | null>(null),
     [game, setGame] = useState<Game | null>(null),
     [round, setRound] = useState<Round | undefined>(),
@@ -92,10 +105,51 @@ export default function FairwayApp() {
     [busy, setBusy] = useState(false);
   const chatEnd = useRef<HTMLDivElement>(null);
   const onboarded = useRef<string | null>(null);
+  const lastPublicPage = useRef("descubrir");
+  const deletionReturn = useRef(false);
+  function openAuth(mode: "login" | "signup" = "login") {
+    setAuthMode(mode);
+    setModal("auth");
+  }
+  function requireAccount(feature: string) {
+    setGateFeature(feature);
+    setModal("account-required");
+    setMobileOpen(false);
+  }
+  async function logout() {
+    if (!supabase) return;
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      data.notify(error.message);
+      return;
+    }
+    setModal(null);
+    setPage("inicio");
+    window.history.replaceState(null, "", location.pathname + "#inicio");
+    data.notify("Cerraste sesión. Nos vemos pronto en el green.");
+  }
+  useEffect(() => {
+    if (
+      !data.loading &&
+      !data.user &&
+      !data.demo &&
+      requiresAccount(page) &&
+      !["auth", "account-required", "delete-account"].includes(modal || "")
+    )
+      requireAccount(page);
+  }, [page, data.loading, data.user, data.demo, modal]);
+  useEffect(() => {
+    if (data.user && deletionReturn.current) {
+      deletionReturn.current = false;
+      setModal("delete-account");
+    }
+  }, [data.user]);
   useEffect(() => {
     if (
       data.user &&
       !data.loading &&
+      !deletionReturn.current &&
+      !["delete-account", "auth"].includes(modal || "") &&
       data.me.id === data.user.id &&
       data.me.availability.length === 0 &&
       onboarded.current !== data.user.id
@@ -107,6 +161,8 @@ export default function FairwayApp() {
   function go(p: string) {
     setPage(p);
     setMobileOpen(false);
+    if (!requiresAccount(p)) lastPublicPage.current = p;
+    if (!data.user && !data.demo && requiresAccount(p)) requireAccount(p);
     window.history.replaceState(null, "", "#" + p);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -118,9 +174,17 @@ export default function FairwayApp() {
       { id: "hoy" },
       { id: "admin" },
       { id: "inicio" },
+      { id: "privacidad" },
     ].map((n) => n.id);
     const recovery =
       new URLSearchParams(location.search).get("recovery") === "1";
+    const deletion =
+      new URLSearchParams(location.search).get("delete_account") === "1";
+    if (deletion) {
+      deletionReturn.current = true;
+      setModal("delete-account");
+      setPage("ajustes");
+    }
     const handleReturnError = () => {
       const message = authReturnError(location.hash, location.search);
       if (!message) return false;
@@ -140,7 +204,11 @@ export default function FairwayApp() {
     };
     const change = () => {
       if (!handleReturnError())
-        setPage(recovery ? "ajustes" : routeFromHash(location.hash, routes));
+        setPage(
+          recovery || deletion
+            ? "ajustes"
+            : routeFromHash(location.hash, routes),
+        );
     };
     change();
     window.addEventListener("hashchange", change);
@@ -212,16 +280,38 @@ export default function FairwayApp() {
   }).length;
   const hasAuth = !!data.user || data.demo;
   function close() {
+    if (modal === "delete-account") {
+      deletionReturn.current = false;
+      const url = new URL(location.href);
+      url.searchParams.delete("delete_account");
+      window.history.replaceState(
+        null,
+        "",
+        url.pathname + url.search + url.hash,
+      );
+    }
+    if (!data.user && !data.demo && requiresAccount(page)) {
+      setPage(lastPublicPage.current);
+      window.history.replaceState(null, "", "#" + lastPublicPage.current);
+    }
     setModal(null);
     setSelected(null);
     setReviewTarget(null);
   }
   function openProfile(p: Profile) {
+    if (!data.user && !data.demo) {
+      requireAccount("perfil");
+      return;
+    }
     setSelected(p);
     setProfileTab("Información");
     setModal("profile");
   }
   function score() {
+    if (!data.user && !data.demo) {
+      requireAccount("scores");
+      return;
+    }
     setRound(undefined);
     setModal("score");
   }
@@ -298,10 +388,21 @@ export default function FairwayApp() {
           </button>
         </div>
         <div className="sidebar-bottom">
-          <button className="nav-item" onClick={() => go("ajustes")}>
+          <button
+            className="nav-item"
+            onClick={() =>
+              go(data.user || data.demo ? "ajustes" : "privacidad")
+            }
+          >
             <SettingsIcon size={18} />
-            Ajustes y privacidad
+            {data.user || data.demo ? "Ajustes y privacidad" : "Privacidad"}
           </button>
+          {data.user && (
+            <button className="nav-item" onClick={() => void logout()}>
+              <LogOut size={18} />
+              Cerrar sesión
+            </button>
+          )}
           {data.admin && (
             <button className="nav-item" onClick={() => go("admin")}>
               <ShieldCheck size={18} />
@@ -310,7 +411,7 @@ export default function FairwayApp() {
           )}
           <button
             className="sidebar-user"
-            onClick={() => (hasAuth ? go("perfil") : setModal("auth"))}
+            onClick={() => (hasAuth ? go("perfil") : openAuth())}
           >
             <Avatar profile={data.me} />
             <span>
@@ -361,6 +462,7 @@ export default function FairwayApp() {
                   { id: "hoy", label: "¿Quién juega hoy?" },
                   { id: "admin", label: "Administración" },
                   { id: "inicio", label: "Bienvenido" },
+                  { id: "privacidad", label: "Privacidad" },
                 ].find((n) => n.id === page)?.label
               }
             </strong>
@@ -373,24 +475,76 @@ export default function FairwayApp() {
             <button
               className="notification-button icon-btn"
               aria-label={`Notificaciones, ${unread} sin leer`}
-              onClick={() => setModal("notifications")}
+              onClick={() =>
+                data.user || data.demo
+                  ? setModal("notifications")
+                  : requireAccount("notificaciones")
+              }
             >
               <Bell size={19} />
               {unread > 0 && <i />}
             </button>
             <div className="topbar-divider" />
             {data.user ? (
-              <button
-                className="avatar-button"
-                onClick={() => go("perfil")}
-                aria-label="Mi perfil"
-              >
-                <Avatar profile={data.me} />
-              </button>
+              <details className="account-menu">
+                <summary aria-label="Opciones de mi cuenta">
+                  <Avatar profile={data.me} />
+                  <span>Mi cuenta</span>
+                  <ChevronDown size={14} />
+                </summary>
+                <div className="account-menu-items">
+                  <strong>{data.me.name}</strong>
+                  <button
+                    onClick={(e) => {
+                      e.currentTarget
+                        .closest("details")
+                        ?.removeAttribute("open");
+                      go("perfil");
+                    }}
+                  >
+                    <UserRound size={16} />
+                    Mi perfil
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.currentTarget
+                        .closest("details")
+                        ?.removeAttribute("open");
+                      go("ajustes");
+                    }}
+                  >
+                    <SettingsIcon size={16} />
+                    Ajustes y privacidad
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.currentTarget
+                        .closest("details")
+                        ?.removeAttribute("open");
+                      void logout();
+                    }}
+                  >
+                    <LogOut size={16} />
+                    Cerrar sesión
+                  </button>
+                  <button
+                    className="account-menu-delete"
+                    onClick={(e) => {
+                      e.currentTarget
+                        .closest("details")
+                        ?.removeAttribute("open");
+                      setModal("delete-account");
+                    }}
+                  >
+                    <Trash2 size={16} />
+                    Eliminar mi cuenta
+                  </button>
+                </div>
+              </details>
             ) : data.demo ? (
               <span className="demo-pill">Vista demo</span>
             ) : (
-              <Button variant="outline" onClick={() => setModal("auth")}>
+              <Button variant="outline" onClick={() => openAuth()}>
                 Iniciar sesión
               </Button>
             )}
@@ -426,10 +580,38 @@ export default function FairwayApp() {
               </div>
             </div>
           ) : !hasAuth ? (
-            <Welcome onAuth={() => setModal("auth")} />
+            <>
+              {page === "inicio" && (
+                <Welcome onAuth={() => openAuth("signup")} />
+              )}
+              {page === "descubrir" && (
+                <GuestDiscover
+                  onClubs={() => go("clubes")}
+                  onAccount={() => requireAccount("perfil")}
+                />
+              )}
+              {page === "clubes" && (
+                <ClubDirectory
+                  clubs={data.clubs}
+                  guest
+                  live={data.publicDirectoryLive}
+                  onPlayers={() => requireAccount("perfil")}
+                />
+              )}
+              {page === "privacidad" && <PublicPrivacy />}
+              {requiresAccount(page) && (
+                <LockedPreview
+                  feature={page}
+                  onAccount={() => requireAccount(page)}
+                  onClubs={() => go("clubes")}
+                />
+              )}
+            </>
           ) : (
             <>
-              {page === "inicio" && <Welcome onAuth={() => setModal("auth")} />}
+              {page === "inicio" && (
+                <Welcome onAuth={() => openAuth("signup")} />
+              )}
               {page === "descubrir" && (
                 <>
                   <SectionHeading
@@ -993,64 +1175,16 @@ export default function FairwayApp() {
                 </>
               )}
               {page === "clubes" && (
-                <>
-                  <SectionHeading
-                    eyebrow="EL PUNTO DE ENCUENTRO"
-                    title="El golf empieza cerca de ti."
-                    description="Directorio inicial de León y sus alrededores. Información pendiente de verificación."
-                  />
-                  <div className="club-grid">
-                    {data.clubs.map((c, i) => (
-                      <article className="panel club-card" key={c.id}>
-                        <div
-                          className="club-photo"
-                          style={{
-                            backgroundImage: `url(https://images.unsplash.com/photo-${i === 1 ? "1593111774240-d529f12cf4bb" : "1535131749006-b7f58c99034b"}?w=900&auto=format&fit=crop)`,
-                          }}
-                        >
-                          <span className="badge">
-                            {c.verified
-                              ? "Datos verificados"
-                              : "Datos por confirmar"}
-                          </span>
-                        </div>
-                        <div className="club-content">
-                          <span className="eyebrow">{c.city}</span>
-                          <h2>{c.name}</h2>
-                          <p>
-                            {c.description ||
-                              "Información del club pendiente de confirmar con su administración."}
-                          </p>
-                          <p className="muted">
-                            {data.demo
-                              ? "Perfiles de ejemplo"
-                              : data.profiles.filter((p) => p.club_id === c.id)
-                                  .length + " perfiles visibles"}{" "}
-                            · Membresías declaradas
-                          </p>
-                          <Button
-                            variant="outline"
-                            onClick={() => {
-                              setFilters({ ...initialFilters, club: c.id });
-                              go("descubrir");
-                            }}
-                          >
-                            Ver golfistas del club
-                            <ArrowUpRight size={15} />
-                          </Button>
-                          <details>
-                            <summary>Información de acceso</summary>
-                            <p>
-                              {c.access_info ||
-                                "Pendiente de confirmar. Contacta al club para autorización, tarifas y condiciones."}
-                            </p>
-                          </details>
-                        </div>
-                      </article>
-                    ))}
-                  </div>
-                </>
+                <ClubDirectory
+                  clubs={data.clubs}
+                  profiles={[data.me, ...data.profiles]}
+                  onPlayers={(id) => {
+                    setFilters({ ...initialFilters, club: id });
+                    go("descubrir");
+                  }}
+                />
               )}
+              {page === "privacidad" && <PublicPrivacy />}
               {page === "hoy" && (
                 <Availability
                   data={data}
@@ -1067,16 +1201,9 @@ export default function FairwayApp() {
                   <Settings
                     data={data}
                     onEdit={() => setModal("edit-profile")}
+                    onLogout={() => void logout()}
+                    onDelete={() => setModal("delete-account")}
                   />
-                  {data.user && (
-                    <Button
-                      variant="outline"
-                      onClick={() => void supabase?.auth.signOut()}
-                    >
-                      <LogOut size={16} />
-                      Cerrar sesión
-                    </Button>
-                  )}
                 </>
               )}
               {page === "admin" && (
@@ -1095,7 +1222,7 @@ export default function FairwayApp() {
               fairway.
             </a>
             <span>El golf conecta.</span>
-            <button onClick={() => go("ajustes")}>Privacidad</button>
+            <button onClick={() => go("privacidad")}>Privacidad</button>
             <span>Hecho para compartir el juego.</span>
           </footer>
         </main>
@@ -1121,15 +1248,58 @@ export default function FairwayApp() {
           </button>
         </div>
       )}
+      {modal === "account-required" && (
+        <AccountRequired
+          feature={gateFeature}
+          onClose={close}
+          onLogin={() => openAuth("login")}
+          onSignup={() => openAuth("signup")}
+        />
+      )}
+      {modal === "delete-account" && !data.user && !data.loading && (
+        <AccountRequired
+          feature="ajustes"
+          onClose={close}
+          onLogin={() => openAuth("login")}
+          onSignup={() => openAuth("signup")}
+        />
+      )}
+      {modal === "delete-account" && data.user && (
+        <DeleteAccountDialog
+          data={data}
+          onClose={close}
+          onDeleted={() => {
+            deletionReturn.current = false;
+            close();
+            go("inicio");
+            window.history.replaceState(
+              null,
+              "",
+              location.pathname + "#inicio",
+            );
+          }}
+        />
+      )}
       {modal === "auth" && (
-        <Modal title="Bienvenido a Fairway" onClose={close}>
+        <Modal
+          title={
+            authMode === "signup"
+              ? "Crea tu cuenta en Fairway"
+              : "Bienvenido a Fairway"
+          }
+          onClose={close}
+          soft
+        >
           <AuthForm
             data={data}
             initialMessage={authNotice}
+            initialMode={authMode}
             onDone={() => {
               setAuthNotice("");
-              close();
-              go("perfil");
+              setModal(null);
+              setSelected(null);
+              setReviewTarget(null);
+              if (!requiresAccount(page)) go("perfil");
             }}
           />
         </Modal>

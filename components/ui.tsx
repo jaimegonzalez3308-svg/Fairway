@@ -16,11 +16,13 @@ export function Modal({
   children,
   onClose,
   wide = false,
+  soft = false,
 }: {
   title: string;
   children: React.ReactNode;
   onClose: () => void;
   wide?: boolean;
+  soft?: boolean;
 }) {
   return (
     <Dialog.Root
@@ -30,7 +32,7 @@ export function Modal({
       }}
     >
       <Dialog.Portal>
-        <Dialog.Overlay className="modal-overlay" />
+        <Dialog.Overlay className={cn("modal-overlay", soft && "soft")} />
         <Dialog.Content className={cn("modal", wide && "wide")}>
           <div className="modal-heading">
             <Dialog.Title>{title}</Dialog.Title>
