@@ -39,6 +39,7 @@ import {
   TrendingUp,
   Trash2,
   LockKeyhole,
+  QrCode,
 } from "lucide-react";
 import { useFairway } from "@/lib/use-fairway";
 import { supabase } from "@/lib/supabase";
@@ -70,10 +71,15 @@ import {
 } from "./guest-experience";
 import { DeleteAccountDialog } from "./delete-account";
 import { requiresAccount } from "@/lib/access";
+import { useFriends, profileWithPhoto } from "@/lib/use-friends";
+import { sharedProfileId } from "@/lib/profile-share";
+import { Friends, FriendshipActions } from "./friends";
+import { ProfileQR } from "./profile-qr";
 const navigation = [
   { id: "descubrir", label: "Descubrir", icon: Compass },
   { id: "partidas", label: "Partidas", icon: Flag },
   { id: "comunidad", label: "Comunidad", icon: Users },
+  { id: "amigos", label: "Amigos", icon: Users },
   { id: "mensajes", label: "Mensajes", icon: MessageCircle },
   { id: "perfil", label: "Mi perfil", icon: UserRound },
 ];
@@ -84,6 +90,7 @@ const extras = [
 ];
 export default function FairwayApp() {
   const data = useFairway();
+  const friends = useFriends(data);
   const [page, setPage] = useState("descubrir"),
     [modal, setModal] = useState<string | null>(null),
     [authNotice, setAuthNotice] = useState(""),
@@ -107,6 +114,7 @@ export default function FairwayApp() {
   const onboarded = useRef<string | null>(null);
   const lastPublicPage = useRef("descubrir");
   const deletionReturn = useRef(false);
+  const sharedProfileHandled = useRef<string | null>(null);
   function openAuth(mode: "login" | "signup" = "login") {
     setAuthMode(mode);
     setModal("auth");
@@ -152,12 +160,60 @@ export default function FairwayApp() {
       !["delete-account", "auth"].includes(modal || "") &&
       data.me.id === data.user.id &&
       data.me.availability.length === 0 &&
+      !sharedProfileId(location.search) &&
       onboarded.current !== data.user.id
     ) {
       onboarded.current = data.user.id;
       setModal("edit-profile");
     }
   }, [data.user, data.loading, data.me]);
+  useEffect(() => {
+    const id = sharedProfileId(location.search);
+    if (
+      !id ||
+      data.loading ||
+      !data.user ||
+      !supabase ||
+      sharedProfileHandled.current === id
+    )
+      return;
+    sharedProfileHandled.current = id;
+    let current = true;
+    void supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle()
+      .then(async ({ data: profile, error }) => {
+        if (!current) return;
+        if (error || !profile) {
+          setModal("profile-unavailable");
+          return;
+        }
+        if (id === data.user!.id) {
+          setPage("perfil");
+          setModal(null);
+          const url = new URL(location.href);
+          url.searchParams.delete("golfista");
+          url.hash = "perfil";
+          window.history.replaceState(
+            null,
+            "",
+            url.pathname + url.search + url.hash,
+          );
+          return;
+        }
+        const p = await profileWithPhoto(profile as Profile);
+        if (current) {
+          setSelected(p);
+          setModal("profile");
+        }
+      });
+    return () => {
+      current = false;
+      sharedProfileHandled.current = null;
+    };
+  }, [data.user?.id, data.loading]);
   function go(p: string) {
     setPage(p);
     setMobileOpen(false);
@@ -280,6 +336,18 @@ export default function FairwayApp() {
   }).length;
   const hasAuth = !!data.user || data.demo;
   function close() {
+    if (
+      ["profile", "profile-unavailable"].includes(modal || "") ||
+      (!data.user && sharedProfileId(location.search))
+    ) {
+      const url = new URL(location.href);
+      url.searchParams.delete("golfista");
+      window.history.replaceState(
+        null,
+        "",
+        url.pathname + url.search + url.hash,
+      );
+    }
     if (modal === "delete-account") {
       deletionReturn.current = false;
       const url = new URL(location.href);
@@ -354,6 +422,21 @@ export default function FairwayApp() {
               {id === "mensajes" && unreadMessages > 0 && (
                 <span className="count">{unreadMessages}</span>
               )}
+              {id === "amigos" &&
+                friends.relations.some(
+                  (r) =>
+                    r.status === "pending" && r.recipient_id === data.user?.id,
+                ) && (
+                  <span className="count">
+                    {
+                      friends.relations.filter(
+                        (r) =>
+                          r.status === "pending" &&
+                          r.recipient_id === data.user?.id,
+                      ).length
+                    }
+                  </span>
+                )}
               {page === id && <span className="nav-dot" />}
             </button>
           ))}
@@ -998,13 +1081,22 @@ export default function FairwayApp() {
                     eyebrow="ESTE ES TU JUEGO"
                     title="Mi perfil de golfista"
                     action={
-                      <Button
-                        variant="outline"
-                        onClick={() => setModal("edit-profile")}
-                      >
-                        Editar perfil
-                        <ArrowUpRight size={16} />
-                      </Button>
+                      <div className="button-row profile-header-actions">
+                        <Button
+                          variant="outline"
+                          onClick={() => setModal("profile-qr")}
+                        >
+                          <QrCode size={17} />
+                          Mi código QR
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => setModal("edit-profile")}
+                        >
+                          Editar perfil
+                          <ArrowUpRight size={16} />
+                        </Button>
+                      </div>
                     }
                   />
                   <div className="profile-cover">
@@ -1027,6 +1119,19 @@ export default function FairwayApp() {
                         <strong>{data.me.handicap ?? "—"}</strong>
                       </div>
                     </div>
+                  </div>
+                  <div className="profile-friends-link panel">
+                    <Users size={21} />
+                    <div>
+                      <strong>El golf, con tus amigos</strong>
+                      <p>
+                        Busca personas, revisa solicitudes y arma tu círculo.
+                      </p>
+                    </div>
+                    <Button variant="outline" onClick={() => go("amigos")}>
+                      Ver mis amigos
+                      <ArrowUpRight size={16} />
+                    </Button>
                   </div>
                   <div className="tabs spaced">
                     {[
@@ -1174,6 +1279,13 @@ export default function FairwayApp() {
                   <Community data={data} />
                 </>
               )}
+              {page === "amigos" && (
+                <Friends
+                  data={data}
+                  friends={friends}
+                  onProfile={openProfile}
+                />
+              )}
               {page === "clubes" && (
                 <ClubDirectory
                   clubs={data.clubs}
@@ -1228,16 +1340,18 @@ export default function FairwayApp() {
         </main>
       </div>
       <nav className="mobile-nav" aria-label="Navegación móvil">
-        {navigation.map(({ id, label, icon: Icon }) => (
-          <button
-            key={id}
-            className={page === id ? "active" : ""}
-            onClick={() => go(id)}
-          >
-            <Icon size={20} />
-            <span>{label}</span>
-          </button>
-        ))}
+        {navigation
+          .filter(({ id }) => id !== "comunidad")
+          .map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              className={page === id ? "active" : ""}
+              onClick={() => go(id)}
+            >
+              <Icon size={20} />
+              <span>{label}</span>
+            </button>
+          ))}
       </nav>
       {data.toast && (
         <div className="toast" role="status">
@@ -1255,6 +1369,18 @@ export default function FairwayApp() {
           onLogin={() => openAuth("login")}
           onSignup={() => openAuth("signup")}
         />
+      )}
+      {modal === "profile-qr" && (
+        <ProfileQR profile={data.me} onClose={close} />
+      )}
+      {modal === "profile-unavailable" && (
+        <Modal title="Perfil no disponible" onClose={close} soft>
+          <p>
+            No podemos mostrar este perfil. Puede ser privado, no estar
+            disponible o no permitir el acceso desde tu cuenta.
+          </p>
+          <Button onClick={close}>Volver a explorar</Button>
+        </Modal>
       )}
       {modal === "delete-account" && !data.user && !data.loading && (
         <AccountRequired
@@ -1441,6 +1567,13 @@ export default function FairwayApp() {
               : "Aún no tiene evaluaciones."}
           </p>
           <div className="button-row">
+            <FriendshipActions
+              personId={selected.id}
+              friends={friends}
+              userId={data.user?.id || data.me.id}
+            />
+          </div>
+          <div className="button-row">
             <Button
               onClick={() => {
                 void data.decide(selected.id, "like");
@@ -1469,7 +1602,10 @@ export default function FairwayApp() {
                     }),
                   "Usuario bloqueado.",
                 );
-                if (ok) close();
+                if (ok) {
+                  void friends.refresh();
+                  close();
+                }
               }}
             >
               Bloquear usuario

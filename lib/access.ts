@@ -11,6 +11,11 @@ export const accountFeatures: Record<
   string,
   { title: string; description: string }
 > = {
+  amigos: {
+    title: "Tu círculo de golf empieza aquí",
+    description:
+      "Busca personas por nombre, envía solicitudes y reúne a tus amigos en un solo lugar.",
+  },
   partidas: {
     title: "Arma tu próximo foursome",
     description: "Crea partidas, solicita un lugar y conversa con tu grupo.",

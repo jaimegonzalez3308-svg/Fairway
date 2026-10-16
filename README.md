@@ -35,6 +35,7 @@ Supabase proporciona el inicio de sesión, la base de datos, el almacenamiento p
    - `supabase/migrations/202610150003_invitations.sql`
    - `supabase/migrations/202610150004_clubs.sql`
    - `supabase/migrations/202610150005_guest_and_account_security.sql`
+   - `supabase/migrations/202610150006_friends.sql`
 
    Si aparece un error, detente y conserva el texto del error. No desactives RLS para solucionarlo. Las migraciones incluyen transacciones para evitar instalaciones parciales.
 
@@ -185,3 +186,17 @@ El menú de la cuenta y Configuración incluyen Cerrar sesión y Eliminar mi cue
 En Supabase → Authentication → URL Configuration deben estar permitidos el sitio público y `https://fairway-leon-golf.honeyring4.chatgpt.site/**`, incluido el regreso `/?delete_account=1`. Mantener habilitados Email y Magic Link, con la plantilla Magic Link usando `{{ .ConfirmationURL }}`. Supabase envía su correo de enlace de acceso para verificar la identidad; Fairway explica el propósito antes y después del envío.
 
 Las pruebas locales cubren permisos de columnas del directorio, solicitudes de eliminación, contraseña reciente, sesiones antiguas, sesiones de otro usuario, correo cambiado, teléfono, vencimiento, cancelación, borrado completo y pérdida de acceso de tokens antiguos. No se han enviado correos ni eliminado cuentas reales para probar este flujo. Falta probarlo con una cuenta desechable en la instancia real tras instalar la migración. Referencias: [Sesiones de Supabase](https://supabase.com/docs/guides/auth/sessions), [campos del JWT](https://supabase.com/docs/guides/auth/jwt-fields), [enlaces de acceso por correo](https://supabase.com/docs/reference/javascript/auth-signinwithotp).
+
+## Amigos y QR del perfil
+
+La sección **Amigos** requiere cuenta y permite buscar por nombre (al menos dos letras), ver el perfil, enviar una solicitud, aceptar o rechazar las recibidas, cancelar las enviadas y eliminar una amistad confirmada. Las búsquedas consultan Supabase y no dependen de likes, favoritos ni filtros de compatibilidad; muestran hasta 30 coincidencias por consulta. La amistad se confirma solo cuando acepta la persona destinataria. No cambia el acceso a mensajes, partidas ni scores.
+
+Los participantes ven únicamente sus relaciones. Los perfiles privados, suspendidos y bloqueados siguen protegidos por RLS, también al abrir enlaces directos. Para enviar solicitudes el propio perfil debe ser visible para miembros. Bloquear elimina las solicitudes y amistades entre las dos personas. Las notificaciones de solicitudes y aceptación se controlan con la categoría Amigos en Ajustes.
+
+**Activación en una base existente:** ejecutar solo `supabase/migrations/202610150006_friends.sql`, también disponible en Matrix como **Agregar amigos Fairway.sql**. Usar SQL Editor → + → Create a new snippet → pegar todo → Run. No ejecutar otra vez Instalar Fairway.sql. Si todavía falta la migración, la búsqueda y el QR siguen disponibles, pero la interfaz avisa que las solicitudes aún no están activadas.
+
+En **Mi perfil → Mi código QR** se genera un QR PNG localmente con `qrcode`; no se envía el enlace a servicios de QR. Se puede descargar, copiar el enlace o usar Compartir en dispositivos compatibles. El enlace contiene únicamente el ID del perfil: `/?golfista=UUID#amigos`, sin credenciales. La persona que lo abra inicia sesión y ve el perfil si su privacidad lo permite. El registro y su confirmación por correo conservan el destino del perfil compartido. Un perfil privado muestra un aviso al compartirlo. El ID no es un permiso de acceso.
+
+Pruebas adicionales con PostgreSQL: solicitudes duplicadas o cruzadas, autoaceptación, participantes ajenos, escrituras directas, aceptación, cancelación, rechazo, bloqueo en ambas direcciones, perfiles privados/suspendidos, búsqueda literal por nombre y cascada de eliminación. Un decodificador independiente (`jsQR`) comprueba que el QR generado contiene el enlace esperado. Falta probar solicitudes entre dos cuentas reales y escanear el QR con un teléfono tras aplicar la migración. Referencias: [RLS de Supabase](https://supabase.com/docs/guides/database/postgres/row-level-security), [funciones de base de datos](https://supabase.com/docs/guides/database/functions), [qrcode](https://github.com/soldair/node-qrcode).
+
+La revisión visual de estas pantallas queda pendiente: el control nativo de Chrome devolvió `cgWindowNotFound`. El servidor local sí respondió HTTP 200; TypeScript, la compilación y las pruebas de permisos y QR se comprobaron por separado.

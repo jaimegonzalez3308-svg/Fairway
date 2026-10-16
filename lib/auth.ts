@@ -1,5 +1,16 @@
-export function authRedirectUrl(origin: string, recovery = false): string {
-  return new URL(recovery ? "/?recovery=1" : "/", origin).href;
+import { sharedProfileId } from "./profile-share";
+export function authRedirectUrl(
+  origin: string,
+  recovery = false,
+  search = "",
+): string {
+  const url = new URL(recovery ? "/?recovery=1" : "/", origin);
+  const profile = sharedProfileId(search);
+  if (!recovery && profile) {
+    url.searchParams.set("golfista", profile);
+    url.hash = "amigos";
+  }
+  return url.href;
 }
 
 export function authErrorMessage(error: {

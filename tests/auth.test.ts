@@ -7,6 +7,21 @@ import {
   routeFromHash,
 } from "../lib/auth";
 const origin = "https://fairway-leon-golf.honeyring4.chatgpt.site";
+test("confirmar el registro conserva el perfil compartido y rechaza destinos arbitrarios", () => {
+  const id = "b1efb86c-4e02-4ad5-b942-0c4c7b48ebcb";
+  assert.equal(
+    authRedirectUrl(origin, false, "?golfista=" + id),
+    origin + "/?golfista=" + id + "#amigos",
+  );
+  assert.equal(
+    authRedirectUrl(origin, false, "?golfista=https://evil.example"),
+    origin + "/",
+  );
+  assert.equal(
+    authRedirectUrl(origin, true, "?golfista=" + id),
+    origin + "/?recovery=1",
+  );
+});
 test("confirmación y recuperación vuelven al mismo dominio público", () => {
   assert.equal(authRedirectUrl(origin), origin + "/");
   assert.equal(authRedirectUrl(origin, true), origin + "/?recovery=1");

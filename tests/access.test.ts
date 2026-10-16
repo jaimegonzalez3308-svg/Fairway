@@ -9,6 +9,7 @@ test("datos y acciones personales requieren cuenta incluso si se accede por enla
   for (const page of [
     "partidas",
     "comunidad",
+    "amigos",
     "mensajes",
     "perfil",
     "scores",

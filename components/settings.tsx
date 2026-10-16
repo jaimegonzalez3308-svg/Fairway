@@ -52,6 +52,7 @@ export function Settings({
         <h3>Notificaciones</h3>
         {[
           ["matches", "Likes y matches"],
+          ["friends", "Amigos y solicitudes de amistad"],
           ["messages", "Mensajes"],
           ["games", "Partidas y solicitudes"],
           ["community", "Comentarios y reacciones"],

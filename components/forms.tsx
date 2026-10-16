@@ -73,7 +73,11 @@ export function AuthForm({
                 ...values,
                 options: {
                   data: { name: fd.get("name"), age },
-                  emailRedirectTo: authRedirectUrl(window.location.origin),
+                  emailRedirectTo: authRedirectUrl(
+                    window.location.origin,
+                    false,
+                    window.location.search,
+                  ),
                 },
               })
             : await supabase.auth.signInWithPassword(values);
@@ -164,7 +168,11 @@ export function AuthForm({
                 type: "signup",
                 email,
                 options: {
-                  emailRedirectTo: authRedirectUrl(window.location.origin),
+                  emailRedirectTo: authRedirectUrl(
+                    window.location.origin,
+                    false,
+                    window.location.search,
+                  ),
                 },
               });
               if (error) setMessage(authErrorMessage(error));
