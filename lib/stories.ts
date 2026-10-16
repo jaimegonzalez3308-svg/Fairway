@@ -10,6 +10,33 @@ export type Story = {
   story_likes: { user_id: string }[];
 };
 
+// Likes references the composite key of story_views, not stories directly.
+// PostgREST embeds this unique relationship as an object (or null).
+export const STORY_FEED_SELECT =
+  "*,story_views(user_id,viewed_at,story_likes(user_id))";
+export type StoryFeedRow = Omit<Story, "story_views" | "story_likes"> & {
+  story_views: (Story["story_views"][number] & {
+    story_likes: { user_id: string } | { user_id: string }[] | null;
+  })[];
+};
+
+export function storyFromFeedRow(row: StoryFeedRow): Story {
+  return {
+    ...row,
+    story_views: row.story_views.map(({ user_id, viewed_at }) => ({
+      user_id,
+      viewed_at,
+    })),
+    story_likes: row.story_views.flatMap((view) =>
+      Array.isArray(view.story_likes)
+        ? view.story_likes
+        : view.story_likes
+          ? [view.story_likes]
+          : [],
+    ),
+  };
+}
+
 export function groupStories(stories: Story[], viewer: string) {
   const groups = new Map<string, Story[]>();
   for (const story of stories) {

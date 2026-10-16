@@ -2,7 +2,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "./supabase";
 import type { FairwayData } from "./use-fairway";
-import type { Story } from "./stories";
+import {
+  STORY_FEED_SELECT,
+  storyFromFeedRow,
+  type Story,
+  type StoryFeedRow,
+} from "./stories";
 
 export function useStories(data: FairwayData) {
   const userId = data.user?.id;
@@ -25,7 +30,7 @@ export function useStories(data: FairwayData) {
     try {
       const result = await supabase
         .from("stories")
-        .select("*,story_views(user_id,viewed_at),story_likes(user_id)")
+        .select(STORY_FEED_SELECT)
         .gt("expires_at", new Date().toISOString())
         .order("created_at", { ascending: false })
         .limit(500);
@@ -34,12 +39,14 @@ export function useStories(data: FairwayData) {
         setAvailable(false);
         setStories([]);
         setError(
-          ["42P01", "PGRST205", "PGRST200"].includes(result.error.code)
-            ? "Las historias estarán disponibles pronto."
+          ["42P01", "PGRST205"].includes(result.error.code)
+            ? "Las historias todavía no están activadas."
             : "No pudimos cargar las historias. Inténtalo de nuevo.",
         );
       } else {
-        setStories(result.data as Story[]);
+        setStories(
+          (result.data as unknown as StoryFeedRow[]).map(storyFromFeedRow),
+        );
         setAvailable(true);
         setError("");
       }

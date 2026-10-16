@@ -167,6 +167,7 @@ export function Stories({ data }: { data: FairwayData }) {
         <StoryComposer
           data={data}
           available={feed.available}
+          statusMessage={feed.loading ? "Cargando historias…" : feed.error}
           onClose={() => setComposing(false)}
           onPublished={async () => {
             setComposing(false);
@@ -196,11 +197,13 @@ export function Stories({ data }: { data: FairwayData }) {
 function StoryComposer({
   data,
   available,
+  statusMessage,
   onClose,
   onPublished,
 }: {
   data: FairwayData;
   available: boolean;
+  statusMessage: string;
   onClose: () => void;
   onPublished: () => Promise<void>;
 }) {
@@ -390,7 +393,10 @@ function StoryComposer({
             <p className="story-form-notice">
               {data.demo
                 ? "Conecta tu cuenta para publicar historias reales."
-                : "Las historias estarán disponibles pronto."}
+                : !data.user
+                  ? "Inicia sesión para publicar una historia."
+                  : statusMessage ||
+                    "No pudimos cargar las historias. Cierra esta ventana y pulsa Reintentar."}
             </p>
           )}
           {error && (

@@ -2,7 +2,46 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { PGlite } from "@electric-sql/pglite";
-import { groupStories, storyTime, type Story } from "../lib/stories";
+import {
+  groupStories,
+  storyTime,
+  storyFromFeedRow,
+  type Story,
+  type StoryFeedRow,
+} from "../lib/stories";
+
+test("actividad conserva las vistas sin like y lee el like anidado de PostgREST", () => {
+  const row: StoryFeedRow = {
+    id: "story",
+    user_id: "author",
+    media_path: "author/story.jpg",
+    caption: "Golf",
+    audience: "members",
+    created_at: "2026-10-15T10:00:00Z",
+    expires_at: "2026-10-16T10:00:00Z",
+    story_views: [
+      { user_id: "a", viewed_at: "2026-10-15T11:00:00Z", story_likes: null },
+      {
+        user_id: "b",
+        viewed_at: "2026-10-15T12:00:00Z",
+        story_likes: { user_id: "b" },
+      },
+      {
+        user_id: "c",
+        viewed_at: "2026-10-15T13:00:00Z",
+        story_likes: [{ user_id: "c" }],
+      },
+    ],
+  };
+  const story = storyFromFeedRow(row);
+  assert.equal(story.story_views.length, 3);
+  assert.deepEqual(story.story_likes, [{ user_id: "b" }, { user_id: "c" }]);
+  assert.equal(groupStories([story], "a")[0].unseen, false);
+  assert.deepEqual(
+    storyFromFeedRow({ ...row, story_views: [] }).story_likes,
+    [],
+  );
+});
 
 test("historias: vencimiento, vistas únicas, likes privados y Storage con RLS", async (t) => {
   const db = new PGlite();
