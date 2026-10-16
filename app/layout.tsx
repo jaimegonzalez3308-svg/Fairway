@@ -2,20 +2,20 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 
-const sourceSans = localFont({
+const inter = localFont({
   src: [
     {
-      path: "./fonts/SourceSans3-Variable.woff2",
-      weight: "200 900",
+      path: "./fonts/inter/InterVariable.woff2",
+      weight: "100 900",
       style: "normal",
     },
     {
-      path: "./fonts/SourceSans3-VariableItalic.woff2",
-      weight: "200 900",
+      path: "./fonts/inter/InterVariable-Italic.woff2",
+      weight: "100 900",
       style: "italic",
     },
   ],
-  variable: "--font-source-sans",
+  variable: "--font-inter",
   display: "swap",
   fallback: ["Segoe UI", "Arial", "sans-serif"],
 });
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 };
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={sourceSans.variable}>
+    <html lang="es" className={inter.variable}>
       <body>{children}</body>
     </html>
   );
