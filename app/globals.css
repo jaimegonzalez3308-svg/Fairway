@@ -255,6 +255,19 @@ hr {
   color: #f8f9f6;
   box-shadow: 0 5px 14px #16382b12;
 }
+.sidebar-icon {
+  --sidebar-icon-ink: #536b56;
+  --sidebar-icon-sage: #d0ddc6;
+  --sidebar-icon-gold: #c7a66a;
+  --sidebar-icon-paper: #f8f8ef;
+  flex-shrink: 0;
+}
+.nav-item.active .sidebar-icon {
+  --sidebar-icon-ink: #edf1df;
+  --sidebar-icon-sage: #597459;
+  --sidebar-icon-gold: #dfc28b;
+  --sidebar-icon-paper: #304e3d;
+}
 .nav-dot {
   width: 5px;
   height: 5px;
