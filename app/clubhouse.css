@@ -81,6 +81,22 @@ h3 {
   box-shadow: inset 3px 0 #c5ab70;
 }
 
+.nav-hole-number {
+  flex: 0 0 20px;
+  text-align: center;
+  font-family: var(--font-score);
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+  line-height: 20px;
+  color: #8b7958;
+}
+
+.nav-item.active .nav-hole-number {
+  color: #dfc58d;
+}
+
 .sidebar-promo {
   border-radius: var(--radius);
   border-color: #c9cebb;
