@@ -1,24 +1,46 @@
 # Moderación del chat — Fairway / JR
 
-Filtro de mensajes en español de México que vive **dentro de Supabase**, en la
-función `send_message`. Como los usuarios solo pueden escribir mensajes por esa
-función, nadie se lo salta desde el navegador.
+Filtro de texto en español de México que vive **dentro de Supabase**, como un
+trigger (`moderation_guard`) en cada tabla donde los usuarios escriben. Se aplica a
+cualquier insert o update, venga del navegador o de una función, así que nadie se lo salta.
 
-- **block**: el mensaje NO se envía. La persona ve un aviso.
-- **flag**: el mensaje se envía, pero queda en `moderation_flags` para que un admin lo revise.
+- **block**: el texto NO se guarda. La persona ve un aviso.
+- **flag**: el texto se guarda, pero queda en `moderation_flags` (con `source`, p. ej.
+  `posts.body`) para que un admin lo revise.
 
-Migración: `supabase/migrations/202610160009_moderation.sql` (nueva; no edita ninguna anterior).
+## Dónde aplica
+
+| Lugar | Tabla y columnas |
+|---|---|
+| Chats (partidas, matches) | `messages.body` |
+| Comunidad: publicaciones | `posts.body` |
+| Comunidad: comentarios | `comments.body` |
+| Historias | `stories.caption` |
+| Perfil | `profiles.name`, `bio`, `city`, `occupation`, `additional_clubs` |
+| Partidas | `games.description`, `access_conditions` |
+| Evaluaciones | `reviews.body` |
+| Rondas | `rounds.notes`, `course` |
+| Clubes (admins) | `clubs.name`, `description`, `access_info` |
+
+Fuera a propósito: `reports` y `verification_requests` (un reporte puede citar el texto
+ofensivo y no debe bloquearse) y los textos que genera el sistema.
+
+En un update solo se revisan las columnas que cambiaron, para no marcar el mismo texto
+cada vez que alguien guarda su perfil.
+
+Migraciones: `202610160009_moderation.sql` (reglas y tablas) y
+`202610160010_moderation_everywhere.sql` (triggers en todas las tablas).
 Prueba automática: `tests/moderation.test.ts`.
 Proyecto de Supabase: `zmahtiecioxiflbblofa`.
 
-El front no necesita cambios: el chat ya muestra el mensaje de error de `send_message`
-como aviso (`data.run` en `lib/use-fairway.ts`), así que el texto
-"Tu mensaje no se envió porque no cumple las reglas de la comunidad..." aparece al bloquearse.
+El front no necesita cambios: cada pantalla ya muestra el error que devuelve Supabase
+(`data.run` en `lib/use-fairway.ts`; las historias usan su propio aviso y borran la foto
+subida si no se publica).
 
 ## Casos probados
 
-`tests/moderation.test.ts` ejecuta todos estos casos contra la función `send_message`
-completa en PostgreSQL (PGlite).
+`tests/moderation.test.ts` ejecuta estos casos en el chat y además prueba publicaciones,
+comentarios, historias, perfil y partidas en PostgreSQL (PGlite).
 
 | Mensaje | Resultado esperado |
 |---|---|
@@ -46,7 +68,8 @@ completa en PostgreSQL (PGlite).
   resultado en vez de un error, y el front tendría que mostrarlo.
 - **Regionalismos.** `coger` es vulgar en México pero inocente en otros países; por eso solo se bloquea
   en frases claras y lo ambiguo va a revisión. Todo se afina con `update moderation_terms`.
-- **Solo texto.** No revisa fotos ni historias (`story-images`).
+- **Solo texto.** Revisa el texto de las historias, pero no las fotos (`story-images`, fotos de perfil y galería).
+- **Registro.** Si alguien se registra con un nombre bloqueado, el registro falla con un error genérico de Supabase.
 - Los `flag` de insultos como `puto` o `pendejo` pueden ser bromas entre amigos; por eso solo se revisan, no se bloquean.
 
 ## Siguiente nivel (opcional)

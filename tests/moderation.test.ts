@@ -24,6 +24,7 @@ test("moderación: send_message bloquea, marca o deja pasar mensajes en PostgreS
     "202610150007_stories.sql",
     "202610160008_open_parties.sql",
     "202610160009_moderation.sql",
+    "202610160010_moderation_everywhere.sql",
   ])
     await db.exec(
       (
@@ -115,6 +116,98 @@ test("moderación: send_message bloquea, marca o deja pasar mensajes en PostgreS
       assert.equal(await sent(body), true, body);
       assert.equal(await flagged(body), undefined, body);
     }
+  });
+
+  await t.test("un mensaje marcado se registra una sola vez", async () => {
+    await db.exec("reset role");
+    const rows = await db.query<{ source: string }>(
+      "select source from moderation_flags where excerpt='eres un pendejo'",
+    );
+    assert.deepEqual(rows.rows, [{ source: "messages.body" }]);
+    await as(a);
+  });
+
+  await t.test("Comunidad: publicaciones y comentarios", async () => {
+    await assert.rejects(
+      db.query("insert into posts(user_id,body) values($1,'pasame tus nudes')", [a]),
+      /reglas de la comunidad/,
+    );
+    const post = (
+      await db.query<{ id: string }>(
+        "insert into posts(user_id,body) values($1,'Gran ronda hoy, 82 golpes') returning id",
+        [a],
+      )
+    ).rows[0].id;
+    await assert.rejects(
+      db.query("update posts set body='quiero coger contigo' where id=$1", [post]),
+      /reglas de la comunidad/,
+    );
+    await assert.rejects(
+      db.query("insert into comments(post_id,user_id,body) values($1,$2,'Sexting?')", [post, a]),
+      /reglas de la comunidad/,
+    );
+    await db.query(
+      "insert into comments(post_id,user_id,body) values($1,$2,'jugaste como pendejo')",
+      [post, a],
+    );
+    assert.equal(await flagged("jugaste como pendejo"), "insulto");
+    await db.query(
+      "insert into comments(post_id,user_id,body) values($1,$2,'¡Felicidades!')",
+      [post, a],
+    );
+  });
+
+  await t.test("historias: el texto de la foto", async () => {
+    const ok = "00000000-0000-4000-8000-0000000000a1",
+      bad = "00000000-0000-4000-8000-0000000000a2";
+    await db.exec("reset role");
+    await db.query(
+      "insert into storage.objects(bucket_id,name) values('story-images',$1),('story-images',$2)",
+      [`${a}/${ok}.jpg`, `${a}/${bad}.jpg`],
+    );
+    await as(a);
+    await assert.rejects(
+      db.query("select publish_story($1,'mira mis nalgas y mis nudes','members')", [bad]),
+      /reglas de la comunidad/,
+    );
+    await db.query("select publish_story($1,'Hoyo en uno en el 7','members')", [ok]);
+    assert.equal(
+      (await db.query("select 1 from stories where id=$1", [bad])).rows.length,
+      0,
+    );
+  });
+
+  await t.test("perfil: nombre y descripción; no se vuelve a marcar lo mismo", async () => {
+    await assert.rejects(
+      db.query("update profiles set bio='vendo nudes, cuanto cobras' where id=$1", [a]),
+      /reglas de la comunidad/,
+    );
+    await assert.rejects(
+      db.query("update profiles set name='Onlyfans Ana' where id=$1", [a]),
+      /reglas de la comunidad/,
+    );
+    await db.query("update profiles set bio='golfista y medio cachonda' where id=$1", [a]);
+    await db.query("update profiles set city='León' where id=$1", [a]);
+    await db.exec("reset role");
+    assert.equal(
+      (
+        await db.query(
+          "select 1 from moderation_flags where source='profiles.bio'",
+        )
+      ).rows.length,
+      1,
+    );
+    await as(a);
+  });
+
+  await t.test("partidas: descripción", async () => {
+    await assert.rejects(
+      db.query(
+        `insert into games(host_id,club_id,starts_at,holes,capacity,format,kind,description,access_conditions,join_mode,privacy) values($1,$2,now()+interval '7 days',18,3,'Casual','social','después sexo casual','Ninguna','open','public')`,
+        [a, club],
+      ),
+      /reglas de la comunidad/,
+    );
   });
 
   await t.test("usuarios normales no ven las reglas ni las marcas", async () => {
