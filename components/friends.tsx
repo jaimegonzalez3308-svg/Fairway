@@ -4,6 +4,7 @@ import {
   ArrowUpRight,
   Check,
   Clock3,
+  RefreshCw,
   Search,
   UserPlus,
   Users,
@@ -210,6 +211,7 @@ export function Friends({
             disabled={friends.loading}
             onClick={() => void friends.refresh()}
           >
+            <RefreshCw size={16} />
             Actualizar solicitudes
           </Button>
         }

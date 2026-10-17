@@ -1,0 +1,692 @@
+/* Editorial rhythm: broad opening statements, close-knit controls, quiet detail.
+   Keep DOM order, data, and interactions intact as the grid changes at desktop. */
+main {
+  padding-bottom: 48px;
+}
+
+.section-heading {
+  align-items: flex-end;
+  margin: 44px 0 28px;
+  padding-bottom: 24px;
+  border-bottom-width: 1px;
+}
+
+.section-heading h1 {
+  font-size: clamp(30px, 3.1vw, 45px);
+  max-width: 24ch;
+}
+
+.section-heading .eyebrow {
+  margin-bottom: 14px;
+}
+
+.section-heading p {
+  max-width: 60ch;
+  margin-top: 12px;
+}
+
+.golf-hero {
+  height: auto;
+  min-height: 290px;
+  margin-bottom: 38px;
+}
+
+.hero-content {
+  padding: 38px 40px;
+}
+
+.hero-content h2 {
+  font-size: clamp(28px, 3vw, 40px);
+  line-height: 1.15;
+  margin: 20px 0 14px;
+}
+
+.hero-content button {
+  margin-top: 25px;
+}
+
+.discover-toolbar {
+  margin-top: 12px;
+}
+
+.discovery-subline {
+  margin: 12px 0 26px;
+}
+
+.guest-feature-grid {
+  gap: 0;
+  margin: 42px 0 58px;
+}
+
+.guest-feature-grid .panel {
+  background: transparent;
+  border: 0;
+  border-left: 1px solid var(--line);
+  padding: 8px 24px;
+}
+
+.guest-feature-grid .panel:first-child {
+  border-left: 0;
+  padding-left: 0;
+}
+
+.guest-feature-grid h3 {
+  font-size: 18px;
+}
+
+.guest-feature-grid .panel:first-child h3 {
+  font-size: 23px;
+}
+
+.guest-feature-grid svg {
+  margin-bottom: 17px;
+}
+
+.guest-feature-grid p {
+  margin-top: 8px;
+}
+
+.guest-join {
+  padding: 32px;
+}
+
+.guest-join h2 {
+  max-width: 26ch;
+}
+
+.club-grid {
+  gap: 38px 24px;
+}
+
+.club-card {
+  margin-bottom: 0;
+}
+
+.club-card:not(:first-child) {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.club-card:not(:first-child) .club-content {
+  padding: 20px 0 26px;
+}
+
+.club-content .eyebrow {
+  margin-bottom: 9px;
+}
+
+.headline-stats {
+  gap: 0;
+  align-items: stretch;
+  margin: 28px 0 40px;
+}
+
+.headline-stats .stat-card {
+  border: 0;
+  border-left: 1px solid var(--line);
+  background: transparent;
+  justify-content: flex-end;
+}
+
+.headline-stats .stat-card:first-child {
+  background: var(--forest);
+  border: 0;
+  padding: 28px;
+}
+
+.headline-stats .stat-card:first-child span,
+.headline-stats .stat-card:first-child svg {
+  color: #d4dec8;
+}
+
+.headline-stats .stat-card:first-child strong {
+  color: var(--paper);
+  font-size: clamp(36px, 4vw, 54px);
+  letter-spacing: -0.06em;
+}
+
+.stat-grid.compact {
+  gap: 0 24px;
+  margin-top: 32px;
+}
+
+.stat-grid.compact .stat-card {
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  padding: 20px 0 26px;
+}
+
+.stat-grid.compact .stat-card strong {
+  margin-top: 8px;
+}
+
+.round-history {
+  border-top: 3px solid var(--forest);
+}
+
+.round-history .panel-heading {
+  margin-bottom: 10px;
+}
+
+.round-history .panel-heading h3 {
+  font-size: 24px;
+}
+
+.rounds-table tbody tr:first-child td {
+  background: var(--wash);
+  padding-top: 26px;
+  padding-bottom: 26px;
+}
+
+.rounds-table tbody tr:first-child .total-score {
+  font-size: 32px;
+  font-weight: 650;
+}
+
+.profile-friends-link.panel {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  padding: 20px 0;
+  margin-bottom: 38px;
+}
+
+.profile-cover-content h2 {
+  font-size: clamp(27px, 3vw, 38px);
+  font-weight: 700;
+}
+
+.friends-intro.panel {
+  padding: 4px 0 24px;
+  border: 0;
+  background: transparent;
+  max-width: 660px;
+  margin: 12px 0 32px;
+}
+
+.friends-intro h2 {
+  font-size: 23px;
+}
+
+.friends-search {
+  max-width: 760px;
+  padding: 28px;
+  background: var(--forest);
+  border-radius: var(--radius);
+  margin: 16px 0 36px;
+}
+
+.friends-search > label {
+  color: var(--paper);
+  font-size: 18px;
+  font-weight: 650;
+  margin-bottom: 15px;
+}
+
+.friends-search > div {
+  background: var(--paper);
+  border-radius: var(--radius-control);
+}
+
+.friends-search small {
+  color: #cbd6be;
+  margin-top: 13px;
+}
+
+.friend-card.panel {
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--line);
+  padding: 22px 0 12px;
+}
+
+.friend-card-actions {
+  padding-top: 10px;
+}
+
+.stories-panel {
+  padding: 30px 0 28px;
+  border: 0;
+  border-top: 3px solid var(--forest);
+  background: transparent;
+  margin-bottom: 40px;
+}
+
+.stories-heading h2 {
+  font-size: clamp(25px, 2.7vw, 34px);
+  font-weight: 650;
+}
+
+.composer {
+  margin-top: 16px;
+  margin-bottom: 34px;
+}
+
+.post {
+  margin-bottom: 12px;
+}
+
+.post > p {
+  margin: 24px 0 16px;
+  color: var(--ink);
+  line-height: 1.8;
+}
+
+.party-board-heading {
+  margin-top: 36px;
+  margin-bottom: 10px;
+}
+
+.party-filters.panel {
+  padding: 12px 0 22px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  margin-bottom: 28px;
+}
+
+.party-month-panel {
+  border-top: 3px solid var(--forest);
+}
+
+.party-day-agenda {
+  margin-top: 48px;
+}
+
+.party-card-grid {
+  gap: 14px 28px;
+}
+
+.party-card:not(:first-child) {
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--line);
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.chat-sidebar h3 {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.chat-contact.active {
+  box-shadow: inset 3px 0 var(--forest);
+  background: var(--wash);
+}
+
+.chat-title > strong {
+  font-size: 22px;
+  font-weight: 650;
+}
+
+.settings-grid > .panel {
+  border-top: 3px solid var(--forest);
+}
+
+.settings-grid > .panel > h3:first-child {
+  font-size: 27px;
+}
+
+.settings-grid .privacy {
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+
+.settings-grid .danger-zone {
+  margin-top: 36px;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--line);
+  padding: 24px 0 0;
+}
+
+.public-privacy-grid > .panel:first-child {
+  background: var(--forest);
+  color: var(--paper);
+  padding: 32px;
+}
+
+.public-privacy-grid > .panel:first-child p,
+.public-privacy-grid > .panel:first-child svg {
+  color: #d4dec8;
+}
+
+.public-privacy-grid > .panel:first-child h3 {
+  font-size: 28px;
+}
+
+.public-privacy-grid > .panel:not(:first-child) {
+  border: 0;
+  border-top: 1px solid var(--line);
+  background: transparent;
+  padding-left: 0;
+  padding-right: 16px;
+}
+
+@media (min-width: 901px) {
+  .guest-feature-grid,
+  .welcome-features {
+    grid-template-columns: 1.35fr 1fr 1fr;
+  }
+
+  .guest-join {
+    width: 88%;
+    margin-left: auto;
+    margin-bottom: 48px;
+  }
+
+  .club-grid > .club-card:first-child {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    margin-bottom: 12px;
+  }
+
+  .club-card:first-child .club-photo {
+    height: 100%;
+    min-height: 320px;
+  }
+
+  .club-card:first-child .club-content {
+    padding: 38px;
+  }
+
+  .club-card:first-child h2 {
+    font-size: clamp(28px, 3vw, 38px);
+    line-height: 1.12;
+    max-width: 18ch;
+  }
+
+  .headline-stats {
+    grid-template-columns: 1.55fr repeat(3, minmax(0, 1fr));
+  }
+
+  main .chart {
+    width: calc(100% - 48px);
+    margin: 0 0 40px 48px;
+    padding: 32px;
+  }
+
+  main[data-page="scores"] .round-history {
+    width: calc(100% - 48px);
+    margin-left: 48px;
+    padding: 32px;
+  }
+
+  .profile-cover-photo {
+    height: 205px;
+  }
+
+  .profile-cover-content {
+    padding-bottom: 32px;
+  }
+
+  .profile-friends-link.panel {
+    width: 82%;
+    margin-left: auto;
+  }
+
+  .friend-grid {
+    max-width: 900px;
+    gap: 12px 38px;
+    margin-left: 32px;
+  }
+
+  main[data-page="comunidad"] > .tabs,
+  main[data-page="comunidad"] .composer,
+  main[data-page="comunidad"] .post,
+  main[data-page="comunidad"] > .empty {
+    width: calc(100% - 64px);
+    max-width: 800px;
+    margin-left: 64px;
+  }
+
+  .party-month-toolbar {
+    align-items: flex-end;
+    padding: 30px 26px 14px;
+  }
+
+  .party-month-toolbar h2 {
+    font-size: 38px;
+  }
+
+  .party-day-agenda {
+    width: 86%;
+    margin-left: auto;
+  }
+
+  .party-card-grid > .party-card:first-child {
+    grid-column: 1 / -1;
+    border-left: 3px solid var(--forest);
+    padding: 30px;
+    margin-bottom: 14px;
+  }
+
+  .party-card:first-child h3 {
+    font-size: 27px;
+  }
+
+  .chat-layout {
+    grid-template-columns: 230px minmax(0, 1fr);
+    min-height: 640px;
+  }
+
+  .chat-title {
+    padding: 28px 32px 20px;
+  }
+
+  .chat-main > .empty {
+    text-align: left;
+    padding: 48px;
+  }
+
+  .chat-main > .empty h3 {
+    font-size: 30px;
+    max-width: 20ch;
+  }
+
+  .settings-grid {
+    grid-template-columns: minmax(0, 1.45fr) minmax(0, 0.85fr);
+    gap: 48px;
+    align-items: start;
+  }
+
+  .settings-grid > .panel {
+    padding: 32px;
+  }
+
+  .settings-grid > div:last-child {
+    padding-top: 18px;
+  }
+
+  .public-privacy-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px 28px;
+  }
+
+  .public-privacy-grid > .panel:first-child {
+    grid-column: 1 / -1;
+    padding: 38px;
+    margin-bottom: 18px;
+  }
+
+  .public-privacy-grid > .panel:first-child p {
+    max-width: 66ch;
+  }
+
+  .welcome {
+    text-align: left;
+    padding-top: 64px;
+  }
+
+  .welcome h1 {
+    font-size: clamp(48px, 5vw, 76px);
+    max-width: 18ch;
+  }
+
+  .welcome > p {
+    margin: 24px 0 30px;
+  }
+
+  .welcome-image {
+    width: 92%;
+    height: 360px;
+    margin: 48px 0 0 auto;
+  }
+}
+
+@media (min-width: 1181px) {
+  main[data-page="descubrir"] .profile-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px 24px;
+  }
+
+  main[data-page="descubrir"] .golfer-card:first-child {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+  }
+
+  main[data-page="descubrir"] .golfer-card:first-child .golfer-photo {
+    height: 100%;
+    min-height: 310px;
+  }
+
+  main[data-page="descubrir"] .golfer-card:first-child .golfer-details {
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  main[data-page="descubrir"] .golfer-card:first-child .golfer-name button {
+    font-size: 28px;
+  }
+
+  main[data-page="descubrir"] .golfer-card:first-child .golfer-bio {
+    -webkit-line-clamp: 3;
+  }
+}
+
+@media (max-width: 900px) {
+  .section-heading {
+    margin-top: 30px;
+  }
+
+  .section-heading h1 {
+    font-size: 30px;
+  }
+
+  .hero-content {
+    padding: 30px;
+  }
+
+  .headline-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 0;
+  }
+
+  .headline-stats .stat-card {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 740px) {
+  .section-heading {
+    align-items: flex-start;
+    gap: 14px;
+    padding-bottom: 20px;
+    margin-bottom: 24px;
+  }
+
+  .section-heading .eyebrow {
+    margin-bottom: 10px;
+  }
+
+  .golf-hero {
+    min-height: 280px;
+    margin-bottom: 28px;
+  }
+
+  .hero-content {
+    padding: 27px 22px;
+  }
+
+  .hero-content h2 {
+    font-size: 28px;
+  }
+
+  .hero-content p {
+    max-width: 28ch;
+  }
+
+  .guest-feature-grid {
+    margin: 30px 0 40px;
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .guest-feature-grid .panel,
+  .guest-feature-grid .panel:first-child {
+    border: 0;
+    border-top: 1px solid var(--line);
+    padding: 22px 0;
+  }
+
+  .guest-feature-grid .panel:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  .guest-join {
+    padding: 24px;
+  }
+
+  .guest-join h2 {
+    font-size: 24px;
+  }
+
+  .club-grid {
+    gap: 30px;
+  }
+
+  .round-history .panel-heading h3 {
+    font-size: 21px;
+  }
+
+  .friends-search {
+    padding: 22px;
+  }
+
+  .friends-intro h2 {
+    font-size: 21px;
+  }
+
+  .stories-panel {
+    padding: 22px 0;
+    margin-bottom: 28px;
+  }
+
+  .stories-heading {
+    gap: 10px;
+  }
+
+  .stories-expiry {
+    padding: 5px 7px;
+    font-size: 9px;
+  }
+
+  .settings-grid > div:last-child {
+    margin-top: 22px;
+  }
+
+  .public-privacy-grid > .panel:first-child {
+    padding: 26px;
+  }
+}

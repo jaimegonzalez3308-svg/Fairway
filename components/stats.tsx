@@ -51,10 +51,10 @@ export function Stats({ data }: { data: FairwayData }) {
           <option value="all">Todo el historial</option>
         </select>
       </div>
-      <div className="stat-grid">
+      <div className="stat-grid headline-stats">
         {[
-          [Flag, "Handicap declarado", data.me.handicap ?? "—"],
           [Target, "Score promedio", average],
+          [Flag, "Handicap declarado", data.me.handicap ?? "—"],
           [Trophy, "Mejor ronda", totals.length ? Math.min(...totals) : "—"],
           [TrendingDown, "Rondas registradas", totals.length],
         ].map(([Icon, label, value]) => {

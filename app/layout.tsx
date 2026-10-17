@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import "./clubhouse.css";
+import "./hierarchy.css";
 
 const inter = localFont({
   src: [

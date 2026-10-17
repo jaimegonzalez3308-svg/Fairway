@@ -786,7 +786,7 @@ export default function FairwayApp() {
             )}
           </div>
         </header>
-        <main>
+        <main data-page={page}>
           {data.demo && (
             <div className="demo-notice">
               <span>
