@@ -202,7 +202,8 @@ export function Friends({
   return (
     <>
       <SectionHeading
-        title="Amigos"
+        eyebrow="EL GOLF SE COMPARTE"
+        title="Tu círculo de golf"
         description="Busca a tus conocidos por nombre y encuentra nuevas personas con quienes compartir una ronda."
         action={
           <Button
@@ -220,7 +221,7 @@ export function Friends({
           <Users size={25} />
         </span>
         <div>
-          <h2>Agrega a tus compañeros de golf</h2>
+          <h2>La próxima ronda, entre amigos.</h2>
           <p>
             Envía una solicitud desde cualquier perfil. La amistad se confirma
             cuando la otra persona la acepta.

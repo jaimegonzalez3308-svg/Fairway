@@ -1,566 +1,692 @@
-/* Member screens use predictable grids and compact, task-focused headings. */
-.app-shell .workspace > main {
-  max-width: 1320px;
-  padding: 0 32px 40px;
+/* Editorial rhythm: broad opening statements, close-knit controls, quiet detail.
+   Keep DOM order, data, and interactions intact as the grid changes at desktop. */
+main {
+  padding-bottom: 48px;
 }
-.app-shell .topbar {
-  height: 66px;
-  padding: 0 32px;
+
+.section-heading {
+  align-items: flex-end;
+  margin: 44px 0 28px;
+  padding-bottom: 24px;
+  border-bottom-width: 1px;
 }
-.app-shell .section-heading {
-  align-items: center;
-  margin: 28px 0 24px;
-  padding-bottom: 0;
-  border: 0;
+
+.section-heading h1 {
+  font-size: clamp(30px, 3.1vw, 45px);
+  max-width: 24ch;
 }
-.app-shell .section-heading h1 {
-  font-size: 28px;
-  line-height: 1.25;
-  max-width: none;
+
+.section-heading .eyebrow {
+  margin-bottom: 14px;
 }
-.app-shell .section-heading .eyebrow {
-  font-size: 10px;
-  margin-bottom: 7px;
+
+.section-heading p {
+  max-width: 60ch;
+  margin-top: 12px;
 }
-.app-shell .section-heading p {
-  font-size: 13px;
-  line-height: 1.6;
-  margin-top: 7px;
-  max-width: 64ch;
+
+.golf-hero {
+  height: auto;
+  min-height: 290px;
+  margin-bottom: 38px;
 }
-.app-shell .button {
-  min-height: 40px;
-  font-size: 12px;
+
+.hero-content {
+  padding: 38px 40px;
 }
-.app-shell .panel {
-  padding: 22px;
+
+.hero-content h2 {
+  font-size: clamp(28px, 3vw, 40px);
+  line-height: 1.15;
+  margin: 20px 0 14px;
 }
-.app-shell .panel-heading {
-  padding-bottom: 0;
-  border: 0;
-  margin-bottom: 18px;
+
+.hero-content button {
+  margin-top: 25px;
 }
-.app-shell .panel-heading h3 {
-  font-size: 18px;
+
+.discover-toolbar {
+  margin-top: 12px;
 }
-.app-shell .sidebar {
-  padding-top: 25px;
+
+.discovery-subline {
+  margin: 12px 0 26px;
 }
-.app-shell .brand {
-  font-size: 30px;
+
+.guest-feature-grid {
+  gap: 0;
+  margin: 42px 0 58px;
 }
-.app-shell .sidebar-city {
-  margin-top: 17px;
-  margin-bottom: 24px;
-}
-.app-shell .nav-item {
-  min-height: 44px;
-  font-size: 12px;
-}
-.app-shell .nav-caption {
-  font-size: 10px;
-  margin-bottom: 10px;
-}
-.sidebar-today {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  min-height: 44px;
-  padding: 12px;
-  margin-top: 20px;
-  border: 1px solid var(--line);
-  border-radius: 7px;
-  text-align: left;
-  font-size: 12px;
-  color: var(--forest);
-}
-.sidebar-today:hover {
-  background: var(--wash);
-}
-.sidebar-today > svg:last-child {
-  margin-left: auto;
-}
-.discovery-actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 18px 20px;
-  margin-bottom: 24px;
-  background: #edf4ef;
-  border: 1px solid #dce7df;
-  border-radius: 9px;
-}
-.discovery-actions h2 {
-  font-size: 15px;
-  line-height: 1.4;
-}
-.discovery-actions p {
-  font-size: 12px;
-  color: var(--muted);
-  margin-top: 4px;
-}
-.discovery-action-buttons {
-  display: flex;
-  gap: 8px;
-  flex-shrink: 0;
-}
-.app-shell .discover-toolbar {
-  gap: 18px;
-  margin-top: 0;
-}
-.app-shell .discover-toolbar .tabs {
-  gap: 22px;
-}
-.app-shell .search-input {
-  border: 1px solid var(--line);
-  border-radius: 7px;
-  background: white;
-  padding: 0 12px;
-  min-width: 180px;
-}
-.app-shell .search-input input {
-  width: 100%;
-  min-height: 40px;
-  font-size: 12px;
-}
-.app-shell .discovery-subline {
-  margin: 16px 0;
-  color: var(--muted);
-}
-.app-shell .discovery-subline p {
-  font-size: 12px;
-}
-.app-shell .profile-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-}
-.app-shell .golfer-card {
-  padding: 20px;
-}
-.golfer-card-heading {
-  display: flex;
-  align-items: center;
-  gap: 13px;
-  min-width: 0;
-}
-.golfer-avatar {
-  width: 60px;
-  height: 60px;
-  flex: 0 0 auto;
-  border-radius: 50%;
-  overflow: hidden;
-  padding: 0;
-  background: var(--wash);
-}
-.golfer-avatar img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.golfer-identity {
-  min-width: 0;
-  flex: 1;
-}
-.golfer-identity > button {
-  display: inline-flex;
-  gap: 6px;
-  align-items: center;
-  font-size: 16px;
-  line-height: 1.4;
-  font-weight: 600;
-  text-align: left;
-  padding: 0;
-  overflow-wrap: anywhere;
-}
-.golfer-identity > button svg {
-  flex: 0 0 auto;
-  color: #44764e;
-}
-.golfer-identity > span {
-  display: block;
-  color: var(--muted);
-  font-size: 12px;
-  margin-top: 4px;
-}
-.golfer-card-heading .save-profile {
-  position: static;
-  flex: 0 0 auto;
-  width: 40px;
-  height: 40px;
-  border: 0;
-  border-radius: 7px;
-  backdrop-filter: none;
-  color: #6b7970;
+
+.guest-feature-grid .panel {
   background: transparent;
+  border: 0;
+  border-left: 1px solid var(--line);
+  padding: 8px 24px;
 }
-.golfer-card-heading .save-profile:hover {
-  background: var(--wash);
+
+.guest-feature-grid .panel:first-child {
+  border-left: 0;
+  padding-left: 0;
 }
-.golfer-card-heading .save-profile.saved {
-  background: #edf3e8;
-  color: var(--forest);
-}
-.app-shell .golfer-details {
-  padding: 16px 0 0;
-}
-.app-shell .golfer-meta {
-  justify-content: flex-start;
-  flex-wrap: wrap;
-  gap: 9px;
-}
-.app-shell .golfer-meta .match-pill {
-  position: static;
-  pointer-events: auto;
-  font-size: 10px;
-  padding: 5px 8px;
-  border-radius: 5px;
-  background: #edf5ee;
-  color: #42664b;
-}
-.app-shell .handicap-chip {
-  font-size: 10px;
-  padding: 4px 7px;
-}
-.app-shell .golfer-meta .rating {
-  margin-left: auto;
-  font-size: 12px;
-}
-.app-shell .golfer-club {
-  font-size: 12px;
-  color: var(--muted);
-  margin: 14px 0 8px;
-}
-.app-shell .golfer-club svg {
-  flex-shrink: 0;
-}
-.app-shell .golfer-bio {
-  font-size: 13px;
-  line-height: 1.65;
-  min-height: 43px;
-}
-.app-shell .golfer-tags {
-  margin: 12px 0 16px;
-  gap: 8px;
-}
-.app-shell .golfer-tags span {
-  font-size: 11px;
-  color: var(--muted);
-  background: #f4f6f4;
-  padding: 5px 8px;
-}
-.app-shell .golfer-actions {
-  padding-top: 12px;
-  border-color: var(--line);
-}
-.app-shell .pass-button,
-.app-shell .like-button {
-  width: 42px;
-  height: 42px;
-}
-.app-shell .pass-button:hover,
-.app-shell .like-button:hover {
-  transform: none;
-}
-.app-shell .profile-info-button {
-  min-height: 42px;
-  font-size: 12px;
-  color: var(--forest);
-}
-.app-shell .discovery-footnote {
-  font-size: 11px;
-  margin-top: 16px;
-  color: var(--muted);
-}
-.app-shell .next-section-heading {
-  margin: 30px 0 18px;
-}
-.app-shell .next-section-heading h2 {
-  font-size: 20px;
-}
-.app-shell .inline-link {
-  font-size: 12px;
-}
-.app-shell .club-grid {
-  gap: 20px;
-}
-.app-shell .club-card,
-.app-shell .party-month-panel {
-  padding: 0;
-}
-.app-shell .club-content {
-  padding: 20px;
-}
-.app-shell .club-content h2 {
-  font-size: 20px;
-  line-height: 1.3;
-}
-.app-shell .club-content p {
-  font-size: 13px;
-}
-.app-shell .headline-stats {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
-  margin: 0 0 22px;
-}
-.app-shell .stat-card {
-  padding: 20px;
-  border: 1px solid var(--line);
-}
-.app-shell .stat-card span {
-  color: var(--muted);
-  font-size: 12px;
-}
-.app-shell .stat-card strong {
-  color: var(--ink);
-  font-family: inherit;
-  font-size: 29px;
-  font-weight: 600;
-  letter-spacing: -0.025em;
-}
-.app-shell .stat-grid.compact {
-  gap: 14px;
-  margin-top: 22px;
-}
-.app-shell .chart,
-.app-shell .round-history {
-  width: 100%;
-  margin-left: 0;
-}
-.app-shell .rounds-table td {
-  padding-top: 16px;
-  padding-bottom: 16px;
-}
-.app-shell .profile-cover-photo {
-  height: 150px;
-}
-.app-shell .profile-cover-content h2 {
-  font-size: 25px;
-}
-.app-shell .profile-friends-link {
-  margin-bottom: 20px;
-}
-.app-shell .friends-intro {
-  padding: 18px 20px;
-  margin-bottom: 20px;
-}
-.app-shell .friends-intro h2 {
+
+.guest-feature-grid h3 {
   font-size: 18px;
 }
-.app-shell .friends-search {
-  max-width: 720px;
-  margin: 20px 0 24px;
-}
-.app-shell .friends-search > label {
-  font-size: 13px;
-  color: var(--ink);
-  margin-bottom: 9px;
-}
-.app-shell .friend-grid {
-  gap: 16px;
-}
-.app-shell .friend-card {
-  margin-bottom: 0;
-}
-.app-shell .stories-panel {
-  margin-bottom: 22px;
-}
-.app-shell .stories-heading {
-  margin-bottom: 18px;
-}
-.app-shell .stories-heading h2 {
-  font-size: 20px;
-  margin-top: 4px;
-}
-.app-shell .stories-rail {
-  gap: 16px;
-}
-.app-shell .composer {
-  margin-top: 20px;
-  margin-bottom: 20px;
-}
-.app-shell .post {
-  margin-bottom: 16px;
-}
-.app-shell .post > p {
-  margin: 18px 0;
-  font-size: 14px;
-  line-height: 1.7;
-}
-.app-shell .party-board-heading {
-  margin: 0 0 18px;
-}
-.app-shell .party-filters {
-  padding: 16px;
-  margin-bottom: 20px;
-}
-.app-shell .party-card-grid {
-  gap: 16px;
-}
-.app-shell .party-card {
-  padding: 20px;
-  margin-bottom: 0;
-}
-.app-shell .party-card h3 {
-  font-size: 19px;
-}
-.app-shell .party-month-toolbar {
-  padding: 20px;
-}
-.app-shell .party-month-toolbar h2 {
+
+.guest-feature-grid .panel:first-child h3 {
   font-size: 23px;
 }
-.app-shell .party-day-agenda {
-  margin-top: 24px;
+
+.guest-feature-grid svg {
+  margin-bottom: 17px;
 }
-.app-shell .chat-layout {
-  grid-template-columns: 260px minmax(0, 1fr);
-  min-height: 570px;
+
+.guest-feature-grid p {
+  margin-top: 8px;
 }
-.app-shell .chat-title {
-  padding: 18px 22px;
+
+.guest-join {
+  padding: 32px;
 }
-.app-shell .chat-title > strong {
+
+.guest-join h2 {
+  max-width: 26ch;
+}
+
+.club-grid {
+  gap: 38px 24px;
+}
+
+.club-card {
+  margin-bottom: 0;
+}
+
+.club-card:not(:first-child) {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.club-card:not(:first-child) .club-content {
+  padding: 20px 0 26px;
+}
+
+.club-content .eyebrow {
+  margin-bottom: 9px;
+}
+
+.headline-stats {
+  gap: 0;
+  align-items: stretch;
+  margin: 28px 0 40px;
+}
+
+.headline-stats .stat-card {
+  border: 0;
+  border-left: 1px solid var(--line);
+  background: transparent;
+  justify-content: flex-end;
+}
+
+.headline-stats .stat-card:first-child {
+  background: var(--forest);
+  border: 0;
+  padding: 28px;
+}
+
+.headline-stats .stat-card:first-child span,
+.headline-stats .stat-card:first-child svg {
+  color: #d4dec8;
+}
+
+.headline-stats .stat-card:first-child strong {
+  color: var(--paper);
+  font-size: clamp(36px, 4vw, 54px);
+  letter-spacing: -0.06em;
+}
+
+.stat-grid.compact {
+  gap: 0 24px;
+  margin-top: 32px;
+}
+
+.stat-grid.compact .stat-card {
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  padding: 20px 0 26px;
+}
+
+.stat-grid.compact .stat-card strong {
+  margin-top: 8px;
+}
+
+.round-history {
+  border-top: 3px solid var(--forest);
+}
+
+.round-history .panel-heading {
+  margin-bottom: 10px;
+}
+
+.round-history .panel-heading h3 {
+  font-size: 24px;
+}
+
+.rounds-table tbody tr:first-child td {
+  background: var(--wash);
+  padding-top: 26px;
+  padding-bottom: 26px;
+}
+
+.rounds-table tbody tr:first-child .total-score {
+  font-size: 32px;
+  font-weight: 650;
+}
+
+.profile-friends-link.panel {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  padding: 20px 0;
+  margin-bottom: 38px;
+}
+
+.profile-cover-content h2 {
+  font-size: clamp(27px, 3vw, 38px);
+  font-weight: 700;
+}
+
+.friends-intro.panel {
+  padding: 4px 0 24px;
+  border: 0;
+  background: transparent;
+  max-width: 660px;
+  margin: 12px 0 32px;
+}
+
+.friends-intro h2 {
+  font-size: 23px;
+}
+
+.friends-search {
+  max-width: 760px;
+  padding: 28px;
+  background: var(--forest);
+  border-radius: var(--radius);
+  margin: 16px 0 36px;
+}
+
+.friends-search > label {
+  color: var(--paper);
   font-size: 18px;
+  font-weight: 650;
+  margin-bottom: 15px;
 }
-.app-shell .chat-sidebar h3 {
+
+.friends-search > div {
+  background: var(--paper);
+  border-radius: var(--radius-control);
+}
+
+.friends-search small {
+  color: #cbd6be;
+  margin-top: 13px;
+}
+
+.friend-card.panel {
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--line);
+  padding: 22px 0 12px;
+}
+
+.friend-card-actions {
+  padding-top: 10px;
+}
+
+.stories-panel {
+  padding: 30px 0 28px;
+  border: 0;
+  border-top: 3px solid var(--forest);
+  background: transparent;
+  margin-bottom: 40px;
+}
+
+.stories-heading h2 {
+  font-size: clamp(25px, 2.7vw, 34px);
+  font-weight: 650;
+}
+
+.composer {
+  margin-top: 16px;
+  margin-bottom: 34px;
+}
+
+.post {
+  margin-bottom: 12px;
+}
+
+.post > p {
+  margin: 24px 0 16px;
+  color: var(--ink);
+  line-height: 1.8;
+}
+
+.party-board-heading {
+  margin-top: 36px;
+  margin-bottom: 10px;
+}
+
+.party-filters.panel {
+  padding: 12px 0 22px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  margin-bottom: 28px;
+}
+
+.party-month-panel {
+  border-top: 3px solid var(--forest);
+}
+
+.party-day-agenda {
+  margin-top: 48px;
+}
+
+.party-card-grid {
+  gap: 14px 28px;
+}
+
+.party-card:not(:first-child) {
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--line);
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.chat-sidebar h3 {
   font-size: 12px;
+  color: var(--muted);
 }
-.app-shell .chat-contact strong {
-  font-size: 13px;
+
+.chat-contact.active {
+  box-shadow: inset 3px 0 var(--forest);
+  background: var(--wash);
 }
-.app-shell .settings-grid {
-  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
-  gap: 22px;
-  align-items: start;
+
+.chat-title > strong {
+  font-size: 22px;
+  font-weight: 650;
 }
-.app-shell .settings-grid h3 {
-  font-size: 18px;
+
+.settings-grid > .panel {
+  border-top: 3px solid var(--forest);
 }
-.app-shell .settings-grid .danger-zone {
-  margin-top: 20px;
+
+.settings-grid > .panel > h3:first-child {
+  font-size: 27px;
 }
-.app-shell .hero-skeleton {
-  height: 84px;
+
+.settings-grid .privacy {
+  background: transparent;
+  border: 0;
+  padding: 0;
 }
-.app-shell .card-skeleton {
-  height: 300px;
+
+.settings-grid .danger-zone {
+  margin-top: 36px;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--line);
+  padding: 24px 0 0;
 }
-@media (min-width: 1600px) {
-  .app-shell .profile-grid {
+
+.public-privacy-grid > .panel:first-child {
+  background: var(--forest);
+  color: var(--paper);
+  padding: 32px;
+}
+
+.public-privacy-grid > .panel:first-child p,
+.public-privacy-grid > .panel:first-child svg {
+  color: #d4dec8;
+}
+
+.public-privacy-grid > .panel:first-child h3 {
+  font-size: 28px;
+}
+
+.public-privacy-grid > .panel:not(:first-child) {
+  border: 0;
+  border-top: 1px solid var(--line);
+  background: transparent;
+  padding-left: 0;
+  padding-right: 16px;
+}
+
+@media (min-width: 901px) {
+  .guest-feature-grid,
+  .welcome-features {
+    grid-template-columns: 1.35fr 1fr 1fr;
+  }
+
+  .guest-join {
+    width: 88%;
+    margin-left: auto;
+    margin-bottom: 48px;
+  }
+
+  .club-grid > .club-card:first-child {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    margin-bottom: 12px;
+  }
+
+  .club-card:first-child .club-photo {
+    height: 100%;
+    min-height: 320px;
+  }
+
+  .club-card:first-child .club-content {
+    padding: 38px;
+  }
+
+  .club-card:first-child h2 {
+    font-size: clamp(28px, 3vw, 38px);
+    line-height: 1.12;
+    max-width: 18ch;
+  }
+
+  .headline-stats {
+    grid-template-columns: 1.55fr repeat(3, minmax(0, 1fr));
+  }
+
+  main .chart {
+    width: calc(100% - 48px);
+    margin: 0 0 40px 48px;
+    padding: 32px;
+  }
+
+  main[data-page="scores"] .round-history {
+    width: calc(100% - 48px);
+    margin-left: 48px;
+    padding: 32px;
+  }
+
+  .profile-cover-photo {
+    height: 205px;
+  }
+
+  .profile-cover-content {
+    padding-bottom: 32px;
+  }
+
+  .profile-friends-link.panel {
+    width: 82%;
+    margin-left: auto;
+  }
+
+  .friend-grid {
+    max-width: 900px;
+    gap: 12px 38px;
+    margin-left: 32px;
+  }
+
+  main[data-page="comunidad"] > .tabs,
+  main[data-page="comunidad"] .composer,
+  main[data-page="comunidad"] .post,
+  main[data-page="comunidad"] > .empty {
+    width: calc(100% - 64px);
+    max-width: 800px;
+    margin-left: 64px;
+  }
+
+  .party-month-toolbar {
+    align-items: flex-end;
+    padding: 30px 26px 14px;
+  }
+
+  .party-month-toolbar h2 {
+    font-size: 38px;
+  }
+
+  .party-day-agenda {
+    width: 86%;
+    margin-left: auto;
+  }
+
+  .party-card-grid > .party-card:first-child {
+    grid-column: 1 / -1;
+    border-left: 3px solid var(--forest);
+    padding: 30px;
+    margin-bottom: 14px;
+  }
+
+  .party-card:first-child h3 {
+    font-size: 27px;
+  }
+
+  .chat-layout {
+    grid-template-columns: 230px minmax(0, 1fr);
+    min-height: 640px;
+  }
+
+  .chat-title {
+    padding: 28px 32px 20px;
+  }
+
+  .chat-main > .empty {
+    text-align: left;
+    padding: 48px;
+  }
+
+  .chat-main > .empty h3 {
+    font-size: 30px;
+    max-width: 20ch;
+  }
+
+  .settings-grid {
+    grid-template-columns: minmax(0, 1.45fr) minmax(0, 0.85fr);
+    gap: 48px;
+    align-items: start;
+  }
+
+  .settings-grid > .panel {
+    padding: 32px;
+  }
+
+  .settings-grid > div:last-child {
+    padding-top: 18px;
+  }
+
+  .public-privacy-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px 28px;
+  }
+
+  .public-privacy-grid > .panel:first-child {
+    grid-column: 1 / -1;
+    padding: 38px;
+    margin-bottom: 18px;
+  }
+
+  .public-privacy-grid > .panel:first-child p {
+    max-width: 66ch;
+  }
+
+  .welcome {
+    text-align: left;
+    padding-top: 64px;
+  }
+
+  .welcome h1 {
+    font-size: clamp(48px, 5vw, 76px);
+    max-width: 18ch;
+  }
+
+  .welcome > p {
+    margin: 24px 0 30px;
+  }
+
+  .welcome-image {
+    width: 92%;
+    height: 360px;
+    margin: 48px 0 0 auto;
   }
 }
-@media (max-width: 1100px) {
-  .app-shell .workspace > main {
-    padding-left: 24px;
-    padding-right: 24px;
-  }
-  .discovery-actions {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 14px;
-  }
-  .app-shell .profile-grid {
-    grid-template-columns: 1fr;
-  }
-  .app-shell .headline-stats {
+
+@media (min-width: 1181px) {
+  main[data-page="descubrir"] .profile-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px 24px;
   }
-  .app-shell .settings-grid {
+
+  main[data-page="descubrir"] .golfer-card:first-child {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+  }
+
+  main[data-page="descubrir"] .golfer-card:first-child .golfer-photo {
+    height: 100%;
+    min-height: 310px;
+  }
+
+  main[data-page="descubrir"] .golfer-card:first-child .golfer-details {
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  main[data-page="descubrir"] .golfer-card:first-child .golfer-name button {
+    font-size: 28px;
+  }
+
+  main[data-page="descubrir"] .golfer-card:first-child .golfer-bio {
+    -webkit-line-clamp: 3;
+  }
+}
+
+@media (max-width: 900px) {
+  .section-heading {
+    margin-top: 30px;
+  }
+
+  .section-heading h1 {
+    font-size: 30px;
+  }
+
+  .hero-content {
+    padding: 30px;
+  }
+
+  .headline-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 0;
+  }
+
+  .headline-stats .stat-card {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 740px) {
+  .section-heading {
+    align-items: flex-start;
+    gap: 14px;
+    padding-bottom: 20px;
+    margin-bottom: 24px;
+  }
+
+  .section-heading .eyebrow {
+    margin-bottom: 10px;
+  }
+
+  .golf-hero {
+    min-height: 280px;
+    margin-bottom: 28px;
+  }
+
+  .hero-content {
+    padding: 27px 22px;
+  }
+
+  .hero-content h2 {
+    font-size: 28px;
+  }
+
+  .hero-content p {
+    max-width: 28ch;
+  }
+
+  .guest-feature-grid {
+    margin: 30px 0 40px;
     grid-template-columns: 1fr;
     gap: 0;
   }
-}
-@media (max-width: 740px) {
-  .app-shell .workspace > main {
-    padding: 0 18px 90px;
+
+  .guest-feature-grid .panel,
+  .guest-feature-grid .panel:first-child {
+    border: 0;
+    border-top: 1px solid var(--line);
+    padding: 22px 0;
   }
-  .app-shell .topbar {
-    height: 62px;
-    padding: 0 18px;
+
+  .guest-feature-grid .panel:first-child {
+    border-top: 0;
+    padding-top: 0;
   }
-  .app-shell .section-heading {
-    align-items: flex-start;
-    margin: 22px 0;
-    gap: 14px;
+
+  .guest-join {
+    padding: 24px;
   }
-  .app-shell .section-heading h1 {
-    font-size: 25px;
+
+  .guest-join h2 {
+    font-size: 24px;
   }
-  .app-shell .section-heading p {
-    font-size: 12px;
+
+  .club-grid {
+    gap: 30px;
   }
-  .app-shell .button {
-    min-height: 44px;
+
+  .round-history .panel-heading h3 {
+    font-size: 21px;
   }
-  .app-shell .section-heading > .button {
-    min-width: 44px;
-    height: auto;
-    margin-top: 0;
-    gap: 6px;
+
+  .friends-search {
+    padding: 22px;
   }
-  .app-shell .pass-button,
-  .app-shell .like-button,
-  .golfer-card-heading .save-profile {
-    min-width: 44px;
-    min-height: 44px;
+
+  .friends-intro h2 {
+    font-size: 21px;
   }
-  .discovery-actions {
-    padding: 16px;
+
+  .stories-panel {
+    padding: 22px 0;
+    margin-bottom: 28px;
   }
-  .discovery-action-buttons {
-    flex-wrap: wrap;
-  }
-  .app-shell .discover-toolbar {
-    align-items: stretch;
-    flex-direction: column-reverse;
-    gap: 4px;
-  }
-  .app-shell .discover-toolbar .tabs {
-    gap: 20px;
-  }
-  .app-shell .search-input {
-    width: 100%;
-  }
-  .app-shell .discovery-subline > span {
-    display: none;
-  }
-  .app-shell .golfer-card {
-    padding: 18px;
-  }
-  .golfer-avatar {
-    width: 52px;
-    height: 52px;
-  }
-  .golfer-identity > button {
-    font-size: 15px;
-  }
-  .app-shell .panel {
-    padding: 18px;
-  }
-  .app-shell .headline-stats {
+
+  .stories-heading {
     gap: 10px;
   }
-  .app-shell .stat-card {
-    padding: 16px;
+
+  .stories-expiry {
+    padding: 5px 7px;
+    font-size: 9px;
   }
-  .app-shell .stat-card strong {
-    font-size: 25px;
+
+  .settings-grid > div:last-child {
+    margin-top: 22px;
   }
-  .app-shell .stat-card span {
-    font-size: 11px;
-  }
-  .app-shell .party-card-grid {
-    grid-template-columns: 1fr;
-  }
-  .app-shell .chat-layout {
-    grid-template-columns: 1fr;
-    min-height: 500px;
-  }
-  .app-shell .chat-title {
-    padding: 16px;
+
+  .public-privacy-grid > .panel:first-child {
+    padding: 26px;
   }
 }

@@ -5,6 +5,7 @@ import {
   CalendarDays,
   Check,
   Clock,
+  Flag,
   LayoutGrid,
   Plus,
   RefreshCw,
@@ -87,15 +88,70 @@ export function Parties({
   return (
     <>
       <SectionHeading
-        title="Partidas"
-        description="Consulta el calendario, encuentra un lugar disponible o crea tu propia partida."
+        eyebrow="LA BUENA COMPAÑÍA SE PLANEA"
+        title="Ponle fecha a tu próxima ronda."
+        description="Explora las parties del mes, elige un día y encuentra tu próxima ronda. También puedes organizar la tuya."
         action={
           <Button onClick={() => onCreate()}>
             <Plus size={17} />
-            Crear partida
+            Crear party
           </Button>
         }
       />
+      {!calendar && (
+        <section
+          className="party-planner-hero"
+          aria-label="Organiza una party con anticipación"
+        >
+          <div className="party-planner-copy">
+            <span className="party-hero-eyebrow">
+              <span className="live-dot" /> UN PLAN ABIERTO A BUENA COMPAÑÍA
+            </span>
+            <h2>
+              Una fecha.
+              <br />
+              Un campo. <em>Tu próximo grupo.</em>
+            </h2>
+            <p>
+              Publica tu ronda con anticipación. Los demás ven los lugares
+              disponibles y se unen a tu party.
+            </p>
+            <Button onClick={() => onCreate()}>
+              Armar mi party
+              <ArrowUpRight size={17} />
+            </Button>
+          </div>
+          <div className="party-planner-illustration" aria-hidden="true">
+            <div className="party-calendar-leaf">
+              <span>LA PRÓXIMA SEMANA</span>
+              <strong>{golfDateAfter(7).slice(-2)}</strong>
+              <small>
+                {new Intl.DateTimeFormat("es-MX", {
+                  month: "long",
+                  timeZone: "America/Mexico_City",
+                }).format(new Date(`${golfDateAfter(7)}T12:00:00-06:00`))}
+              </small>
+            </div>
+            <div className="party-hero-group">
+              <span>
+                <Flag size={20} />
+              </span>
+              <span>
+                <Users size={19} />
+              </span>
+              <span>
+                <Plus size={18} />
+              </span>
+              <span>
+                <Plus size={18} />
+              </span>
+            </div>
+            <div className="party-hero-note">
+              <Check size={13} /> El plan lo pones tú.
+            </div>
+          </div>
+        </section>
+      )}
       <div className="party-board-heading">
         <div className="tabs">
           <button

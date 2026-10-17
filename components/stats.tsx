@@ -70,7 +70,7 @@ export function Stats({ data }: { data: FairwayData }) {
       </div>
       {!rounds.length ? (
         <Empty
-          title="Todavía no hay estadísticas"
+          title="Cada ronda cuenta"
           description="Registra tu primer score para empezar a ver tu progreso."
         />
       ) : (
@@ -78,8 +78,10 @@ export function Stats({ data }: { data: FairwayData }) {
           <div className="panel chart">
             <div className="panel-heading">
               <div>
+                <span className="eyebrow">TU JUEGO, EN PERSPECTIVA</span>
                 <h3>Evolución de tus scores</h3>
               </div>
+              <span className="badge">Menos es más</span>
             </div>
             <ResponsiveContainer width="100%" height={260}>
               <AreaChart
