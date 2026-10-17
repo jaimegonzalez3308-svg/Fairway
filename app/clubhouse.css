@@ -3,13 +3,13 @@
 :root {
   --forest: #183c30;
   --sage: #72917a;
-  --bg: #f5f3eb;
+  --bg: #f7efdf;
   --gold: #a17c42;
   --ink: #223c30;
   --muted: #687265;
-  --line: #d5d7c9;
-  --paper: #fffef9;
-  --wash: #ebece1;
+  --line: #d9cfbb;
+  --paper: #fffbf2;
+  --wash: #f0e7d6;
   --radius: 4px;
   --radius-control: 6px;
   --radius-dialog: 12px;
@@ -44,7 +44,7 @@ h3 {
 }
 
 .sidebar {
-  background: #eeeee4;
+  background: #efe6d6;
   border-right-color: #c9cebd;
 }
 
@@ -383,6 +383,12 @@ textarea::placeholder {
 
 .score-table td {
   font-family: var(--font-score);
+  background: var(--paper);
+}
+
+.chat-messages,
+.chat-input input {
+  background: var(--bg);
 }
 
 .score-table td input:focus,
@@ -421,7 +427,7 @@ textarea::placeholder {
 }
 
 .party-month-grid td.outside-month {
-  background: #efefe6;
+  background: var(--wash);
 }
 
 .party-month-grid td.selected-day {
@@ -487,7 +493,7 @@ legend {
 }
 
 .mobile-nav {
-  background: #fffef9f5;
+  background: #fffbf2f5;
   border-top-color: #bdc7af;
 }
 
