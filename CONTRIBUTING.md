@@ -42,4 +42,4 @@ Las migraciones de Supabase están en `supabase/migrations`; consulta el README 
 
 ## Estilo de los iconos laterales
 
-La navegación principal usa números monoespaciados 01–06, como los hoyos de una tarjeta de golf. La sección Mi juego conserva los iconos de contorno. Para usar los iconos ilustrados en esa sección, cambia `useIllustratedSidebarIcons` a `true` en `lib/appearance.ts`, compila y publica. Los dibujos se conservan en `components/sidebar-icon.tsx` y sus colores en `app/globals.css`.
+Los iconos originales de contorno están activos. Para volver a los iconos ilustrados en verde salvia y dorado, cambia `useIllustratedSidebarIcons` a `true` en `lib/appearance.ts`, compila y publica. Los dibujos se conservan en `components/sidebar-icon.tsx` y sus colores en `app/globals.css`.

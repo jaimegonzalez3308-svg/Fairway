@@ -541,15 +541,17 @@ export default function FairwayApp() {
         </div>
         <span className="nav-caption">TU COMUNIDAD DE GOLF</span>
         <nav aria-label="Navegación principal">
-          {navigation.map(({ id, label }, index) => (
+          {navigation.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               className={cn("nav-item", page === id && "active")}
               onClick={() => go(id)}
             >
-              <span className="nav-hole-number" aria-hidden="true">
-                {String(index + 1).padStart(2, "0")}
-              </span>
+              {useIllustratedSidebarIcons ? (
+                <SidebarIcon name={id} />
+              ) : (
+                <Icon size={20} strokeWidth={1.7} />
+              )}
               <span>{label}</span>
               {id === "mensajes" && unreadMessages > 0 && (
                 <span className="count">{unreadMessages}</span>
