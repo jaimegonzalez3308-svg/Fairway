@@ -13,7 +13,6 @@ import {
   Plus,
   ShieldCheck,
   Sun,
-  Users,
   X,
 } from "lucide-react";
 import type { Club } from "@/lib/domain";
@@ -31,22 +30,22 @@ type Props = {
 const rhythms = ["Social", "Mejorar mi juego", "Competir"] as const;
 const plans = {
   Social: {
-    title: "Una buena vuelta.\nUna mejor conversación.",
-    tag: "Sin prisas, con buena compañía",
+    title: "Falta uno en el flight de Fer.",
+    club: "El Molino Golf Club",
     description:
-      "Encuentra personas que también disfrutan el camino entre un golpe y otro.",
+      "Van Fer, Ana y Mau. Quieren jugar sin presión por el score y ponerse al día entre hoyos.",
   },
   "Mejorar mi juego": {
-    title: "Mismo objetivo.\nUn golpe mejor cada vez.",
-    tag: "Aprender también se comparte",
+    title: "Mau busca con quién practicar.",
+    club: "Club de Golf Los Naranjos",
     description:
-      "Conecta con golfistas con quienes practicar y sigue tu progreso ronda a ronda.",
+      "La idea es anotar todos los golpes y guardar la tarjeta para revisar qué salió bien y qué toca practicar.",
   },
   Competir: {
-    title: "Un poco de reto.\nMucho de buen golf.",
-    tag: "El siguiente reto es en equipo",
+    title: "Ana propone jugar por golpes.",
+    club: "El Molino Golf Club",
     description:
-      "Encuentra compañeros que disfrutan medirse en el campo y guarda tu tarjeta al terminar.",
+      "Se ponen de acuerdo en el formato antes de salir y comparan las tarjetas al terminar la vuelta.",
   },
 };
 
@@ -227,13 +226,12 @@ export function LandingPage({
             </div>
             <div className="fw-hero-copy">
               <p>
-                Hay rondas que se recuerdan
-                <br className="fw-desktop-break" /> por los golpes. Otras, por
-                la gente.
+                ¿Tus amigos no pueden el sábado? Busca a alguien en León para
+                completar el flight.
               </p>
               <p>
-                Encuentra compañeros, organiza tu próxima partida y comparte lo
-                mejor de jugar.
+                Escoge el campo, acuerda la hora y reúne al grupo en el chat de
+                la partida.
               </p>
               <button className="fw-btn fw-btn-dark" onClick={onSignup}>
                 Encuentra tu foursome <ArrowUpRight size={19} />
@@ -253,11 +251,11 @@ export function LandingPage({
             />
             <div className="fw-image-shade" />
             <div className="fw-image-caption">
-              <span className="fw-outline-dot" /> MÁS ALLÁ DEL SCORE
+              <span className="fw-outline-dot" /> LEÓN, GUANAJUATO
             </div>
             <div className="fw-hero-image-copy">
-              <span>Un buen plan empieza</span>
-              <strong>en el primer tee.</strong>
+              <span>PARA ESTE FIN DE SEMANA</span>
+              <strong>¿Quién se apunta?</strong>
             </div>
             <button
               className="fw-explore-orb"
@@ -271,8 +269,8 @@ export function LandingPage({
                 <Flag size={24} strokeWidth={1.4} />
               </span>
               <div>
-                <span>EL MEJOR FLIGHT</span>
-                <p>Es el que se comparte.</p>
+                <span>PRUEBA EL PLANIFICADOR</span>
+                <p>Elige 9 o 18 hoyos.</p>
               </div>
               <button
                 onClick={() => scrollTo("fw-plan")}
@@ -283,7 +281,7 @@ export function LandingPage({
             </div>
           </div>
           <div className="fw-photo-credit">
-            <span>EL JUEGO NOS CONECTA.</span>
+            <span>EMPEZAMOS EN LEÓN Y ALREDEDORES.</span>
             <span>Fotografía ilustrativa · Keith Tanner / Unsplash</span>
           </div>
         </section>
@@ -294,92 +292,97 @@ export function LandingPage({
           aria-labelledby="fw-experience-heading"
         >
           <div className="fw-section-top" data-fw-reveal>
-            <p className="fw-kicker">01 / UN NUEVO PUNTO DE ENCUENTRO</p>
-            <span>Menos coordinar. Más jugar.</span>
+            <p className="fw-kicker">ASÍ SE USA FAIRWAY</p>
+            <span>El campo, la hora y quiénes van.</span>
           </div>
           <div className="fw-experience-intro" data-fw-reveal>
-            <h2 id="fw-experience-heading">
-              El campo es el mismo.
-              <br />
-              <em>La experiencia cambia.</em>
-            </h2>
+            <h2 id="fw-experience-heading">Organiza esa salida del sábado.</h2>
             <p>
-              Una partida empieza mucho antes del primer tee. Conecta con
-              personas que comparten tu ritmo y convierte las ganas de jugar en
-              un plan.
+              Pon el campo, los hoyos y la hora. Quien se apunte verá los
+              detalles y tendrá el chat de la partida a la mano.
             </p>
           </div>
-          <div className="fw-feature-grid">
-            <article data-fw-reveal>
-              <span className="fw-feature-number">01</span>
-              <Users size={29} strokeWidth={1.4} />
-              <h3>
-                Tu gente.
-                <br />
-                Tu ritmo.
-              </h3>
-              <p>
-                Conoce golfistas según su estilo, club y disponibilidad. Hay
-                espacio para una vuelta social y para un buen reto.
+          <div className="fw-club-board">
+            <aside
+              className="fw-round-note"
+              data-fw-reveal
+              aria-label="Mensaje y tarjeta de ejemplo"
+            >
+              <header>
+                <span className="fw-pencil-mark" aria-hidden="true" /> UN
+                MENSAJE PODRÍA EMPEZAR ASÍ
+              </header>
+              <p className="fw-note-author">
+                Fer <span>· León</span>
               </p>
-              <button className="fw-text-link" onClick={onSignup}>
-                Encuentra compañeros <ArrowUpRight size={18} />
-              </button>
-            </article>
-            <article data-fw-reveal>
-              <span className="fw-feature-number">02</span>
-              <Flag size={29} strokeWidth={1.4} />
-              <h3>
-                Del “hay que jugar”
-                <br />
-                al primer tee.
-              </h3>
-              <p>
-                Organiza una partida, reúne a tu flight y coordina los detalles
-                en el chat de la party.
+              <blockquote>
+                “Sábado, 7:30, 18 hoyos en El Molino. Vamos Ana, Mau y yo; falta
+                uno. ¿Te apuntas?”
+              </blockquote>
+              <p className="fw-note-postscript">
+                Y si al salir se arma una guacamaya, mejor.
               </p>
-              <button
-                className="fw-text-link"
-                onClick={() => scrollTo("fw-plan")}
-              >
-                Imagina tu próxima ronda <ArrowDownRight size={18} />
-              </button>
-            </article>
-            <article data-fw-reveal>
-              <span className="fw-feature-number">03</span>
-              <svg
-                width="30"
-                height="30"
-                viewBox="0 0 30 30"
-                fill="none"
-                aria-hidden="true"
-              >
-                <path
-                  d="M4 25h23M8 20v-7m7 7V9m7 11V4"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                />
-                <path
-                  d="m5 10 8-5 7 1 6-4"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                />
-              </svg>
-              <h3>
-                Cada ronda
-                <br />
-                cuenta tu historia.
-              </h3>
-              <p>
-                Guarda tus tarjetas y consulta tus estadísticas. Recuerda ese
-                birdie y sigue construyendo tu juego.
-              </p>
-              <button className="fw-text-link" onClick={onSignup}>
-                Empieza tu historia <ArrowUpRight size={18} />
-              </button>
-            </article>
+              <small>Escena de ejemplo: nombres y partida ficticios.</small>
+              <table className="fw-scorecard">
+                <caption>Tu próxima tarjeta, por llenar</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">HOYO</th>
+                    {Array.from({ length: 9 }, (_, i) => (
+                      <th scope="col" key={i}>
+                        {i + 1}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">SCORE</th>
+                    {Array.from({ length: 9 }, (_, i) => (
+                      <td key={i}>
+                        <span aria-hidden="true">—</span>
+                        <span className="sr-only">Sin anotar</span>
+                      </td>
+                    ))}
+                  </tr>
+                </tbody>
+              </table>
+            </aside>
+            <div className="fw-feature-list" data-fw-reveal>
+              <article>
+                <h3>Encuentra al cuarto jugador.</h3>
+                <p>
+                  Busca compañeros por club, estilo y disponibilidad. Revisa sus
+                  perfiles antes de proponer una salida.
+                </p>
+                <button className="fw-plain-button" onClick={onSignup}>
+                  Buscar compañeros
+                </button>
+              </article>
+              <article>
+                <h3>Pon fecha y campo.</h3>
+                <p>
+                  Crea la partida con sus detalles. Las personas que se
+                  confirmen podrán coordinarse contigo en el chat del grupo.
+                </p>
+                <button
+                  className="fw-plain-button"
+                  onClick={() => scrollTo("fw-plan")}
+                >
+                  Probar el planificador
+                </button>
+              </article>
+              <article>
+                <h3>Anota los golpes al terminar.</h3>
+                <p>
+                  Guarda la tarjeta y revisa tus estadísticas. Así puedes
+                  comparar esa vuelta con la del domingo pasado.
+                </p>
+                <button className="fw-plain-button" onClick={onSignup}>
+                  Crear mi perfil
+                </button>
+              </article>
+            </div>
           </div>
         </section>
 
@@ -390,15 +393,14 @@ export function LandingPage({
         >
           <div className="fw-planner-inner">
             <div className="fw-planner-copy" data-fw-reveal>
-              <p className="fw-kicker">02 / EL GOLF, A TU MANERA</p>
+              <p className="fw-kicker">ARMA UN PLAN</p>
               <h2 id="fw-plan-heading">
-                Hay una ronda
-                <br />
-                <em>para tu ritmo.</em>
+                Dinos cuántos hoyos
+                <br />y cuándo puedes.
               </h2>
               <p>
-                Un sábado entero o nueve hoyos antes de volver. Haz la prueba:
-                ¿cómo sería tu plan ideal?
+                Elige una opción y mira cómo cambia una propuesta. Cuando
+                entres, podrás buscar partidas reales.
               </p>
               <fieldset className="fw-choice-group">
                 <legend>¿Cuántos hoyos?</legend>
@@ -417,7 +419,7 @@ export function LandingPage({
                 </div>
               </fieldset>
               <fieldset className="fw-choice-group">
-                <legend>¿Qué te mueve?</legend>
+                <legend>¿Cómo quieres jugar?</legend>
                 <div>
                   {rhythms.map((value) => (
                     <button
@@ -433,7 +435,7 @@ export function LandingPage({
                 </div>
               </fieldset>
               <fieldset className="fw-choice-group">
-                <legend>¿Cuándo te escapas al campo?</legend>
+                <legend>¿Cuándo puedes?</legend>
                 <div>
                   {["Entre semana", "Fin de semana"].map((value) => (
                     <button
@@ -516,7 +518,7 @@ export function LandingPage({
                   <span>HOYOS</span>
                 </div>
                 <span className="fw-map-tag">
-                  <Sun size={13} /> EL CAMPO TE ESPERA
+                  <Sun size={13} /> PROPUESTA ILUSTRATIVA
                 </span>
               </div>
               <div
@@ -525,19 +527,21 @@ export function LandingPage({
                 aria-atomic="true"
               >
                 <p className="fw-preview-label">
-                  TU PLAN IDEAL · {rhythm.toUpperCase()}
+                  PARTIDA DE EJEMPLO · {rhythm.toUpperCase()}
                 </p>
-                <h3>
-                  {plan.title.split("\n").map((line, index) => (
-                    <span key={index}>{line}</span>
-                  ))}
-                </h3>
+                <h3>{plan.title}</h3>
+                <p className="fw-proposal-course">
+                  <MapPin size={13} /> {plan.club}
+                </p>
                 <div className="fw-result-chips">
                   <span>
                     <Flag size={13} /> {holes} hoyos
                   </span>
                   <span>
-                    <Sun size={13} /> {time}
+                    <Sun size={13} />{" "}
+                    {time === "Fin de semana"
+                      ? "Sábado · 7:30"
+                      : "Miércoles · 8:00"}
                   </span>
                 </div>
                 <p>{plan.description}</p>
@@ -546,11 +550,11 @@ export function LandingPage({
                 className="fw-btn fw-btn-dark fw-preview-cta"
                 onClick={onSignup}
               >
-                Encuentra con quién jugar <ArrowUpRight size={18} />
+                Buscar partidas reales <ArrowUpRight size={18} />
               </button>
               <p className="fw-preview-disclaimer">
-                Ejemplo interactivo. Las partidas reales aparecen al iniciar
-                sesión.
+                Nombres, horarios y partidas ficticios. El acceso al campo se
+                confirma con el club.
               </p>
             </div>
           </div>
@@ -562,7 +566,7 @@ export function LandingPage({
           aria-labelledby="fw-local-heading"
         >
           <div className="fw-section-top" data-fw-reveal>
-            <p className="fw-kicker">03 / EMPIEZA CERCA</p>
+            <p className="fw-kicker">CAMPOS DEL DIRECTORIO</p>
             <span>
               <MapPin size={14} /> León, Guanajuato y alrededores
             </span>
@@ -577,24 +581,19 @@ export function LandingPage({
                 loading="lazy"
               />
               <div>
-                <span>BUENOS GOLPES.</span>
-                <strong>Mejores historias.</strong>
+                <span>LEÓN Y ALREDEDORES</span>
+                <strong>¿Dónde juegas el domingo?</strong>
               </div>
             </div>
             <div className="fw-local-copy" data-fw-reveal>
-              <h2 id="fw-local-heading">
-                Tu ciudad.
-                <br />
-                <em>Tu siguiente tee.</em>
-              </h2>
+              <h2 id="fw-local-heading">¿En qué campo sueles jugar?</h2>
               <p>
-                El punto de encuentro es León. Explora los clubes del directorio
-                y encuentra tu próxima conexión con el golf.
+                El Molino y Los Naranjos ya están en el directorio. Revisa la
+                información y confirma con el club cómo puedes jugar ahí.
               </p>
               <div className="fw-club-list">
-                {clubs.slice(0, 4).map((club, index) => (
+                {clubs.slice(0, 4).map((club) => (
                   <button key={club.id} onClick={onClubs}>
-                    <span className="fw-club-index">0{index + 1}</span>
                     <span>
                       <strong>{club.name}</strong>
                       <small>{club.city}</small>
@@ -624,8 +623,8 @@ export function LandingPage({
                   directamente con el club.
                 </p>
               </div>
-              <button className="fw-text-link" onClick={onClubs}>
-                Ver todos los clubes <ArrowUpRight size={18} />
+              <button className="fw-plain-button" onClick={onClubs}>
+                Ver el directorio completo
               </button>
             </div>
           </div>
@@ -637,11 +636,7 @@ export function LandingPage({
         >
           <div data-fw-reveal>
             <p className="fw-kicker">ANTES DE TU PRIMERA RONDA</p>
-            <h2 id="fw-faq-heading">
-              Lo que quizá
-              <br />
-              <em>te estás preguntando.</em>
-            </h2>
+            <h2 id="fw-faq-heading">Antes de registrarte</h2>
           </div>
           <div className="fw-faq-list" data-fw-reveal>
             {[
@@ -680,17 +675,14 @@ export function LandingPage({
             <span />
           </div>
           <div className="fw-finale-inner" data-fw-reveal>
-            <p className="fw-kicker">TU PRÓXIMA BUENA COMPAÑÍA EMPIEZA AQUÍ</p>
-            <h2 id="fw-finale-heading">
-              Nos vemos
-              <br />
-              <em>en el primer tee.</em>
-            </h2>
-            <button className="fw-btn fw-btn-lime" onClick={onSignup}>
-              Quiero ser parte <ArrowUpRight size={20} />
+            <p className="fw-kicker">FAIRWAY EN LEÓN</p>
+            <h2 id="fw-finale-heading">¿Jugamos el sábado?</h2>
+            <button className="fw-btn fw-btn-pencil" onClick={onSignup}>
+              Crear mi perfil <ArrowUpRight size={20} />
             </button>
             <span className="fw-finale-note">
-              <ShieldCheck size={14} /> Con Google o correo. A tu ritmo.
+              <ShieldCheck size={14} /> Accede con Google o correo y completa tu
+              perfil.
             </span>
           </div>
         </section>
@@ -699,9 +691,9 @@ export function LandingPage({
       <footer className="fw-footer">
         <div className="fw-footer-top">
           <p>
-            Más que una ronda.
+            Golfistas de León
             <br />
-            <strong>Una comunidad.</strong>
+            que quieren jugar.
           </p>
           <nav aria-label="Enlaces del pie de página">
             <button onClick={onClubs}>
@@ -715,9 +707,9 @@ export function LandingPage({
             </button>
           </nav>
           <span>
-            HECHO PARA JUGAR
+            BUSCA UNA PARTIDA
             <br />
-            EN COMPAÑÍA.
+            PARA ESTA SEMANA.
             <Flag size={28} strokeWidth={1.2} />
           </span>
         </div>
@@ -727,7 +719,7 @@ export function LandingPage({
         </div>
         <div className="fw-footer-bottom">
           <span>FAIRWAY · LEÓN, GUANAJUATO</span>
-          <span>GOLF, PERSONAS Y BUENAS HISTORIAS.</span>
+          <span>PARA MAYORES DE 18 AÑOS</span>
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: "instant" })}
           >
