@@ -67,10 +67,7 @@ export function Stories({ data }: { data: FairwayData }) {
       >
         <div className="stories-heading">
           <div>
-            <span className="eyebrow">EL CAMPO, EN VIVO</span>
-            <h2>
-              Un momento en el green<span>.</span>
-            </h2>
+            <h2>Historias</h2>
           </div>
           <span className="stories-expiry">
             <Clock3 size={14} />

@@ -31,9 +31,8 @@ export function ClubDirectory({
   return (
     <>
       <SectionHeading
-        eyebrow="EL PUNTO DE ENCUENTRO"
-        title="El golf empieza cerca de ti."
-        description="Explora los clubes de León y sus alrededores, sin necesidad de crear una cuenta."
+        title="Clubes de golf"
+        description="Consulta los clubes de León y sus alrededores. El acceso y las tarifas se confirman con cada club."
       />
       {guest && (
         <div className="guest-directory-note">

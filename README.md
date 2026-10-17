@@ -310,3 +310,11 @@ Fotografía principal: [Keith Tanner en Unsplash](https://unsplash.com/photos/ae
 
 
 Validación de la landing: TypeScript y compilación estática correctos, 92 pruebas aprobadas y respuesta HTTP 200 de la portada local. La inspección visual e interacción en navegador de escritorio/móvil quedan sin verificar: el control de Chrome no respondió durante esta actualización. No se simularon inicios de sesión ni se crearon partidas reales como prueba.
+
+## Interfaz de miembros
+
+Las pantallas después de iniciar sesión usan una interfaz de producto: fondo gris claro, superficies blancas, verde reservado para selección y acciones, titulares de tamaño moderado y rejillas consistentes. `clubhouse.css` define los controles y superficies compartidos; `hierarchy.css` organiza las pantallas. Se retiraron los primeros elementos destacados, columnas desplazadas y diferencias decorativas entre tarjetas.
+
+Descubrir muestra retratos compactos, nombre, club, compatibilidad y acciones sin fotografías a tamaño de portada. Una barra permite ver partidas o abrir el formulario existente para crear una. Partidas conserva el calendario real y sus controles; se retiró el banner con calendario ilustrado. Scores, estadísticas, amigos, comunidad y mensajes usan títulos concretos, márgenes regulares y tarjetas equivalentes. El contenido público de la landing, la recuperación de contraseña y la navegación con sesión activa conservan sus flujos. No hay migraciones ni dependencias nuevas.
+
+La validación de esta actualización incluye TypeScript y compilación de producción. La inspección visual en escritorio y móvil no estuvo disponible porque el entorno no expuso un navegador controlable.

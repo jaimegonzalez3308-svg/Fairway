@@ -1,102 +1,78 @@
-/* Club stationery: crisp paper surfaces, softened controls, round portraits.
-   Kept after globals.css so the existing layouts and behavior stay intact. */
+/* Shared product surfaces and controls. The public landing owns its own palette. */
 :root {
-  --forest: #183c30;
-  --sage: #72917a;
-  --bg: #f7efdf;
-  --gold: #a17c42;
-  --ink: #223c30;
-  --muted: #687265;
-  --line: #d9cfbb;
-  --paper: #fffbf2;
-  --wash: #f0e7d6;
-  --radius: 4px;
-  --radius-control: 6px;
-  --radius-dialog: 12px;
+  --forest: #1e4937;
+  --sage: #71957e;
+  --bg: #f5f7f6;
+  --gold: #94742f;
+  --ink: #25372e;
+  --muted: #626e67;
+  --line: #dfe5e1;
+  --paper: #ffffff;
+  --wash: #eef3ef;
+  --radius: 10px;
+  --radius-control: 7px;
+  --radius-dialog: 14px;
   --font-score: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
-
-/* A low-opacity paper tile sits behind the UI, leaving cards and text crisp. */
 body {
-  background-image: url("/images/paper-grain.svg");
-  background-repeat: repeat;
-  background-size: 180px 180px;
+  background: var(--bg);
 }
-
 ::selection {
-  background: #dbe4d2;
+  background: #dbeade;
   color: var(--forest);
 }
-
 h1 {
-  color: var(--forest);
-  font-weight: 750;
-  letter-spacing: -0.045em;
+  color: var(--ink);
+  font-weight: 650;
+  letter-spacing: -0.035em;
 }
-
 h2,
 h3 {
-  font-weight: 650;
-  letter-spacing: -0.025em;
-}
-
-.eyebrow,
-.hero-eyebrow,
-.party-hero-eyebrow,
-.nav-caption {
-  font-family: var(--font-score);
   font-weight: 600;
-  letter-spacing: 0.13em;
-  color: #6c704f;
+  letter-spacing: -0.02em;
 }
-
+.eyebrow,
+.nav-caption {
+  font-family: inherit;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
 .sidebar {
-  background: #efe6d6;
-  border-right-color: #c9cebd;
+  background: var(--paper);
+  border-right-color: var(--line);
 }
-
 .brand {
-  font-weight: 800;
-  letter-spacing: -1.6px;
+  font-weight: 750;
 }
-
 .sidebar-city,
 .location,
 .breadcrumb,
 .sidebar-user small {
   color: var(--muted);
 }
-
 .nav-item {
-  border-radius: var(--radius);
-  color: #5c6b5d;
+  border-radius: 7px;
+  color: #5c6861;
 }
-
 .nav-item:hover {
-  background: #e1e6d8;
+  background: #f2f5f3;
 }
-
 .nav-item.active {
+  background: #e8f1eb;
+  color: var(--forest);
+  box-shadow: none;
+}
+.nav-item.active svg {
+  color: var(--forest);
+}
+.nav-dot {
   background: var(--forest);
-  box-shadow: inset 3px 0 #c5ab70;
 }
-
-.sidebar-promo {
-  border-radius: var(--radius);
-  border-color: #c9cebb;
-  border-top: 2px solid var(--forest);
-  background: #e5e8d9;
-}
-
-.sidebar-promo p {
-  color: #63725b;
-}
-
 .topbar {
   background: var(--paper);
-  border-bottom-color: #c9cebd;
+  border-bottom-color: var(--line);
 }
-
 .icon-btn,
 input,
 select,
@@ -104,416 +80,158 @@ textarea,
 fieldset {
   border-radius: var(--radius-control);
 }
-
 input,
 select,
 textarea {
-  border-color: #c9cebf;
+  border-color: #d2dcd5;
   background: var(--paper);
 }
-
 input::placeholder,
 textarea::placeholder {
-  color: #747c6d;
+  color: #758078;
 }
-
 .button {
   border-radius: var(--radius-control);
-  font-weight: 650;
+  font-weight: 600;
   transition:
-    background 0.18s,
-    border-color 0.18s,
-    box-shadow 0.18s;
+    background-color 0.16s,
+    border-color 0.16s;
 }
-
 .button:hover {
   transform: none;
 }
-
 .button.primary:hover {
-  background: #294f3d;
-  border-color: #294f3d;
+  background: #2c5c44;
+  border-color: #2c5c44;
 }
-
 .button.outline {
   background: var(--paper);
-  border-color: #bcc6b1;
+  border-color: #ccd7cf;
   color: var(--forest);
 }
-
 .button.outline:hover {
-  background: var(--wash);
-  border-color: #7a8c70;
+  background: #f1f6f2;
+  border-color: #98b39f;
 }
-
-.section-heading {
-  border-bottom: 2px solid var(--forest);
-  padding-bottom: 22px;
-}
-
-.section-heading p,
-.welcome > p,
-.welcome-features p,
-.guest-feature-grid p,
-.guest-join p,
-.club-content p,
-.golfer-bio,
-.settings-grid .panel p,
-.modal p {
-  color: var(--muted);
-}
-
-.demo-notice,
-.app-footer {
-  border-color: #c9cebd;
-  color: var(--muted);
-}
-
-.demo-pill,
-.match-pill,
-.badge,
-.handicap-chip,
-.game-type,
-.party-kind-badge,
-.party-agenda-status {
-  border-radius: 3px;
-  font-family: var(--font-score);
-  font-weight: 500;
-  letter-spacing: 0;
-}
-
-.demo-pill,
-.badge,
-.handicap-chip {
-  background: #eeefe2;
-  color: #53674b;
-  border-color: #d0d6bf;
-}
-
-.badge.gold {
-  background: #f3ebd8;
-  color: #806028;
-  border-color: #d8c7a0;
-}
-
-.golf-hero,
-.welcome-image,
-.party-planner-hero,
-.profile-cover {
-  border-radius: var(--radius);
-  border: 1px solid #c9cebd;
-}
-
-.golf-hero,
-.party-planner-hero {
-  border-color: var(--forest);
-  border-bottom: 3px solid #b69a60;
-}
-
-.hero-content h2,
-.party-planner-copy h2 {
-  font-weight: 650;
-  letter-spacing: -0.035em;
-}
-
-.hero-eyebrow,
-.party-hero-eyebrow {
-  color: #d4d9b9;
-}
-
-.hero-content button {
-  border-radius: var(--radius-control);
-  font-weight: 650;
-  background: var(--paper);
-  color: var(--forest);
-}
-
-.hero-stamp {
-  border-radius: 2px;
-  border-style: dashed;
-  backdrop-filter: none;
-  background: #16382b70;
-}
-
-.hero-stamp span {
-  font-family: var(--font-score);
-}
-
 .panel,
 .golfer-card,
 .game-card,
 .stat-card,
 .chat-layout,
+.party-card,
+.party-month-panel,
 .guest-join,
-.friends-intro,
 .party-group-chat {
   border-radius: var(--radius);
   border-color: var(--line);
   background: var(--paper);
   box-shadow: none;
 }
-
 .golfer-card,
 .party-card {
-  transition:
-    border-color 0.18s,
-    box-shadow 0.18s;
+  transition: border-color 0.16s;
 }
-
 .golfer-card:hover,
 .party-card:hover {
   transform: none;
-  border-color: #86977b;
-  box-shadow: 0 3px 0 #d4d9c6;
+  border-color: #a3b8aa;
+  box-shadow: none;
 }
-
-.panel-heading {
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--line);
+.section-heading p,
+.golfer-bio,
+.club-content p,
+.settings-grid .panel p,
+.modal p {
+  color: var(--muted);
 }
-
-.panel-heading h3,
-.game-card h3,
-.guest-feature-grid h3,
-.welcome-features h3,
-.club-content h2,
-.party-card h3,
-.party-agenda-info h4 {
-  font-weight: 650;
+.badge,
+.handicap-chip,
+.game-type,
+.party-kind-badge {
+  border-radius: 5px;
 }
-
-.guest-feature-grid .panel {
-  border-top: 2px solid var(--forest);
+.badge,
+.handicap-chip {
+  background: #f0f5ef;
+  color: #4e6754;
+  border-color: #dee8dc;
 }
-
-.guest-feature-grid svg,
-.welcome-features svg,
-.public-privacy-grid svg,
-.stat-card svg {
-  color: #607953;
+.badge.gold {
+  background: #faf5e7;
+  color: #7f6324;
+  border-color: #e9ddba;
 }
-
-.welcome-features > div {
-  border-top: 2px solid var(--forest);
-  padding-top: 20px;
-}
-
-.welcome .eyebrow {
-  color: #876a37;
-}
-
-.guest-join {
-  background: #e9ecdd;
-  border-left: 3px solid var(--forest);
-}
-
-.guest-join h2,
-.account-gate h3 {
-  font-weight: 650;
-}
-
 .tabs button {
-  color: #65725c;
-  font-weight: 600;
+  color: var(--muted);
+  font-weight: 500;
 }
-
 .tabs button.active {
-  border-bottom-width: 3px;
-}
-
-.search-input,
-.search-input input::placeholder,
-.discovery-subline,
-.guest-directory-note,
-.golfer-club,
-.party-day-label {
-  color: #63735b;
-}
-
-.golfer-tags span,
-.chips span,
-.party-chat-roster > span {
-  border-radius: 3px;
-}
-
-.stat-card {
-  border-top: 2px solid var(--forest);
-}
-
-.stat-card strong,
-.score-summary strong,
-.handicap-chip strong,
-.profile-hcp strong,
-.party-calendar-leaf strong {
-  font-family: var(--font-score);
-  font-variant-numeric: tabular-nums;
-  font-weight: 600;
   color: var(--forest);
+  border-bottom-width: 2px;
 }
-
-.stat-card span,
-.score-summary span {
-  color: #617057;
-}
-
-.score-summary {
-  background: #eeefe2;
-  border: 1px solid #c9cebb;
-  border-top: 2px solid var(--forest);
-  border-radius: var(--radius);
-}
-
-.score-summary div {
-  border-right: 1px dashed #b8c2a8;
-}
-
-.score-table {
-  border-spacing: 0;
-  border-top: 2px solid var(--forest);
-  border-left: 1px solid var(--line);
+.score-table,
+.rounds-table {
   font-variant-numeric: tabular-nums;
 }
-
-.score-table th,
-.score-table td,
-.score-table th:first-child {
-  border-radius: 0;
-  border-right: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-}
-
 .score-table th {
-  background: #e9ecdd;
-  color: #526646;
-  font-weight: 650;
+  background: #edf3ed;
+  color: #506854;
 }
-
 .score-table td {
-  font-family: var(--font-score);
   background: var(--paper);
 }
-
-.chat-messages,
-.chat-input input {
-  background: var(--bg);
-}
-
 .score-table td input:focus,
 .score-table td select:focus {
   position: relative;
   z-index: 1;
 }
-
-.party-calendar-leaf {
-  border-radius: var(--radius);
-  box-shadow: 4px 5px 0 #0e2b22;
-}
-
-.party-calendar-leaf > span {
-  border-bottom: 1px dashed #b9c2a8;
-  font-family: var(--font-score);
-}
-
-.party-calendar-leaf strong {
-  color: #264433;
-}
-
 .party-month-grid th {
-  background: #e9ecdd;
-  color: #526646;
-  font-family: var(--font-score);
-  font-weight: 600;
+  background: #f2f5f3;
+  color: #5b6d60;
 }
-
-.party-month-toolbar h2 {
-  font-weight: 650;
-}
-
 .party-month-grid td {
   background: var(--paper);
 }
-
 .party-month-grid td.outside-month {
-  background: var(--wash);
+  background: #f7f9f7;
 }
-
 .party-month-grid td.selected-day {
-  background: #e8eddd;
-  box-shadow: inset 0 0 0 2px #78916a;
+  background: #edf5ee;
+  box-shadow: inset 0 0 0 2px #82a58a;
 }
-
-.party-day-number,
-.party-month-event time,
-.party-agenda-time strong,
-.party-calendar-hour,
-.rounds-table td {
-  font-family: var(--font-score);
-  font-variant-numeric: tabular-nums;
-}
-
-.party-month-event {
-  border-radius: 2px;
-  border-left: 2px solid currentColor;
-}
-
-.party-view-switch,
-.party-view-switch > button,
-.party-date-filters button,
-.party-quick-dates button,
-.party-agenda-action,
-.party-card-action,
-.party-month-navigation button {
-  border-radius: var(--radius-control);
-}
-
 .party-month-instructions {
-  background: #f1f2e7;
-  color: #65725c;
+  background: #f4f7f4;
+  color: var(--muted);
 }
-
+.chat-contact.active {
+  background: var(--wash);
+  box-shadow: inset 3px 0 var(--forest);
+}
+.chat-messages,
+.chat-input input {
+  background: #f8faf8;
+}
 .modal {
   border-radius: var(--radius-dialog);
-  border: 1px solid #b6c0a8;
-  border-top: 3px solid var(--forest);
+  border: 1px solid var(--line);
   background: var(--paper);
-  box-shadow: 0 18px 60px #10271c30;
+  box-shadow: 0 18px 60px #10271c25;
 }
-
 .modal-heading {
-  padding-bottom: 17px;
+  padding-bottom: 16px;
   border-bottom: 1px solid var(--line);
 }
-
 .modal-heading h2 {
-  font-weight: 700;
+  font-weight: 650;
 }
-
 .field > span,
 legend {
   font-weight: 600;
 }
-
-.gate-benefits,
-.party-group-chat-icon,
-.party-chat-empty > span {
-  border-radius: 8px;
-}
-
 .mobile-nav {
-  background: #fffbf2f5;
-  border-top-color: #bdc7af;
+  background: #fffffff5;
+  border-top-color: var(--line);
 }
-
 .mobile-nav button {
-  color: #68795d;
+  color: #647168;
 }
-
-@media (max-width: 740px) {
-  .score-summary strong {
-    font-size: clamp(14px, 4.3vw, 20px);
-    letter-spacing: -0.04em;
-    white-space: nowrap;
-  }
-}
-
-/* Portraits, story rings, score markers and calendar dates stay circular. */

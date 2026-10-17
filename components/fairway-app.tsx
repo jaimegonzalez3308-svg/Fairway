@@ -699,21 +699,11 @@ export default function FairwayApp() {
             </button>
           ))}
         </nav>
-        <div className="sidebar-promo">
-          <span className="mini-sun">
-            <Sun size={23} strokeWidth={1.4} />
-          </span>
-          <h3>¿Quién juega hoy?</h3>
-          <p>
-            Hay una buena ronda
-            <br />
-            esperándote.
-          </p>
-          <button onClick={() => go("hoy")}>
-            Encuentra compañía
-            <ArrowUpRight size={16} />
-          </button>
-        </div>
+        <button className="sidebar-today" onClick={() => go("hoy")}>
+          <Sun size={18} />
+          <span>¿Quién juega hoy?</span>
+          <ChevronRight size={15} />
+        </button>
         <div className="sidebar-bottom">
           <button
             className="nav-item"
@@ -951,9 +941,8 @@ export default function FairwayApp() {
               {page === "descubrir" && (
                 <>
                   <SectionHeading
-                    eyebrow="MEJOR GOLF. MEJOR COMPAÑÍA."
-                    title="Encuentra tu próximo foursome."
-                    description="Conecta con golfistas que comparten tu ritmo, tu nivel y tu pasión."
+                    title="Golfistas en León"
+                    description="Busca compañeros por nombre o ajusta los filtros según cuándo y cómo juegas."
                     action={
                       <Button
                         variant="outline"
@@ -972,31 +961,29 @@ export default function FairwayApp() {
                       </Button>
                     }
                   />
-                  <section className="golf-hero">
-                    <div className="hero-image" />
-                    <div className="hero-content">
-                      <span className="hero-eyebrow">
-                        <span className="live-dot" />
-                        EL GOLF SE DISFRUTA MÁS EN COMPAÑÍA
-                      </span>
-                      <h2>
-                        El siguiente gran encuentro
-                        <br />
-                        puede ser en el green.
-                      </h2>
-                      <p>Tu comunidad de golf, aquí en León.</p>
-                      <button onClick={() => go("partidas")}>
-                        Explorar partidas
-                        <ArrowUpRight size={16} />
-                      </button>
+                  <section
+                    className="discovery-actions"
+                    aria-label="Organizar una salida"
+                  >
+                    <div>
+                      <h2>¿Ya tienes fecha para jugar?</h2>
+                      <p>
+                        Revisa las partidas o publica una salida para reunir a
+                        tu grupo.
+                      </p>
                     </div>
-                    <div className="hero-stamp">
-                      <Flag size={23} strokeWidth={1.2} />
-                      <span>
-                        GOOD GOLF.
-                        <br />
-                        GREAT COMPANY.
-                      </span>
+                    <div className="discovery-action-buttons">
+                      <Button variant="outline" onClick={() => go("partidas")}>
+                        Ver partidas
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setPartyDate(undefined);
+                          setModal("create-party");
+                        }}
+                      >
+                        <Plus size={16} /> Crear partida
+                      </Button>
                     </div>
                   </section>
                   <div className="discover-toolbar">
@@ -1037,7 +1024,7 @@ export default function FairwayApp() {
                       <span className="live-dot" />
                       {tab === "Favoritos"
                         ? "Tus compañeros guardados"
-                        : "Personas con las que vale la pena compartir 18 hoyos"}
+                        : `${visible.length} golfistas según tus filtros`}
                     </p>
                     <span>
                       Ordenados por compatibilidad
@@ -1093,8 +1080,7 @@ export default function FairwayApp() {
                   </div>
                   <div className="next-section-heading">
                     <div>
-                      <span className="eyebrow">HAZ ESPACIO EN TU AGENDA</span>
-                      <h2>El green te está esperando</h2>
+                      <h2>Próximas partidas</h2>
                     </div>
                     <InlineLink onClick={() => go("partidas")}>
                       Ver todas las partidas
@@ -1136,8 +1122,7 @@ export default function FairwayApp() {
               {page === "mensajes" && (
                 <>
                   <SectionHeading
-                    eyebrow="DEL MATCH AL TEE"
-                    title="Buenas conversaciones. Mejores rondas."
+                    title="Mensajes"
                     description="Conversa con tus matches y con los participantes de tus partidas."
                   />
                   <div className="chat-layout">
@@ -1332,8 +1317,7 @@ export default function FairwayApp() {
               {page === "perfil" && (
                 <>
                   <SectionHeading
-                    eyebrow="ESTE ES TU JUEGO"
-                    title="Mi perfil de golfista"
+                    title="Mi perfil"
                     action={
                       <div className="button-row profile-header-actions">
                         <Button
@@ -1487,9 +1471,8 @@ export default function FairwayApp() {
               {page === "scores" && (
                 <>
                   <SectionHeading
-                    eyebrow="CADA GOLPE CUENTA"
-                    title="La historia de tu juego."
-                    description="Guarda tus rondas, celebra tus mejores scores y sigue mejorando."
+                    title="Mis scores"
+                    description="Registra una ronda o consulta tus tarjetas anteriores."
                     action={
                       <Button onClick={score}>
                         <Plus size={17} />
@@ -1510,9 +1493,8 @@ export default function FairwayApp() {
               {page === "estadisticas" && (
                 <>
                   <SectionHeading
-                    eyebrow="UN POCO MEJOR, CADA RONDA"
-                    title="Tu juego en números."
-                    description="El progreso está en los detalles. Descubre los tuyos."
+                    title="Estadísticas"
+                    description="Compara tus scores y revisa los datos de tus rondas finalizadas."
                     action={
                       <Button onClick={score}>
                         <Plus size={16} />
@@ -1526,8 +1508,7 @@ export default function FairwayApp() {
               {page === "comunidad" && (
                 <>
                   <SectionHeading
-                    eyebrow="MÁS ALLÁ DEL HOYO 18"
-                    title="Historias que se comparten."
+                    title="Comunidad"
                     description="Logros, rondas y conversaciones de tu comunidad de golf."
                   />
                   <Community data={data} />
@@ -1560,10 +1541,7 @@ export default function FairwayApp() {
               )}
               {page === "ajustes" && (
                 <>
-                  <SectionHeading
-                    eyebrow="TU ESPACIO"
-                    title="Ajustes y privacidad"
-                  />
+                  <SectionHeading title="Ajustes y privacidad" />
                   <Settings
                     data={data}
                     onEdit={() => setModal("edit-profile")}
@@ -1694,14 +1672,7 @@ export default function FairwayApp() {
         </Modal>
       )}
       {(modal === "create-game" || modal === "create-party") && (
-        <Modal
-          title={
-            modal === "create-party"
-              ? "Arma tu próxima party"
-              : "Arma tu próxima partida"
-          }
-          onClose={close}
-        >
+        <Modal title="Crear partida" onClose={close}>
           <GameForm
             party={modal === "create-party"}
             initialDate={modal === "create-party" ? partyDate : undefined}
@@ -2245,44 +2216,37 @@ function ProfileCard({
         else if (delta < -90) onPass();
       }}
     >
-      <div className="golfer-photo">
+      <header className="golfer-card-heading">
         <button
           onClick={onOpen}
           aria-label={`Ver perfil de ${p.name}`}
-          className="photo-open"
+          className="golfer-avatar"
         >
-          <img
-            src={p.photo || "/images/avatar.svg"}
-            alt={p.name}
-            loading="lazy"
-          />
+          <img src={p.photo || "/images/avatar.svg"} alt="" loading="lazy" />
         </button>
-        <span className="match-pill">
-          <span className="live-dot" />
-          {match.score}% compatible
-        </span>
+        <div className="golfer-identity">
+          <button onClick={onOpen}>
+            {p.name}
+            {p.verified && (
+              <ShieldCheck size={16} aria-label="Perfil verificado" />
+            )}
+          </button>
+          <span>
+            {p.city} · {p.age} años
+          </span>
+        </div>
         <button
           className={cn("save-profile", favorite && "saved")}
           aria-label={favorite ? "Quitar de favoritos" : "Guardar perfil"}
+          aria-pressed={favorite}
           onClick={onFavorite}
         >
-          <Bookmark size={17} fill={favorite ? "currentColor" : "none"} />
+          <Bookmark size={18} fill={favorite ? "currentColor" : "none"} />
         </button>
-        <div className="photo-gradient" />
-        <div className="golfer-name">
-          <button onClick={onOpen}>
-            {p.name}
-            <span>, {p.age}</span>
-            {p.verified && <ShieldCheck size={18} />}
-          </button>
-          <span>
-            <MapPin size={12} />
-            {p.city}, Gto.
-          </span>
-        </div>
-      </div>
+      </header>
       <div className="golfer-details">
         <div className="golfer-meta">
+          <span className="match-pill">{match.score}% compatible</span>
           <span className="handicap-chip">
             HCP <strong>{p.handicap ?? "S/H"}</strong>
           </span>
@@ -2463,7 +2427,7 @@ function Rounds({
         </div>
       ) : (
         <Empty
-          title="El primer score es el comienzo"
+          title="Todavía no tienes scores"
           description="Registra una ronda, hoyo por hoyo, y construye tu historial."
           action={<Button onClick={onNew}>Registrar mi primera ronda</Button>}
         />
@@ -2636,7 +2600,6 @@ function Availability({
   return (
     <>
       <SectionHeading
-        eyebrow="ESPONTÁNEO TAMBIÉN ES UN GRAN PLAN"
         title="¿Quién juega hoy?"
         description="Publica tu disponibilidad temporal y encuentra compañía."
         action={
