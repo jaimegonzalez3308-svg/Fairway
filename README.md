@@ -282,3 +282,17 @@ Antes de activar el proveedor, el botón muestra un aviso y permite seguir usand
 Para eliminar una cuenta creada con Google, crea primero una contraseña desde **Ajustes → Crear o cambiar contraseña**. Después utiliza Eliminar mi cuenta: se mantienen la verificación de contraseña reciente, el enlace nuevo por correo y la confirmación final escribiendo ELIMINAR.
 
 Referencias: [Google con Supabase](https://supabase.com/docs/guides/auth/social-login/auth-google), [redirecciones](https://supabase.com/docs/guides/auth/redirect-urls), [vinculación de identidades](https://supabase.com/docs/guides/auth/auth-identity-linking).
+
+
+## Landing pública de Fairway
+
+La portada para visitantes (`/`, `#descubrir` y `#inicio`) usa una composición editorial independiente de la interfaz de miembros: tipografía amplia, crema y verde profundo, fotografía local en WebP y una vista interactiva que permite combinar 9/18 hoyos, estilo y momento para jugar. El plan es un ejemplo claramente identificado; no crea partidas ni realiza reservas. El directorio utiliza la consulta pública existente. Las llamadas a crear cuenta e iniciar sesión abren los formularios actuales, incluido Google. Los miembros conservan su aplicación y pueden visitar la portada con `#inicio`.
+
+Incluye navegación móvil, enlace para saltar al contenido, controles de selección con `aria-pressed`, resultados anunciados con `aria-live`, preguntas desplegables nativas y animaciones breves. Las entradas al hacer scroll usan IntersectionObserver; la información sigue visible cuando no hay soporte. `prefers-reduced-motion` desactiva el movimiento. No se agregaron dependencias ni cambios en Supabase.
+
+Criterios consultados: [NNGroup: principios de una homepage](https://www.nngroup.com/articles/homepage-design-principles/), [web.dev: animaciones eficientes](https://web.dev/articles/animations-guide), [web.dev: preferencias de movimiento reducido](https://web.dev/articles/prefers-reduced-motion), [W3C: pausar, detener u ocultar movimiento](https://www.w3.org/WAI/WCAG21/Understanding/pause-stop-hide.html).
+
+Fotografía principal: [Keith Tanner en Unsplash](https://unsplash.com/photos/aerial-view-of-a-beautiful-golf-course-4WSLeNydrlo). Fotografía de swing: imagen de Unsplash ya utilizada por Fairway (`photo-1535131749006-b7f58c99034b`). Son imágenes ilustrativas; no representan un club de León ni miembros reales. Se sirven desde `public/images` en WebP para evitar descargas de terceros durante la visita.
+
+
+Validación de la landing: TypeScript y compilación estática correctos, 87 pruebas existentes aprobadas y respuesta HTTP 200 de la portada local. La inspección visual e interacción en navegador de escritorio/móvil quedan sin verificar: el control de Chrome no respondió durante esta actualización. No se simularon inicios de sesión ni se crearon partidas reales como prueba.

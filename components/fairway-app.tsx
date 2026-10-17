@@ -58,6 +58,7 @@ import { cn, dateFormat, timeFormat } from "@/lib/utils";
 import { Button, Modal, Field, Empty, SectionHeading, InlineLink } from "./ui";
 import { AuthForm, ProfileForm, GameForm, ReviewForm } from "./forms";
 import { GoogleOnboarding } from "./google-onboarding";
+import { LandingPage } from "./landing-page";
 import { Scorecard } from "./scorecard";
 import { Stats } from "./stats";
 import { Community } from "./community";
@@ -498,6 +499,54 @@ export default function FairwayApp() {
   const currentGame = game;
   if (data.user && data.needsGoogleProfile)
     return <GoogleOnboarding data={data} />;
+  if (page === "inicio" || (!data.user && page === "descubrir"))
+    return (
+      <>
+        {data.error && (
+          <div role="alert" className="error-banner">
+            {data.error}
+            <button onClick={() => void data.reload()}>Reintentar</button>
+          </div>
+        )}
+        <LandingPage
+          onSignup={() => (data.user ? go("descubrir") : openAuth("signup"))}
+          onLogin={() => (data.user ? go("perfil") : openAuth("login"))}
+          onClubs={() => go("clubes")}
+          onPrivacy={() => go("privacidad")}
+          clubs={data.clubs}
+          liveDirectory={data.publicDirectoryLive}
+          signedIn={!!data.user}
+        />
+        {modal === "auth" && (
+          <Modal
+            title={
+              authMode === "signup"
+                ? "Crea tu cuenta en Fairway"
+                : "Bienvenido a Fairway"
+            }
+            onClose={close}
+            soft
+          >
+            <AuthForm
+              data={data}
+              initialMessage={authNotice}
+              initialMode={authMode}
+              onDone={() => {
+                setAuthNotice("");
+                setModal(null);
+                setPage("perfil");
+                window.history.replaceState(
+                  null,
+                  "",
+                  location.pathname + location.search + "#perfil",
+                );
+                window.scrollTo({ top: 0, behavior: "instant" });
+              }}
+            />
+          </Modal>
+        )}
+      </>
+    );
   return (
     <div
       className={cn(
@@ -820,9 +869,6 @@ export default function FairwayApp() {
             </div>
           ) : !hasAuth ? (
             <>
-              {page === "inicio" && (
-                <Welcome onAuth={() => openAuth("signup")} />
-              )}
               {page === "descubrir" && (
                 <GuestDiscover
                   onClubs={() => go("clubes")}
@@ -848,9 +894,6 @@ export default function FairwayApp() {
             </>
           ) : (
             <>
-              {page === "inicio" && (
-                <Welcome onAuth={() => openAuth("signup")} />
-              )}
               {page === "descubrir" && (
                 <>
                   <SectionHeading
@@ -2504,44 +2547,6 @@ function FilterForm({
         </Button>
       </div>
     </form>
-  );
-}
-function Welcome({ onAuth }: { onAuth: () => void }) {
-  return (
-    <section className="welcome">
-      <span className="eyebrow">FAIRWAY · LEÓN, GUANAJUATO</span>
-      <h1>
-        El golf es mejor
-        <br />
-        cuando se comparte.
-      </h1>
-      <p>
-        Encuentra golfistas que comparten tu ritmo. Arma tu próximo foursome y
-        lleva un registro de cada gran ronda.
-      </p>
-      <Button onClick={onAuth}>
-        Encuentra tu comunidad
-        <ArrowRight size={18} />
-      </Button>
-      <div className="welcome-image" />
-      <div className="welcome-features">
-        <div>
-          <Compass size={25} />
-          <h3>Encuentra tu foursome</h3>
-          <p>Compatibilidad clara según tu club, estilo y disponibilidad.</p>
-        </div>
-        <div>
-          <Flag size={25} />
-          <h3>Nos vemos en el tee</h3>
-          <p>Organiza partidas y aprueba a tus compañeros.</p>
-        </div>
-        <div>
-          <TrendingUp size={25} />
-          <h3>Cada golpe cuenta</h3>
-          <p>Scorecards y estadísticas para seguir tu progreso.</p>
-        </div>
-      </div>
-    </section>
   );
 }
 function Availability({

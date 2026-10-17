@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import "./clubhouse.css";
 import "./hierarchy.css";
+import "./landing.css";
 
 const inter = localFont({
   src: [
