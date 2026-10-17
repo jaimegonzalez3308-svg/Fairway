@@ -42,7 +42,12 @@ import {
 } from "lucide-react";
 import { useFairway } from "@/lib/use-fairway";
 import { supabase } from "@/lib/supabase";
-import { authReturnError, routeFromHash } from "@/lib/auth";
+import {
+  authReturnError,
+  routeFromHash,
+  completedAuthReturnUrl,
+  passwordRecoveryError,
+} from "@/lib/auth";
 import {
   compatibility,
   matchesFilters,
@@ -59,6 +64,7 @@ import { Button, Modal, Field, Empty, SectionHeading, InlineLink } from "./ui";
 import { AuthForm, ProfileForm, GameForm, ReviewForm } from "./forms";
 import { GoogleOnboarding } from "./google-onboarding";
 import { LandingPage } from "./landing-page";
+import { PasswordRecovery } from "./password-recovery";
 import { Scorecard } from "./scorecard";
 import { Stats } from "./stats";
 import { Community } from "./community";
@@ -222,6 +228,7 @@ export default function FairwayApp() {
       data.user &&
       !data.loading &&
       !deletionReturn.current &&
+      !data.passwordRecovery &&
       !["delete-account", "auth"].includes(modal || "") &&
       data.me.id === data.user.id &&
       data.me.availability.length === 0 &&
@@ -231,11 +238,12 @@ export default function FairwayApp() {
       onboarded.current = data.user.id;
       setModal("edit-profile");
     }
-  }, [data.user, data.loading, data.me]);
+  }, [data.user, data.loading, data.me, data.passwordRecovery]);
   useEffect(() => {
     const id = sharedProfileId(location.search);
     if (
       !id ||
+      data.passwordRecovery ||
       data.loading ||
       !data.user ||
       !supabase ||
@@ -278,8 +286,9 @@ export default function FairwayApp() {
       current = false;
       sharedProfileHandled.current = null;
     };
-  }, [data.user?.id, data.loading]);
+  }, [data.user?.id, data.loading, data.passwordRecovery]);
   function go(p: string) {
+    if (p === "inicio" && data.user) p = "descubrir";
     setPage(p);
     setMobileOpen(false);
     if (!requiresAccount(p)) lastPublicPage.current = p;
@@ -297,8 +306,7 @@ export default function FairwayApp() {
       { id: "inicio" },
       { id: "privacidad" },
     ].map((n) => n.id);
-    const recovery =
-      new URLSearchParams(location.search).get("recovery") === "1";
+    const recovery = data.passwordRecovery;
     const deletion =
       new URLSearchParams(location.search).get("delete_account") === "1";
     if (deletion) {
@@ -324,17 +332,27 @@ export default function FairwayApp() {
       return true;
     };
     const change = () => {
-      if (!handleReturnError())
-        setPage(
-          recovery || deletion
-            ? "ajustes"
-            : routeFromHash(location.hash, routes),
-        );
+      if (recovery) {
+        setPage("ajustes");
+        return;
+      }
+      if (!handleReturnError()) {
+        const next = deletion
+          ? "ajustes"
+          : routeFromHash(location.hash, routes, !!data.user);
+        setPage(next);
+        if (data.user && location.hash === "#inicio")
+          window.history.replaceState(
+            null,
+            "",
+            completedAuthReturnUrl(location.href, next),
+          );
+      }
     };
     change();
     window.addEventListener("hashchange", change);
     return () => window.removeEventListener("hashchange", change);
-  }, []);
+  }, [data.user?.id, data.passwordRecovery]);
   useEffect(() => {
     if (!supabase || !data.user) return;
     void supabase
@@ -497,9 +515,45 @@ export default function FairwayApp() {
     };
   }, [modal, selectedGameId, data.user?.id, data.games, data.notify]);
   const currentGame = game;
+  if (!data.authReady)
+    return (
+      <main className="auth-screen">
+        <section className="panel" role="status">
+          <p>Recuperando tu sesión…</p>
+        </section>
+      </main>
+    );
+  if (data.passwordRecovery)
+    return (
+      <PasswordRecovery
+        ready={data.authReady}
+        signedIn={!!data.user}
+        error={passwordRecoveryError(data.authReturnIssue)}
+        onDone={() => {
+          data.finishPasswordRecovery();
+          setModal(null);
+          setPage("descubrir");
+          window.history.replaceState(
+            null,
+            "",
+            completedAuthReturnUrl(location.href, "descubrir"),
+          );
+        }}
+        onExit={() => {
+          data.finishPasswordRecovery();
+          setPage("descubrir");
+          window.history.replaceState(
+            null,
+            "",
+            completedAuthReturnUrl(location.href, "descubrir"),
+          );
+          if (!data.user) openAuth("login");
+        }}
+      />
+    );
   if (data.user && data.needsGoogleProfile)
     return <GoogleOnboarding data={data} />;
-  if (page === "inicio" || (!data.user && page === "descubrir"))
+  if (!data.user && (page === "inicio" || page === "descubrir"))
     return (
       <>
         {data.error && (

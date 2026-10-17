@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
 import type { User } from "@supabase/supabase-js";
-import { supabase } from "./supabase";
+import { supabase, initialAuthReturn } from "./supabase";
 import {
   demoMe,
   demoProfiles,
@@ -52,6 +52,11 @@ export type Notification = {
 };
 export function useFairway() {
   const [user, setUser] = useState<User | null>(null),
+    [authReady, setAuthReady] = useState(!supabase),
+    [passwordRecovery, setPasswordRecovery] = useState(
+      initialAuthReturn.recovery,
+    ),
+    [authReturnIssue, setAuthReturnIssue] = useState(initialAuthReturn.error),
     [loading, setLoading] = useState(!!supabase),
     [error, setError] = useState(""),
     [toast, setToast] = useState("");
@@ -199,11 +204,19 @@ export function useFairway() {
   useEffect(() => {
     if (!supabase) return;
     supabase.auth
-      .getSession()
+      .initialize()
+      .then(({ error }) => {
+        if (error) setAuthReturnIssue(authErrorMessage(error));
+        return supabase!.auth.getSession();
+      })
       .then(({ data, error }) => {
-        if (error) setError(authErrorMessage(error));
+        if (error) {
+          setError(authErrorMessage(error));
+          setAuthReturnIssue(authErrorMessage(error));
+        }
         currentUserId.current = data.session?.user.id;
         setUser(data.session?.user ?? null);
+        setAuthReady(true);
         if (data.session?.user) void load(data.session.user);
         else setLoading(false);
       })
@@ -213,8 +226,11 @@ export function useFairway() {
         );
         setLoading(false);
         setPartiesAvailable(false);
+        setAuthReady(true);
       });
-    const { data } = supabase.auth.onAuthStateChange((_e, s) => {
+    const { data } = supabase.auth.onAuthStateChange((event, s) => {
+      if (event === "PASSWORD_RECOVERY") setPasswordRecovery(true);
+      if (event === "SIGNED_OUT") setPasswordRecovery(false);
       currentUserId.current = s?.user.id;
       setUser(s?.user ?? null);
       if (s?.user) setTimeout(() => void load(s.user), 0);
@@ -403,6 +419,13 @@ export function useFairway() {
   }
   return {
     user,
+    authReady,
+    passwordRecovery,
+    authReturnIssue,
+    finishPasswordRecovery: () => {
+      setPasswordRecovery(false);
+      setAuthReturnIssue(null);
+    },
     demo,
     loading,
     error,

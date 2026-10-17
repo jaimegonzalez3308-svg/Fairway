@@ -182,6 +182,18 @@ El error `otp_expired` puede indicar un enlace vencido o que ya se utilizó. La 
 
 Si personalizaste la plantilla **Confirm signup**, revisa que use el enlace de verificación de Supabase (`{{ .ConfirmationURL }}`) y no un enlace directo a localhost. No desactives Confirm Email como solución. Referencias: [Redirect URLs](https://supabase.com/docs/guides/auth/redirect-urls), [Reenviar confirmación](https://supabase.com/docs/reference/javascript/auth-resend).
 
+## Recuperación de contraseña y regreso con sesión activa
+
+Fairway espera a que Supabase termine de recuperar la sesión antes de mostrar una pantalla. Los visitantes ven la portada y los miembros entran a la aplicación, también al abrir `#inicio`. Los enlaces a partidas, amigos y otras pantallas mantienen su destino.
+
+**Olvidé mi contraseña** abre un formulario de correo independiente: valida la dirección, muestra el progreso, permite reintentar después de 60 segundos y comunica errores reales del proveedor. El enlace vuelve a `/?recovery=1`. La app conserva la intención de recuperación antes de que Supabase consuma el fragmento de la URL y escucha `PASSWORD_RECOVERY`. La pantalla de contraseña tiene prioridad sobre el perfil y el onboarding, exige una sesión y dos contraseñas coincidentes de al menos 10 caracteres, y solo anuncia éxito si `updateUser` termina sin error. Un enlace inválido o vencido permite pedir otro. Terminar o cancelar limpia los parámetros de autenticación sin borrar un perfil compartido.
+
+Los formularios de alta y reenvío de confirmación conservan `emailRedirectTo` al dominio público. Iniciar sesión acepta la contraseña existente aunque tenga menos de 10 caracteres; el mínimo de 10 se exige al crear o cambiar una contraseña. Los fallos de conexión liberan el botón para reintentar.
+
+La entrega depende también de **Supabase → Authentication → Email / SMTP Settings**. El [SMTP predeterminado de Supabase](https://supabase.com/docs/guides/auth/auth-smtp) solo envía a direcciones del equipo del proyecto y tiene límites de prueba; para enviar a usuarios públicos hay que configurar SMTP propio. Las plantillas Confirm signup, Reset password y Magic Link deben usar `{{ .ConfirmationURL }}`. No deben contener enlaces fijos ni seguimiento que modifique el enlace. Mantener la confirmación de correo activada.
+
+La verificación del backend público confirmó que Email y Google están habilitados y que un enlace de recuperación inválido regresa al dominio público con `recovery=1` y el error correspondiente. Las pruebas de regresión cubren rutas con sesión activa, limpieza del callback, solicitud real del SDK con transporte simulado, fallos de entrega y validación de la nueva contraseña. Un HTTP 200 al solicitar un correo no prueba que llegó a la bandeja: confirmar recepción, abrir el mensaje más reciente y cambiar la contraseña requiere una prueba con el propietario. No se almacenan contraseñas ni enlaces de recuperación en el repositorio.
+
 ## Acceso público y eliminación segura de cuenta
 
 Sin cuenta se puede abrir Inicio, Descubrir (presentación de las funciones), Clubes y Privacidad. Las demás secciones muestran un diálogo con fondo difuminado y opciones para iniciar sesión o crear una cuenta. Los perfiles y conversaciones requieren autenticación. El directorio público consulta solo las columnas públicas de clubes; si faltan permisos muestra un catálogo de referencia claramente identificado.
@@ -286,7 +298,7 @@ Referencias: [Google con Supabase](https://supabase.com/docs/guides/auth/social-
 
 ## Landing pública de Fairway
 
-La portada para visitantes (`/`, `#descubrir` y `#inicio`) usa una composición editorial independiente de la interfaz de miembros: tipografía amplia, crema con grano de papel, verde profundo y un acento amarillo de lápiz, fotografía ilustrativa en WebP y una vista interactiva que permite combinar 9/18 hoyos, estilo y momento para jugar. El plan es un ejemplo claramente identificado; no crea partidas ni realiza reservas. El directorio utiliza la consulta pública existente. Las llamadas a crear cuenta e iniciar sesión abren los formularios actuales, incluido Google. Los miembros conservan su aplicación y pueden visitar la portada con `#inicio`.
+La portada para visitantes (`/`, `#descubrir` y `#inicio`) usa una composición editorial independiente de la interfaz de miembros: tipografía amplia, crema con grano de papel, verde profundo y un acento amarillo de lápiz, fotografía ilustrativa en WebP y una vista interactiva que permite combinar 9/18 hoyos, estilo y momento para jugar. El plan es un ejemplo claramente identificado; no crea partidas ni realiza reservas. El directorio utiliza la consulta pública existente. Las llamadas a crear cuenta e iniciar sesión abren los formularios actuales, incluido Google. Al reabrir la web, Fairway espera a recuperar la sesión antes de mostrar la portada. Una sesión activa entra a Descubrir incluso si el enlace contiene `#inicio`; las demás pantallas enlazadas se conservan.
 
 Incluye navegación móvil, enlace para saltar al contenido, controles de selección con `aria-pressed`, resultados anunciados con `aria-live`, preguntas desplegables nativas y animaciones breves. Las entradas al hacer scroll usan IntersectionObserver; la información sigue visible cuando no hay soporte. `prefers-reduced-motion` desactiva el movimiento. No se agregaron dependencias ni cambios en Supabase.
 
@@ -297,4 +309,4 @@ Criterios consultados: [NNGroup: principios de una homepage](https://www.nngroup
 Fotografía principal: [Keith Tanner en Unsplash](https://unsplash.com/photos/aerial-view-of-a-beautiful-golf-course-4WSLeNydrlo). Fotografía de swing: imagen de Unsplash ya utilizada por Fairway (`photo-1535131749006-b7f58c99034b`). Son imágenes ilustrativas; no representan un club de León ni miembros reales. Se sirven desde `public/images` en WebP para evitar descargas de terceros durante la visita.
 
 
-Validación de la landing: TypeScript y compilación estática correctos, 87 pruebas existentes aprobadas y respuesta HTTP 200 de la portada local. La inspección visual e interacción en navegador de escritorio/móvil quedan sin verificar: el control de Chrome no respondió durante esta actualización. No se simularon inicios de sesión ni se crearon partidas reales como prueba.
+Validación de la landing: TypeScript y compilación estática correctos, 92 pruebas aprobadas y respuesta HTTP 200 de la portada local. La inspección visual e interacción en navegador de escritorio/móvil quedan sin verificar: el control de Chrome no respondió durante esta actualización. No se simularon inicios de sesión ni se crearon partidas reales como prueba.

@@ -1313,6 +1313,28 @@ h1 {
   width: 100%;
   max-width: 460px;
 }
+.auth-screen {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+.auth-screen > .panel {
+  width: 100%;
+  max-width: 460px;
+}
+.auth-screen h1 {
+  font-size: 28px;
+  line-height: 1.2;
+  margin: 12px 0 22px;
+}
+.auth-screen p {
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+.auth-screen .form p {
+  margin-bottom: 0;
+}
 .notice {
   padding: 13px 15px;
   border-radius: 9px;

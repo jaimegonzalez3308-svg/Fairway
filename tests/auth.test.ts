@@ -5,8 +5,42 @@ import {
   authErrorMessage,
   authReturnError,
   routeFromHash,
+  isPasswordRecoveryReturn,
+  completedAuthReturnUrl,
+  passwordRecoveryError,
 } from "../lib/auth";
 const origin = "https://fairway-leon-golf.honeyring4.chatgpt.site";
+test("una sesión activa evita Inicio y conserva pantallas enlazadas", () => {
+  const routes = ["inicio", "descubrir", "amigos", "partidas", "ajustes"];
+  assert.equal(routeFromHash("#inicio", routes, true), "descubrir");
+  assert.equal(routeFromHash("", routes, true), "descubrir");
+  assert.equal(routeFromHash("#partidas", routes, true), "partidas");
+  assert.equal(routeFromHash("#amigos", routes, true), "amigos");
+  assert.equal(routeFromHash("#inicio", routes, false), "inicio");
+});
+test("la recuperación tiene prioridad sobre la ruta y limpia solo parámetros de autenticación al terminar", () => {
+  assert.equal(isPasswordRecoveryReturn("#inicio", "?recovery=1"), true);
+  assert.equal(
+    isPasswordRecoveryReturn("#type=recovery&access_token=example"),
+    true,
+  );
+  assert.equal(
+    isPasswordRecoveryReturn("#type=signup&access_token=example"),
+    false,
+  );
+  assert.equal(isPasswordRecoveryReturn("#ajustes"), false);
+  assert.equal(
+    completedAuthReturnUrl(
+      origin +
+        "/?recovery=1&error=access_denied&error_code=otp_expired&error_description=untrusted&golfista=example#access_token=example",
+      "descubrir",
+    ),
+    "/?golfista=example#descubrir",
+  );
+  assert.equal(passwordRecoveryError(null), null);
+  assert.match(passwordRecoveryError("otp_expired")!, /recuperación/);
+  assert.doesNotMatch(passwordRecoveryError("untrusted")!, /untrusted/);
+});
 test("confirmar el registro conserva el perfil compartido y rechaza destinos arbitrarios", () => {
   const id = "b1efb86c-4e02-4ad5-b942-0c4c7b48ebcb";
   assert.equal(

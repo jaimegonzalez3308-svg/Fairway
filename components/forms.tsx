@@ -18,9 +18,10 @@ import { days, profileSchema, type Profile, type Game } from "@/lib/domain";
 import type { FairwayData } from "@/lib/use-fairway";
 import { authErrorMessage, authRedirectUrl } from "@/lib/auth";
 import { golfDate, golfDateAfter } from "@/lib/parties";
+import { PasswordResetRequest } from "./password-recovery";
 const authSchema = z.object({
-  email: z.email("Escribe un correo válido."),
-  password: z.string().min(10, "Usa al menos 10 caracteres."),
+  email: z.string().trim().pipe(z.email("Escribe un correo válido.")),
+  password: z.string().min(1, "Escribe tu contraseña."),
 });
 export function AuthForm({
   data,
@@ -38,6 +39,7 @@ export function AuthForm({
     [googleBusy, setGoogleBusy] = useState(false),
     [message, setMessage] = useState(initialMessage),
     [resendBusy, setResendBusy] = useState(false),
+    [recovering, setRecovering] = useState(false),
     [resendWait, setResendWait] = useState(0);
   useEffect(() => {
     if (resendWait <= 0) return;
@@ -52,6 +54,13 @@ export function AuthForm({
   } = useForm<z.infer<typeof authSchema>>({
     resolver: zodResolver(authSchema),
   });
+  if (recovering)
+    return (
+      <PasswordResetRequest
+        initialEmail={getValues("email")}
+        onBack={() => setRecovering(false)}
+      />
+    );
   return (
     <>
       <p className="form-intro">
@@ -128,32 +137,45 @@ export function AuthForm({
             setBusy(false);
             return;
           }
-          const result = signup
-            ? await supabase.auth.signUp({
-                ...values,
-                options: {
-                  data: { name: fd.get("name"), age },
-                  emailRedirectTo: authRedirectUrl(
-                    window.location.origin,
-                    false,
-                    window.location.search,
-                  ),
-                },
-              })
-            : await supabase.auth.signInWithPassword(values);
-          setBusy(false);
-          if (result.error) setMessage(authErrorMessage(result.error));
-          else if (signup && !result.data.session)
+          if (signup && values.password.length < 10) {
+            setMessage("Usa al menos 10 caracteres en tu contraseña.");
+            setBusy(false);
+            return;
+          }
+          try {
+            const result = signup
+              ? await supabase.auth.signUp({
+                  ...values,
+                  options: {
+                    data: { name: fd.get("name"), age },
+                    emailRedirectTo: authRedirectUrl(
+                      window.location.origin,
+                      false,
+                      window.location.search,
+                    ),
+                  },
+                })
+              : await supabase.auth.signInWithPassword(values);
+            setBusy(false);
+            if (result.error) setMessage(authErrorMessage(result.error));
+            else if (signup && !result.data.session)
+              setMessage(
+                "Revisa tu correo y confirma tu cuenta antes de iniciar sesión.",
+              );
+            else {
+              data.notify(
+                signup
+                  ? "Cuenta creada. Completa tu perfil."
+                  : "Bienvenido de vuelta.",
+              );
+              onDone();
+            }
+          } catch {
             setMessage(
-              "Revisa tu correo y confirma tu cuenta antes de iniciar sesión.",
+              "No se pudo conectar. Revisa tu conexión e intenta de nuevo.",
             );
-          else {
-            data.notify(
-              signup
-                ? "Cuenta creada. Completa tu perfil."
-                : "Bienvenido de vuelta.",
-            );
-            onDone();
+          } finally {
+            setBusy(false);
           }
         })}
         id="auth-form"
@@ -265,24 +287,7 @@ export function AuthForm({
             type="button"
             className="text-button"
             disabled={!supabase || busy || resendBusy || googleBusy}
-            onClick={async () => {
-              const input = document.querySelector<HTMLInputElement>(
-                "#auth-form input[type=email]",
-              );
-              if (!input?.value || !supabase) {
-                setMessage("Escribe primero tu correo.");
-                return;
-              }
-              const { error } = await supabase.auth.resetPasswordForEmail(
-                input.value,
-                { redirectTo: authRedirectUrl(window.location.origin, true) },
-              );
-              setMessage(
-                error
-                  ? authErrorMessage(error)
-                  : "Si existe la cuenta, recibirás un enlace de recuperación.",
-              );
-            }}
+            onClick={() => setRecovering(true)}
           >
             Olvidé mi contraseña
           </button>

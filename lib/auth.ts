@@ -19,6 +19,17 @@ export function authErrorMessage(error: {
   status?: number;
 }): string {
   switch (error.code) {
+    case "email_address_not_authorized":
+      return "El servicio de correo todavía no permite enviar a esta dirección. El administrador debe configurar el correo de Fairway en Supabase. Puedes acceder con Google mientras tanto.";
+    case "email_provider_disabled":
+      return "El acceso por correo aún no está habilitado. Puedes acceder con Google.";
+    case "same_password":
+      return "Elige una contraseña diferente de la anterior.";
+    case "weak_password":
+      return "La contraseña no cumple los requisitos. Usa al menos 10 caracteres y evita contraseñas comunes.";
+    case "session_not_found":
+    case "session_expired":
+      return "La sesión del enlace venció. Solicita otro correo de recuperación.";
     case "provider_disabled":
     case "unsupported_provider":
       return "El acceso con Google aún no está disponible. Puedes usar tu correo y contraseña.";
@@ -67,7 +78,37 @@ export function authReturnError(hash: string, search = ""): string | null {
 export function routeFromHash(
   hash: string,
   allowed: readonly string[],
+  signedIn = false,
 ): string {
   const candidate = hash.replace(/^#/, "");
+  if (signedIn && candidate === "inicio") return "descubrir";
   return allowed.includes(candidate) ? candidate : "descubrir";
+}
+
+// This identifies the intended screen; Supabase still verifies the email token.
+export function isPasswordRecoveryReturn(hash: string, search = ""): boolean {
+  return (
+    new URLSearchParams(search.replace(/^\?/, "")).get("recovery") === "1" ||
+    new URLSearchParams(hash.replace(/^#/, "")).get("type") === "recovery"
+  );
+}
+
+export function passwordRecoveryError(error: string | null): string | null {
+  return error
+    ? "El enlace de recuperación venció, ya se utilizó o no es válido. Solicita uno nuevo y abre únicamente el correo más reciente."
+    : null;
+}
+
+export function completedAuthReturnUrl(href: string, page: string): string {
+  const url = new URL(href);
+  for (const key of [
+    "recovery",
+    "error",
+    "error_code",
+    "error_description",
+    "code",
+  ])
+    url.searchParams.delete(key);
+  url.hash = page;
+  return url.pathname + url.search + url.hash;
 }
