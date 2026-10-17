@@ -13,7 +13,7 @@ import {
   CalendarDays,
 } from "lucide-react";
 import { Button, Field } from "./ui";
-import { supabase } from "@/lib/supabase";
+import { supabase, signInWithGoogle } from "@/lib/supabase";
 import { days, profileSchema, type Profile, type Game } from "@/lib/domain";
 import type { FairwayData } from "@/lib/use-fairway";
 import { authErrorMessage, authRedirectUrl } from "@/lib/auth";
@@ -35,6 +35,7 @@ export function AuthForm({
 }) {
   const [signup, setSignup] = useState(initialMode === "signup"),
     [busy, setBusy] = useState(false),
+    [googleBusy, setGoogleBusy] = useState(false),
     [message, setMessage] = useState(initialMessage),
     [resendBusy, setResendBusy] = useState(false),
     [resendWait, setResendWait] = useState(0);
@@ -63,6 +64,56 @@ export function AuthForm({
           Supabase.
         </div>
       )}
+      <Button
+        type="button"
+        variant="outline"
+        className="google-signin"
+        disabled={!supabase || busy || resendBusy || googleBusy}
+        onClick={async () => {
+          if (!supabase || googleBusy) return;
+          setGoogleBusy(true);
+          setMessage("");
+          try {
+            const { error } = await signInWithGoogle(
+              authRedirectUrl(
+                window.location.origin,
+                false,
+                window.location.search,
+              ),
+            );
+            if (error) throw error;
+          } catch (error) {
+            setMessage(
+              authErrorMessage(error as { code?: string; message?: string }),
+            );
+          } finally {
+            setGoogleBusy(false);
+          }
+        }}
+      >
+        <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
+          <path
+            fill="#4285F4"
+            d="M43.61 24.46c0-1.36-.12-2.66-.35-3.92H24.8v7.42h10.54a9 9 0 0 1-3.91 5.91v4.91h6.34c3.71-3.42 5.84-8.46 5.84-14.32Z"
+          />
+          <path
+            fill="#34A853"
+            d="M24.8 43.6c5.3 0 9.74-1.76 12.98-4.82l-6.34-4.91c-1.76 1.18-4.01 1.89-6.64 1.89-5.1 0-9.42-3.44-10.96-8.07H7.3v5.06A19.6 19.6 0 0 0 24.8 43.6Z"
+          />
+          <path
+            fill="#FBBC05"
+            d="M13.84 27.69a11.76 11.76 0 0 1 0-7.38v-5.06H7.3a19.6 19.6 0 0 0 0 17.5l6.54-5.06Z"
+          />
+          <path
+            fill="#EA4335"
+            d="M24.8 12.24c2.88 0 5.45.99 7.49 2.94l5.62-5.62A18.8 18.8 0 0 0 24.8 4.4 19.6 19.6 0 0 0 7.3 15.25l6.54 5.06c1.54-4.63 5.86-8.07 10.96-8.07Z"
+          />
+        </svg>
+        {googleBusy ? "Conectando con Google…" : "Continuar con Google"}
+      </Button>
+      <div className="auth-divider">
+        <span>o usa tu correo</span>
+      </div>
       <form
         className="form"
         onSubmit={handleSubmit(async (values) => {
@@ -145,13 +196,14 @@ export function AuthForm({
             {message}
           </div>
         )}
-        <Button disabled={busy || resendBusy || !supabase}>
+        <Button disabled={busy || resendBusy || googleBusy || !supabase}>
           {busy ? "Conectando…" : signup ? "Crear cuenta" : "Iniciar sesión"}
           <ArrowRight size={17} />
         </Button>
         <button
           type="button"
           className="text-button"
+          disabled={busy || resendBusy || googleBusy}
           onClick={() => {
             setSignup(!signup);
             setMessage("");
@@ -162,7 +214,9 @@ export function AuthForm({
         <button
           type="button"
           className="text-button"
-          disabled={!supabase || busy || resendBusy || resendWait > 0}
+          disabled={
+            !supabase || busy || resendBusy || googleBusy || resendWait > 0
+          }
           onClick={async () => {
             const email = getValues("email").trim();
             if (!z.email().safeParse(email).success || !supabase) {
@@ -210,6 +264,7 @@ export function AuthForm({
           <button
             type="button"
             className="text-button"
+            disabled={!supabase || busy || resendBusy || googleBusy}
             onClick={async () => {
               const input = document.querySelector<HTMLInputElement>(
                 "#auth-form input[type=email]",

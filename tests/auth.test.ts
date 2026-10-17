@@ -64,3 +64,66 @@ test("errores de correo no confirmado y límites de envío ofrecen el siguiente 
   );
   assert.match(authErrorMessage({ status: 429 }), /Espera/);
 });
+
+test("cancelar Google permite reintentar sin mostrar mensajes arbitrarios del proveedor", () => {
+  assert.match(
+    authReturnError("#error=access_denied&error_description=Untrusted")!,
+    /Google/,
+  );
+  assert.doesNotMatch(
+    authReturnError("#error=access_denied&error_description=Untrusted")!,
+    /Untrusted/,
+  );
+  assert.match(
+    authReturnError("", "?error=access_denied&error_code=access_denied")!,
+    /intentarlo de nuevo/,
+  );
+  assert.match(
+    authErrorMessage({ code: "provider_disabled" }),
+    /correo y contraseña/,
+  );
+});
+
+test("Google comprueba el proveedor antes de redirigir y conserva el destino permitido", async (t) => {
+  const oldUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const oldKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  process.env.NEXT_PUBLIC_SUPABASE_URL = "https://auth.example.invalid";
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = "test-public-key";
+  t.after(() => {
+    if (oldUrl === undefined) delete process.env.NEXT_PUBLIC_SUPABASE_URL;
+    else process.env.NEXT_PUBLIC_SUPABASE_URL = oldUrl;
+    if (oldKey === undefined)
+      delete process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+    else process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = oldKey;
+  });
+  const { supabase, signInWithGoogle } = await import("../lib/supabase");
+  const oauth = t.mock.method(supabase!.auth, "signInWithOAuth", async () => ({
+    data: { provider: "google", url: "https://accounts.google.com/" },
+    error: null,
+  }));
+  let enabled = false;
+  t.mock.method(globalThis, "fetch", async () =>
+    Response.json({ external: { google: enabled } }),
+  );
+  await assert.rejects(signInWithGoogle(origin + "/"), {
+    code: "provider_disabled",
+  });
+  assert.equal(oauth.mock.callCount(), 0);
+  enabled = true;
+  const redirect = authRedirectUrl(
+    origin,
+    false,
+    "?golfista=b1efb86c-4e02-4ad5-b942-0c4c7b48ebcb&next=https://evil.example",
+  );
+  await signInWithGoogle(redirect);
+  assert.deepEqual(oauth.mock.calls[0].arguments, [
+    {
+      provider: "google",
+      options: {
+        redirectTo:
+          origin + "/?golfista=b1efb86c-4e02-4ad5-b942-0c4c7b48ebcb#amigos",
+        queryParams: { prompt: "select_account" },
+      },
+    },
+  ]);
+});

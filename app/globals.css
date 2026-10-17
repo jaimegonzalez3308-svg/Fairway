@@ -1278,6 +1278,41 @@ h1 {
   color: #93a186;
   margin-top: 20px;
 }
+.google-signin {
+  width: 100%;
+  background: #fff;
+  color: #1f1f1f;
+  font-size: 14px;
+  min-height: 44px;
+}
+.google-signin svg {
+  flex-shrink: 0;
+}
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0;
+  font-size: 11px;
+  color: #7a8b71;
+}
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+.google-onboarding {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+.google-onboarding > .panel {
+  width: 100%;
+  max-width: 460px;
+}
 .notice {
   padding: 13px 15px;
   border-radius: 9px;

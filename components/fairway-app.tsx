@@ -57,6 +57,7 @@ import {
 import { cn, dateFormat, timeFormat } from "@/lib/utils";
 import { Button, Modal, Field, Empty, SectionHeading, InlineLink } from "./ui";
 import { AuthForm, ProfileForm, GameForm, ReviewForm } from "./forms";
+import { GoogleOnboarding } from "./google-onboarding";
 import { Scorecard } from "./scorecard";
 import { Stats } from "./stats";
 import { Community } from "./community";
@@ -495,6 +496,8 @@ export default function FairwayApp() {
     };
   }, [modal, selectedGameId, data.user?.id, data.games, data.notify]);
   const currentGame = game;
+  if (data.user && data.needsGoogleProfile)
+    return <GoogleOnboarding data={data} />;
   return (
     <div
       className={cn(

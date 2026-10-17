@@ -40,6 +40,9 @@ Supabase proporciona el inicio de sesión, la base de datos, el almacenamiento p
    - `supabase/migrations/202610150006_friends.sql`
    - `supabase/migrations/202610150007_stories.sql`
    - `supabase/migrations/202610160008_open_parties.sql`
+   - `supabase/migrations/202610160009_moderation.sql`
+   - `supabase/migrations/202610160010_moderation_everywhere.sql`
+   - `supabase/migrations/202610170011_google_auth.sql`
 
    Si aparece un error, detente y conserva el texto del error. No desactives RLS para solucionarlo. Las migraciones incluyen transacciones para evitar instalaciones parciales.
 
@@ -62,7 +65,7 @@ Realtime queda preparado por las migraciones para `messages` y `notifications`. 
 
 ## 3. Qué está implementado
 
-- Registro con correo y contraseña, confirmación, login, recuperación y cambio de contraseña mediante Supabase Auth. Alta limitada a 18+ tanto en formulario como en base de datos.
+- Registro con correo y contraseña, confirmación, login, recuperación y cambio de contraseña mediante Supabase Auth. Acceso con Google al activar el proveedor, con nombre, edad y consentimiento antes de habilitar el perfil. Alta limitada a 18+ tanto en formulario como en base de datos.
 - Perfil editable, foto y galería de hasta 6 imágenes, club declarado, handicap declarado opcional, disponibilidad, modalidades, estilos y preferencias.
 - Descubrimiento con filtros combinables y guardados en base de datos, búsqueda, favoritos y decisiones persistentes. Un perfil decidido deja de aparecer en recomendaciones; sigue siendo accesible desde favoritos si se guardó.
 - Compatibilidad determinista de 0 a 100 y razones visibles. Club: 30; al menos un día compartido: 30; misma modalidad: 20; diferencia de handicap de hasta 8: 10; mismo estilo: 10. Los factores desconocidos no suman puntos.
@@ -151,7 +154,7 @@ El núcleo del MVP está implementado y probado localmente. Supabase ya está co
 
 Antes de un lanzamiento público: completar el aviso de privacidad con datos del responsable y canal ARCO; configurar SMTP y protección antiabuso en Auth; verificar el catálogo de clubes y campos; definir operación de moderación y verificación; hacer revisión de seguridad contra el proyecto real. El consentimiento actual explica el uso básico de datos y no sustituye ese aviso completo.
 
-Quedan para fases posteriores: Google OAuth, retos, push, recomendaciones avanzadas, integración con clubes, subida de fotos a publicaciones, guardado de publicaciones, compartir perfiles/invitaciones dentro del chat, evolución histórica del handicap declarado y filtros de descubrimiento por hora, experiencia o múltiples clubes. La disponibilidad rápida sí permite fechas y horarios. El directorio no anuncia conteos totales públicos: solo perfiles visibles bajo RLS. Los logros actuales son Primera ronda, 10 rondas y Primer birdie, derivados de registros.
+Quedan para fases posteriores: retos, push, recomendaciones avanzadas, integración con clubes, subida de fotos a publicaciones, guardado de publicaciones, compartir perfiles/invitaciones dentro del chat, evolución histórica del handicap declarado y filtros de descubrimiento por hora, experiencia o múltiples clubes. La disponibilidad rápida sí permite fechas y horarios. El directorio no anuncia conteos totales públicos: solo perfiles visibles bajo RLS. Los logros actuales son Primera ronda, 10 rondas y Primer birdie, derivados de registros.
 
 La membresía declarada no concede acceso a un club. No existe integración con World Handicap System ni cálculo de un handicap oficial. El handicap declarado se mantiene separado de las estadísticas internas.
 
@@ -258,3 +261,24 @@ Al publicar una party, Fairway abre su chat. Al unirse directamente también se 
 En **Mensajes** los grupos se distinguen de los matches, muestran campo y fecha, lista de participantes y autor de cada mensaje. Los chats recién creados muestran un estado vacío real, sin mensajes inventados. Se actualiza la lista de conversaciones cada 20 segundos al estar la página visible, además del Realtime existente de mensajes y notificaciones. Las actualizaciones en segundo plano y el envío de mensajes conservan la pantalla montada para no interrumpir la escritura. Cambiar de conversación limpia el borrador para evitar enviarlo al grupo equivocado.
 
 No requiere SQL nuevo: utiliza la creación y las membresías de chat ya instaladas. Las pruebas de PostgreSQL comprueban chat único desde la creación, organizador incluido, historial compartido entre confirmados, separación de historiales entre parties, incorporación tras aprobación y rechazo de acceso para terceros o participantes que ya salieron. La consulta anidada de conversaciones con datos de la partida se comprobó contra la API real sin credenciales de usuario: Supabase reconoce las relaciones y rechaza el acceso anónimo. Falta la aceptación de la interfaz y Realtime con dos cuentas reales; no se han publicado parties ni enviado mensajes reales para probar esta mejora.
+
+
+## Acceso con Google
+
+El botón **Continuar con Google** está disponible tanto en Iniciar sesión como en Crear cuenta. Usa Supabase Auth y vuelve al mismo dominio, conservando el perfil compartido por QR cuando existe. En la primera visita se piden nombre, edad de 18 a 100 años y aceptación de privacidad. Google no proporciona la edad: no se inventa una ni se crea un perfil público antes de completar este paso. Hasta entonces no existe un rol activo y RLS bloquea el acceso a los perfiles y la actividad de miembros. Los registros por correo conservan su flujo actual.
+
+Para activarlo en la instancia publicada:
+
+1. Ejecuta **una sola vez** `supabase/migrations/202610170011_google_auth.sql`, después de las migraciones anteriores. Si tu base ya está actualizada hasta 010, ejecuta únicamente 011. No vuelvas a ejecutar el instalador inicial.
+2. En [Google Auth Platform](https://console.cloud.google.com/auth/overview), configura la aplicación Fairway (branding, público y datos de contacto). Solicita solo `openid`, correo y perfil. Si está en modo Testing, agrega las cuentas de prueba; para abrirlo al público, cambia el estado de publicación según los requisitos de Google.
+3. Crea un cliente OAuth de tipo **Web application**. Agrega como origen `https://fairway-leon-golf.honeyring4.chatgpt.site` y, para desarrollo, `http://localhost:3000` (también `http://127.0.0.1:3000` si lo utilizas).
+4. En **Supabase → Authentication → Sign In / Providers → Google**, copia la URL de callback (`https://TU-PROYECTO.supabase.co/auth/v1/callback`) y agrégala en **Authorized redirect URIs** del cliente de Google. Esta URL pertenece a Supabase, no al frontend.
+5. Copia **Client ID** y **Client Secret** de Google en ese proveedor de Supabase, habilítalo y guarda. El secreto se configura solo en Supabase: no lo agregues al código, a Git ni a variables `NEXT_PUBLIC_*`.
+6. En **Supabase → Authentication → URL Configuration**, mantén la web pública como Site URL y permite `https://fairway-leon-golf.honeyring4.chatgpt.site/**`, además de los orígenes locales que utilices. Publica el frontend actualizado.
+7. Prueba con una cuenta nueva de Google: selección de cuenta, regreso a Fairway, rechazo de edades menores de 18, aceptación de privacidad, perfil, cierre de sesión y nuevo acceso. Prueba también cancelar el consentimiento y abrir un QR antes de entrar. Si existe una cuenta con el mismo correo verificado, comprueba que Supabase vincula la identidad y conserva el perfil existente.
+
+Antes de activar el proveedor, el botón muestra un aviso y permite seguir usando correo y contraseña. La configuración de Google Cloud/Supabase y un acceso real requieren las cuentas del propietario; las pruebas locales no activan el proveedor ni publican la aplicación.
+
+Para eliminar una cuenta creada con Google, crea primero una contraseña desde **Ajustes → Crear o cambiar contraseña**. Después utiliza Eliminar mi cuenta: se mantienen la verificación de contraseña reciente, el enlace nuevo por correo y la confirmación final escribiendo ELIMINAR.
+
+Referencias: [Google con Supabase](https://supabase.com/docs/guides/auth/social-login/auth-google), [redirecciones](https://supabase.com/docs/guides/auth/redirect-urls), [vinculación de identidades](https://supabase.com/docs/guides/auth/auth-identity-linking).

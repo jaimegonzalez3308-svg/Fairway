@@ -67,6 +67,7 @@ export function useFairway() {
     [notifications, setNotifications] = useState<Notification[]>([]),
     [admin, setAdmin] = useState(false);
   const [publicDirectoryLive, setPublicDirectoryLive] = useState(false);
+  const [needsGoogleProfile, setNeedsGoogleProfile] = useState(false);
   const [partiesAvailable, setPartiesAvailable] = useState(!supabase);
   const currentUserId = useRef(user?.id);
   currentUserId.current = user?.id;
@@ -100,6 +101,18 @@ export function useFairway() {
     if (!quiet) setLoading(true);
     setError("");
     try {
+      // Un alta con Google no tiene perfil ni acceso privado hasta declarar su edad.
+      const ownProfile = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("id", u.id)
+        .maybeSingle();
+      if (currentUserId.current !== u.id) return;
+      if (ownProfile.error) throw ownProfile.error;
+      if (!ownProfile.data && u.app_metadata.provider === "google") {
+        setNeedsGoogleProfile(true);
+        return;
+      }
       const r = await Promise.all([
         supabase.from("profiles").select("*"),
         supabase.from("clubs").select("*"),
@@ -156,6 +169,7 @@ export function useFairway() {
       }[];
       if (currentUserId.current !== u.id) return;
       setMe(photos.find((p) => p.id === u.id) || own);
+      setNeedsGoogleProfile(false);
       setProfiles(
         photos
           .filter((x) => x.id !== u.id)
@@ -205,6 +219,7 @@ export function useFairway() {
       setUser(s?.user ?? null);
       if (s?.user) setTimeout(() => void load(s.user), 0);
       else {
+        setNeedsGoogleProfile(false);
         setMe(anonymousProfile);
         setDecided([]);
         setFavorites([]);
@@ -405,6 +420,7 @@ export function useFairway() {
     notifications,
     admin,
     publicDirectoryLive,
+    needsGoogleProfile,
     partiesAvailable,
     refreshGames,
     partyChat,

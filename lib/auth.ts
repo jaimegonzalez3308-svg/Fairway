@@ -19,6 +19,11 @@ export function authErrorMessage(error: {
   status?: number;
 }): string {
   switch (error.code) {
+    case "provider_disabled":
+    case "unsupported_provider":
+      return "El acceso con Google aún no está disponible. Puedes usar tu correo y contraseña.";
+    case "access_denied":
+      return "No se completó el acceso con Google. Puedes intentarlo de nuevo o usar tu correo y contraseña.";
     case "otp_expired":
       return "El enlace de correo ya se utilizó o venció. Si ya confirmaste tu cuenta, inicia sesión; si no, solicita un nuevo correo de confirmación.";
     case "email_not_confirmed":
@@ -45,13 +50,15 @@ export function authReturnError(hash: string, search = ""): string | null {
     const params = new URLSearchParams(value);
     if (params.has("error") || params.has("error_code")) {
       const code = params.get("error_code");
+      if (params.get("error") === "access_denied" && !code)
+        return authErrorMessage({ code: "access_denied" });
       if (code)
         return authErrorMessage({
           code,
           message:
-            "No se pudo validar el enlace de correo. Solicita uno nuevo o intenta iniciar sesión.",
+            "No se pudo completar el acceso. Intenta iniciar sesión de nuevo.",
         });
-      return "No se pudo validar el enlace de correo. Solicita uno nuevo o intenta iniciar sesión.";
+      return "No se pudo completar el acceso. Intenta iniciar sesión de nuevo.";
     }
   }
   return null;

@@ -181,6 +181,13 @@ export function DeleteAccountDialog({
         <p>
           Queremos asegurarnos de que eres tú. Primero verificamos tu contraseña
           y después tu correo.
+          {data.user?.app_metadata.providers?.includes("google") && (
+            <>
+              {" "}
+              Si entras con Google, primero puedes crear una contraseña en
+              Ajustes con «Crear o cambiar contraseña».
+            </>
+          )}
         </p>
       </div>
       <ol className="deletion-steps">

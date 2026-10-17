@@ -116,7 +116,7 @@ export function Settings({
             if (!error) setPassword("");
           }}
         >
-          <Field label="Cambiar contraseña">
+          <Field label="Crear o cambiar contraseña">
             <input
               type="password"
               minLength={10}
