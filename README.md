@@ -313,6 +313,8 @@ Validación de la landing: TypeScript y compilación estática correctos, 92 pru
 
 ## Accesibilidad
 
+Los controles usan formas según su función: las acciones principales conservan la silueta de píldora; los botones secundarios usan rectángulos de esquinas suaves, y las acciones discretas o de borrado tienen esquinas más rectas. Este criterio se mantiene en ambos modos visuales.
+
 El diseño anterior es el predeterminado. En **Ajustes → Accesibilidad → Modo de accesibilidad** se puede activar mayor contraste, texto más legible e indicadores de foco destacados. También hay un control en la página pública y en recuperación de contraseña. La preferencia se guarda en este navegador, se aplica antes de mostrar la página y se sincroniza entre pestañas; no depende de la cuenta.
 
 Las etiquetas/errores de formularios, navegación por teclado, anuncios del chat y resultados, estados de controles, tablas de scores y preferencias del sistema de movimiento/colores forzados permanecen activos en ambos modos. Consulta el [informe de accesibilidad](docs/accessibility.md) para las mediciones del modo activado, comprobaciones automatizadas y pruebas manuales pendientes. La revisión no equivale a una declaración de conformidad WCAG del sitio completo.

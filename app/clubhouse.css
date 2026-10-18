@@ -12,6 +12,8 @@
   --wash: #f0e7d6;
   --radius: 4px;
   --radius-control: 6px;
+  --radius-action: 999px;
+  --radius-quiet: 3px;
   --radius-dialog: 12px;
   --font-score: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
@@ -146,6 +148,26 @@ textarea::placeholder {
   border-color: #7a8c70;
 }
 
+/* Shape follows the action: pill CTAs, rectangular secondary/utility controls,
+   and quieter corners for text actions. Keep the existing colors and sizing. */
+.button.primary {
+  border-radius: var(--radius-action);
+}
+
+.button.outline {
+  border-radius: var(--radius-control);
+}
+
+.button.ghost,
+.button.danger-button,
+.danger-zone .button {
+  border-radius: var(--radius-quiet);
+}
+
+.modal-heading .icon-btn {
+  border-radius: var(--radius-quiet);
+}
+
 .section-heading {
   border-bottom: 2px solid var(--forest);
   padding-bottom: 22px;
@@ -222,7 +244,7 @@ textarea::placeholder {
 }
 
 .hero-content button {
-  border-radius: var(--radius-control);
+  border-radius: var(--radius-action);
   font-weight: 650;
   background: var(--paper);
   color: var(--forest);
