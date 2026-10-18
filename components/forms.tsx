@@ -22,7 +22,7 @@ import { PasswordResetRequest } from "./password-recovery";
 import { StarRatingInput } from "./player-rating";
 import { canRatePlayer, ratingColumns } from "@/lib/ratings";
 import { CityField } from "./city-field";
-import { DEFAULT_CITY } from "@/lib/cities";
+import { clubsForCity, DEFAULT_CITY } from "@/lib/cities";
 const authSchema = z.object({
   email: z.string().trim().pipe(z.email("Escribe un correo válido.")),
   password: z.string().min(1, "Escribe tu contraseña."),
@@ -354,10 +354,27 @@ export function ProfileForm({
     [photo, setPhoto] = useState<File | null>(null),
     [gallery, setGallery] = useState<File[]>([]),
     [keepGallery, setKeepGallery] = useState<string[]>(p.gallery || []);
+  const [showOtherCities, setShowOtherCities] = useState(false);
+  const [locating, setLocating] = useState(false);
+  const city = watch("city");
+  const chosenClubs = [watch("club_id"), ...watch("additional_clubs")];
+  const localClubs = clubsForCity(data.clubs, city);
+  const availableClubs = clubsForCity(
+    data.clubs,
+    city,
+    chosenClubs,
+    showOtherCities,
+  );
   return (
     <form
       className="form"
       onSubmit={handleSubmit(async (values) => {
+        if (locating) {
+          setErr(
+            "Espera a que termine la detección o elige tu ciudad manualmente.",
+          );
+          return;
+        }
         const parsed = profileSchema.safeParse(values);
         if (!parsed.success) {
           setErr(parsed.error.issues[0].message);
@@ -418,9 +435,14 @@ export function ProfileForm({
           <input type="number" min={18} max={100} {...register("age")} />
         </Field>
         <CityField
-          value={watch("city")}
+          value={city}
           onChange={(city) => setValue("city", city, { shouldDirty: true })}
           disabled={busy}
+          automaticAccountId={
+            !data.demo && !p.availability.length ? data.user?.id : undefined
+          }
+          cities={data.clubs.map((club) => club.city)}
+          onLocatingChange={setLocating}
         />
         <Field
           label="Handicap declarado"
@@ -434,16 +456,35 @@ export function ProfileForm({
             {...register("handicap")}
           />
         </Field>
-        <Field label="Club principal">
+        <Field
+          label="Club principal"
+          hint="Tu membresía es declarada. Elige tu club; la ubicación no lo selecciona por ti."
+        >
           <select {...register("club_id")}>
             <option value="">No pertenezco a ningún club</option>
-            {data.clubs.map((c) => (
+            {availableClubs.map((c) => (
               <option key={c.id} value={c.id}>
-                {c.name}
+                {c.name} · {c.city}
               </option>
             ))}
           </select>
         </Field>
+        <div className="city-field">
+          <p className="city-location-note" role="status">
+            {localClubs.length
+              ? `Clubes del directorio en ${city}: ${localClubs.length}.`
+              : `Todavía no tenemos clubes registrados en ${city || "esta ciudad"}. Puedes continuar sin club.`}{" "}
+            Se conservan los clubes que ya elegiste.
+          </p>
+          <label className="checkbox">
+            <input
+              type="checkbox"
+              checked={showOtherCities}
+              onChange={(event) => setShowOtherCities(event.target.checked)}
+            />
+            Ver también clubes de otras ciudades
+          </label>
+        </div>
         <Field label="Años jugando">
           <input type="number" min={0} {...register("years")} />
         </Field>
@@ -522,14 +563,14 @@ export function ProfileForm({
       </fieldset>
       <fieldset>
         <legend>Otros clubes donde puedes jugar</legend>
-        {data.clubs.map((c) => (
+        {availableClubs.map((c) => (
           <label className="checkbox" key={c.id}>
             <input
               type="checkbox"
               value={c.id}
               {...register("additional_clubs")}
             />
-            {c.name}
+            {c.name} · {c.city}
           </label>
         ))}
       </fieldset>
@@ -582,8 +623,12 @@ export function ProfileForm({
           {err}
         </p>
       )}
-      <Button disabled={busy}>
-        {busy ? "Guardando…" : "Guardar mi perfil"}
+      <Button disabled={busy || locating}>
+        {busy
+          ? "Guardando…"
+          : locating
+            ? "Obteniendo tu ciudad…"
+            : "Guardar mi perfil"}
       </Button>
     </form>
   );

@@ -143,12 +143,13 @@ export function Settings({
             conserva en el proveedor de autenticación y no se publica.
           </p>
           <p>
-            Tu ciudad ayuda a encontrar jugadores y clubes. Si pulsas «Usar mi
-            ubicación», el navegador pedirá permiso y enviará coordenadas
-            aproximadas a BigDataCloud para sugerirla. Fairway guarda solo la
-            ciudad elegida al enviar el formulario, sin coordenadas ni
-            seguimiento. Puedes escribirla manualmente. Cada score tiene su
-            propio control de visibilidad.
+            Tu ciudad ayuda a encontrar jugadores y clubes. Al completar un
+            perfil nuevo se solicita permiso de ubicación una vez en este
+            navegador; también puedes pulsar «Usar mi ubicación». Si aceptas, se
+            envían coordenadas aproximadas a BigDataCloud para obtener la
+            ciudad. Fairway guarda solo la ciudad elegida al enviar el
+            formulario, sin coordenadas ni seguimiento. Puedes escribirla
+            manualmente. Cada score tiene su propio control de visibilidad.
           </p>
           <p>
             Las imágenes se almacenan en un depósito privado. Bloquear a alguien

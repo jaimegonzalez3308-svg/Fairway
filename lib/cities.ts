@@ -77,6 +77,20 @@ export function gameMatchesCity(
   );
 }
 
+export function clubsForCity(
+  clubs: Club[],
+  city: string,
+  selectedIds: string[] = [],
+  showOtherCities = false,
+) {
+  return clubs.filter(
+    (club) =>
+      showOtherCities ||
+      matchesCity(club.city, "mine", city) ||
+      selectedIds.includes(club.id),
+  );
+}
+
 export function cityFromGeocode(data: unknown): string {
   if (!data || typeof data !== "object")
     throw new Error("No pudimos identificar la ciudad. Escríbela manualmente.");
