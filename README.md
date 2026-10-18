@@ -318,3 +318,17 @@ Los controles usan formas según su función: las acciones principales conservan
 El diseño anterior es el predeterminado. En **Ajustes → Accesibilidad → Modo de accesibilidad** se puede activar mayor contraste, texto más legible e indicadores de foco destacados. También hay un control en la página pública y en recuperación de contraseña. La preferencia se guarda en este navegador, se aplica antes de mostrar la página y se sincroniza entre pestañas; no depende de la cuenta.
 
 Las etiquetas/errores de formularios, navegación por teclado, anuncios del chat y resultados, estados de controles, tablas de scores y preferencias del sistema de movimiento/colores forzados permanecen activos en ambos modos. Consulta el [informe de accesibilidad](docs/accessibility.md) para las mediciones del modo activado, comprobaciones automatizadas y pruebas manuales pendientes. La revisión no equivale a una declaración de conformidad WCAG del sitio completo.
+
+## Metadatos, rastreo y publicación
+
+La identidad pública y URL canónica viven en `lib/site.ts`. La portada incluye título/descripción en español, canonical, Open Graph/Twitter con una imagen propia de 1200×630 y datos estructurados `WebSite`. Se generan `/robots.txt` y `/sitemap.xml`; este último solo enumera la portada pública. Los perfiles, chats y enlaces de recuperación no se incluyen. Los estados de la app usan fragmentos y no son páginas independientes para buscadores.
+
+La página 404 tiene texto en español, una acción para volver a Fairway y `noindex`. La comprobación de sesión mantiene un encabezado y descripción útiles en el HTML inicial, sin mostrar la app privada antes de autenticar. El contenido completo y las funciones de Fairway requieren JavaScript. Se conserva el retorno directo de usuarios con sesión iniciada.
+
+Las estadísticas y Recharts se cargan bajo demanda. Los mapas de código fuente del navegador están desactivados para producción. Los títulos de las pantallas de la app siguen actualizándose; al volver a la portada se restaura el título público. El favicon y las descripciones de imágenes existentes se mantienen; las imágenes decorativas conservan `alt=""`.
+
+Después de compilar, ejecutar `node scripts/check-site-output.mjs` para validar el HTML exportado, canonical, metadatos sociales, dimensiones de la imagen, JSON-LD, 404, sitemap, robots y ausencia de `.map`. `node scripts/generate-social-image.mjs` regenera la imagen pública sin usar datos de miembros ni servicios externos.
+
+No se inventa una dirección de negocio ni se usa schema `LocalBusiness`: Fairway es una plataforma de golf, no un club físico. Conectar un dominio propio requiere elegir/proporcionar el dominio y acceso a su DNS; después se debe actualizar `lib/site.ts` y las URLs autorizadas de autenticación. No se añadieron `llms.txt` ni páginas artificiales para los estados privados. El navegador controlable no estuvo disponible: quedan pendientes la consola real, navegación móvil/escritorio y comprobar la respuesta HTTP 404 del hosting para una ruta inexistente. Las comprobaciones de compilación no sustituyen estas pruebas.
+
+Referencias: [Next.js: metadatos y OG](https://nextjs.org/docs/app/getting-started/metadata-and-og-images), [Google: nombres de sitio y WebSite](https://developers.google.com/search/docs/appearance/site-names), [Google: estructura de URLs y fragmentos](https://developers.google.com/search/docs/crawling-indexing/url-structure).

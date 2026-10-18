@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
+import dynamic from "next/dynamic";
+import { site } from "@/lib/site";
 import {
   Compass,
   Flag,
@@ -66,7 +68,6 @@ import { GoogleOnboarding } from "./google-onboarding";
 import { LandingPage } from "./landing-page";
 import { PasswordRecovery } from "./password-recovery";
 import { Scorecard } from "./scorecard";
-import { Stats } from "./stats";
 import { Community } from "./community";
 import { Settings, Admin } from "./settings";
 import {
@@ -87,6 +88,11 @@ import { GameJoinActions } from "./game-join-actions";
 import { gameIsUpcoming, golfDate } from "@/lib/parties";
 import { SidebarIcon } from "./sidebar-icon";
 import { useIllustratedSidebarIcons } from "@/lib/appearance";
+
+// Recharts is only needed when a member opens their statistics.
+const Stats = dynamic(() => import("./stats").then((module) => module.Stats), {
+  loading: () => <p role="status">Cargando estadísticas…</p>,
+});
 const navigation = [
   { id: "descubrir", label: "Descubrir", icon: Compass },
   { id: "partidas", label: "Partidas", icon: Flag },
@@ -143,7 +149,7 @@ export default function FairwayApp() {
 
   useEffect(() => {
     const title = mainContentRef.current?.querySelector("h1")?.textContent;
-    if (title) document.title = `${title} · Fairway`;
+    document.title = title ? `${title} · Fairway` : site.title;
   }, [page, data.loading, data.user?.id]);
 
   useEffect(() => {
@@ -551,8 +557,16 @@ export default function FairwayApp() {
   if (!data.authReady)
     return (
       <main className="auth-screen">
-        <section className="panel" role="status">
-          <p>Recuperando tu sesión…</p>
+        <section className="panel" aria-labelledby="session-title">
+          <h1 id="session-title">Golfistas y partidas en León</h1>
+          <p>
+            Fairway te ayuda a encontrar con quién jugar, consultar clubes y
+            organizar partidas.
+          </p>
+          <p role="status">Recuperando tu sesión…</p>
+          <noscript>
+            Activa JavaScript para iniciar sesión y utilizar Fairway.
+          </noscript>
         </section>
       </main>
     );
