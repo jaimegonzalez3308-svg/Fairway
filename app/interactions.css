@@ -49,6 +49,13 @@
     border-color: #6c7b61;
     background: var(--wash);
   }
+  .section-heading .button.outline:hover:not(:disabled),
+  .city-field .button.outline:hover:not(:disabled),
+  .button.google-signin:hover:not(:disabled) {
+    color: var(--accent-blue);
+    border-color: var(--accent-blue);
+    background: var(--accent-blue-wash);
+  }
   .button.ghost:hover {
     background: var(--wash);
   }

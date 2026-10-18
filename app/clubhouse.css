@@ -10,6 +10,9 @@
   --line: #d9cfbb;
   --paper: #fffbf2;
   --wash: #f0e7d6;
+  --accent-blue: #285b80;
+  --accent-blue-wash: #e8f0f6;
+  --accent-blue-line: #6187a2;
   --radius: 4px;
   --radius-control: 6px;
   --radius-action: 999px;
@@ -146,6 +149,18 @@ textarea::placeholder {
 .button.outline:hover {
   background: var(--wash);
   border-color: #7a8c70;
+}
+
+.section-heading .button.outline,
+.city-field .button.outline,
+.button.google-signin {
+  color: var(--accent-blue);
+  border-color: var(--accent-blue-line);
+}
+
+.inline-link,
+.text-button {
+  color: var(--accent-blue);
 }
 
 /* Shape follows the action: pill CTAs, rectangular secondary/utility controls,

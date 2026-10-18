@@ -26,7 +26,9 @@ main {
   display: inline-flex;
   min-height: 40px;
   padding: 7px;
-  border: 1px solid var(--line);
+  color: var(--accent-blue);
+  background: var(--accent-blue-wash);
+  border: 1px solid var(--accent-blue-line);
   border-radius: 6px;
 }
 .city-location-button > span {
@@ -69,7 +71,7 @@ main {
   height: 4px;
   margin-right: 9px;
   vertical-align: middle;
-  background: #d9e9a4;
+  background: var(--accent-blue);
 }
 
 .section-heading p {

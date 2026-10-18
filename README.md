@@ -357,7 +357,9 @@ Las calificaciones incluyen un pequeño vaso de cerveza junto a las estrellas y 
 
 ## Estados de interacción
 
-La referencia deportiva se incorpora de forma puntual: dos títulos de la portada con mayor peso y un acento lima bajo una palabra, fotografías con esquinas más suaves y una flecha circular delineada dentro de la acción principal. En la app, las cejas de los títulos reciben una pequeña marca lima. Se mantienen la paleta crema/verde y las estructuras existentes; los acentos son decorativos.
+Los acentos azules usan `--accent-blue`, `--accent-blue-wash` y `--accent-blue-line`: enlaces de acción, botones secundarios de encabezados/ubicación/Google, el selector de ciudad y pequeñas marcas de sección. La portada los incorpora en las cejas, la flecha circular y la tarjeta del planificador. El crema y verde siguen siendo la base, con sus acciones principales y el campo del menú lateral. El texto azul tiene entre 6.29:1 y 7.02:1 sobre los fondos usados, y los bordes azules entre 3.32:1 y 3.70:1. Son cálculos de colores declarados; la composición visual en navegador sigue pendiente.
+
+La referencia deportiva se incorpora de forma puntual: dos títulos de la portada con mayor peso y un acento lima bajo una palabra, fotografías con esquinas más suaves y una flecha circular delineada dentro de la acción principal. En la app, las cejas de los títulos reciben una pequeña marca azul. Se mantienen la base crema/verde y las estructuras existentes; los acentos son decorativos.
 
 `app/interactions.css` unifica el feedback de botones principales/secundarios, iconos, pestañas, navegación lateral, acciones de tarjetas, contactos del chat, menús de cuenta, acciones sociales, calendario, campos editables y enlaces. Los botones reciben un movimiento de 1 px y sombra corta; las tarjetas se acentúan al interactuar con sus acciones; los enlaces usan subrayado. Se conserva el dibujo de campo del elemento lateral seleccionado y los estados ya elegidos de pestañas y filtros.
 

@@ -169,6 +169,9 @@
   height: 34px;
   border: 1px solid currentColor;
   border-radius: 50%;
+  color: var(--accent-blue);
+  background: var(--accent-blue-wash);
+  border-color: var(--accent-blue-line);
 }
 .fw-btn-pencil {
   background: var(--fw-pencil);
@@ -211,9 +214,13 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #6b8d4e;
+  background: var(--accent-blue);
   flex-shrink: 0;
-  box-shadow: 0 0 0 4px #779c4e14;
+  box-shadow: 0 0 0 4px #285b8014;
+}
+.fw-hero-heading .fw-kicker,
+.fw-section-top .fw-kicker {
+  color: var(--accent-blue);
 }
 .fw-hero h1 {
   font-size: clamp(64px, 6.85vw, 100px);
@@ -346,8 +353,8 @@
   gap: 16px;
   align-items: center;
   padding: 22px;
-  border: 1px solid #dbe0c7;
-  background: #f0f2dc;
+  border: 1px solid var(--accent-blue-line);
+  background: var(--accent-blue-wash);
   border-radius: 8px;
   box-shadow: 0 12px 20px #163d2910;
 }
@@ -358,12 +365,13 @@
   height: 45px;
   flex-shrink: 0;
   border-radius: 50%;
-  background: #e0e6c8;
+  background: #d3e3ef;
+  color: var(--accent-blue);
 }
 .fw-hero-ticket > div > span {
   font-size: 8px;
   letter-spacing: 0.11em;
-  color: #62724d;
+  color: var(--accent-blue);
   font-weight: 600;
 }
 .fw-hero-ticket p {
