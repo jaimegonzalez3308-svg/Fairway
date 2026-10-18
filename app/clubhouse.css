@@ -748,3 +748,32 @@ legend {
     color: HighlightText;
   }
 }
+
+/* The glass illustrates the same average already written beside the stars. */
+.rating-beer {
+  display: block;
+  flex-shrink: 0;
+  color: #183c30;
+}
+.rating-beer-glass,
+.rating-beer-foam {
+  fill: #fffbf2;
+}
+.rating-beer-liquid {
+  fill: #b37d24;
+}
+.rating .rating-beer-compact {
+  margin-right: 3px;
+}
+@media (forced-colors: active) {
+  .rating-beer {
+    color: CanvasText;
+  }
+  .rating-beer-glass,
+  .rating-beer-foam {
+    fill: Canvas;
+  }
+  .rating-beer-liquid {
+    fill: Highlight;
+  }
+}

@@ -78,3 +78,17 @@ export function ratingLabel(profile: Pick<Profile, "rating" | "review_count">) {
     return "Sin calificaciones todavía";
   return `${rating.toLocaleString("es-MX", { minimumFractionDigits: 1, maximumFractionDigits: 1 })} de 5 · ${count} ${count === 1 ? "calificación" : "calificaciones"}`;
 }
+
+export function ratingFillPercent(
+  profile: Pick<Profile, "rating" | "review_count">,
+) {
+  const rating = Number(profile.rating);
+  if (
+    !(Number(profile.review_count) > 0) ||
+    !Number.isFinite(rating) ||
+    rating < 1 ||
+    rating > 5
+  )
+    return 0;
+  return Math.round(rating * 200) / 10;
+}

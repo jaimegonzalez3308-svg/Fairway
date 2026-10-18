@@ -89,6 +89,7 @@ import { gameIsUpcoming, golfDate } from "@/lib/parties";
 import { SidebarIcon } from "./sidebar-icon";
 import { useIllustratedSidebarIcons } from "@/lib/appearance";
 import { PlayerRating } from "./player-rating";
+import { RatingBeer } from "./rating-beer";
 import { CourseIcon } from "./course-icon";
 import {
   canRatePlayer,
@@ -2487,6 +2488,7 @@ function ProfileCard({
             HCP <strong>{p.handicap ?? "S/H"}</strong>
           </span>
           <span className="rating" role="img" aria-label={ratingLabel(p)}>
+            <RatingBeer profile={p} compact />
             <Star size={12} fill="currentColor" aria-hidden="true" />
             {p.review_count ? p.rating : "—"}
             <small>{p.review_count ? `(${p.review_count})` : ""}</small>

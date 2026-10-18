@@ -4,6 +4,7 @@ import { useId } from "react";
 import { Star } from "lucide-react";
 import type { Profile } from "@/lib/domain";
 import { ratingLabel } from "@/lib/ratings";
+import { RatingBeer } from "./rating-beer";
 
 export function StarRatingInput({
   value,
@@ -66,6 +67,7 @@ export function PlayerRating({
     Number(profile.rating) <= 5;
   return (
     <div className="player-rating">
+      <RatingBeer profile={profile} />
       {rated && (
         <span className="player-rating-stars" aria-hidden="true">
           {[0, 1, 2, 3, 4].map((star) => (
