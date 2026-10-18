@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button, Field } from "./ui";
+import { AccessibilityToggle } from "./accessibility-mode";
 import { supabase } from "@/lib/supabase";
 import { authErrorMessage } from "@/lib/auth";
 import {
@@ -112,6 +113,7 @@ export function PasswordRecovery({
   return (
     <main className="auth-screen">
       <section className="panel" aria-labelledby="password-recovery-title">
+        <AccessibilityToggle />
         <span className="eyebrow">FAIRWAY · TU CUENTA</span>
         <h1 id="password-recovery-title">
           {complete ? "Contraseña actualizada" : "Recupera tu contraseña"}

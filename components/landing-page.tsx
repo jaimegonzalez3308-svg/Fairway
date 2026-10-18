@@ -16,6 +16,7 @@ import {
   X,
 } from "lucide-react";
 import type { Club } from "@/lib/domain";
+import { AccessibilityToggle } from "./accessibility-mode";
 
 type Props = {
   onSignup: () => void;
@@ -163,6 +164,7 @@ export function LandingPage({
           <button onClick={() => scrollTo("fw-clubs")}>Los clubes</button>
         </nav>
         <div className="fw-header-actions">
+          <AccessibilityToggle compact className="accessibility-desktop" />
           <button className="fw-login" onClick={onLogin}>
             {signedIn ? "Mi perfil" : "Iniciar sesión"}{" "}
             <ArrowUpRight size={15} />
@@ -186,6 +188,7 @@ export function LandingPage({
             id="fw-mobile-nav"
             aria-label="Navegación móvil"
           >
+            <AccessibilityToggle />
             <button onClick={() => scrollTo("fw-experience")}>
               La experiencia <ArrowDownRight size={18} />
             </button>
@@ -703,6 +706,7 @@ export function LandingPage({
             que quieren jugar.
           </p>
           <nav aria-label="Enlaces del pie de página">
+            <AccessibilityToggle />
             <button onClick={onClubs}>
               Directorio de clubes <ArrowUpRight size={15} />
             </button>

@@ -313,6 +313,6 @@ Validación de la landing: TypeScript y compilación estática correctos, 92 pru
 
 ## Accesibilidad
 
-Se reforzaron contraste, foco y navegación con teclado, etiquetas/errores de formularios, anuncios del chat y resultados, estados de controles, tablas de scores y preferencias de movimiento/colores forzados. Se conserva el diseño restaurado y los flujos de autenticación. Consulta el [informe de accesibilidad](docs/accessibility.md) para mediciones antes/después, comprobaciones automatizadas y pruebas manuales pendientes. La revisión no equivale a una declaración de conformidad WCAG del sitio completo.
+El diseño anterior es el predeterminado. En **Ajustes → Accesibilidad → Modo de accesibilidad** se puede activar mayor contraste, texto más legible e indicadores de foco destacados. También hay un control en la página pública y en recuperación de contraseña. La preferencia se guarda en este navegador, se aplica antes de mostrar la página y se sincroniza entre pestañas; no depende de la cuenta.
 
-Comprobar colores declarados: `node scripts/check-contrast.mjs`. Las pruebas de componentes y negocio se ejecutan con `pnpm test`.
+Las etiquetas/errores de formularios, navegación por teclado, anuncios del chat y resultados, estados de controles, tablas de scores y preferencias del sistema de movimiento/colores forzados permanecen activos en ambos modos. Consulta el [informe de accesibilidad](docs/accessibility.md) para las mediciones del modo activado, comprobaciones automatizadas y pruebas manuales pendientes. La revisión no equivale a una declaración de conformidad WCAG del sitio completo.

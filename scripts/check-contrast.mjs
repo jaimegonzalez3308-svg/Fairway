@@ -26,7 +26,19 @@ const load = (revision) =>
       throw new Error(`Cannot read ${file}`);
     }
     const rules = [];
-    postcss.parse(css).walkRules((rule) => rules.push(rule));
+    postcss.parse(css).walkRules((rule) => {
+      // Evaluate the enabled theme; the browser still receives the scoped CSS.
+      const normalized = rule.clone();
+      normalized.selector = postcss.list
+        .comma(rule.selector)
+        .map((selector) =>
+          selector === 'html[data-accessibility="true"]'
+            ? ":root"
+            : selector.replace(/^html\[data-accessibility="true"\]\s+/, ""),
+        )
+        .join(", ");
+      rules.push(normalized);
+    });
     return rules;
   });
 function value(rules, selector, property) {
@@ -294,6 +306,7 @@ const cases = [
 const current = load();
 const beforeRef = process.argv[2];
 const before = beforeRef ? load(beforeRef) : null;
+console.log("Accessibility mode enabled — declared-color checks\n");
 console.log("| Component / state | Before | Current | Minimum |");
 console.log("| --- | ---: | ---: | ---: |");
 let failed = 0;

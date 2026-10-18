@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Button, Field, Empty } from "./ui";
 import type { FairwayData } from "@/lib/use-fairway";
 import { supabase } from "@/lib/supabase";
+import { AccessibilitySetting } from "./accessibility-mode";
 export function Settings({
   data,
   onEdit,
@@ -48,6 +49,8 @@ export function Settings({
             Cerrar sesión
           </Button>
         </div>
+        <hr />
+        <AccessibilitySetting />
         <hr />
         <h3>Notificaciones</h3>
         {[

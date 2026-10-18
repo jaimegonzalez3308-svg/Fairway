@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import Script from "next/script";
+import { AccessibilityProvider } from "@/components/accessibility-mode";
+import { ACCESSIBILITY_BOOTSTRAP } from "@/lib/accessibility-mode";
 import "./globals.css";
 import "./clubhouse.css";
 import "./hierarchy.css";
@@ -31,8 +34,16 @@ export const metadata: Metadata = {
 };
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={inter.variable}>
-      <body>{children}</body>
+    <html lang="es" className={inter.variable} suppressHydrationWarning>
+      <body>
+        <Script
+          id="fairway-accessibility-preference"
+          strategy="beforeInteractive"
+        >
+          {ACCESSIBILITY_BOOTSTRAP}
+        </Script>
+        <AccessibilityProvider>{children}</AccessibilityProvider>
+      </body>
     </html>
   );
 }
