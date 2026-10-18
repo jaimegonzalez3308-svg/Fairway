@@ -732,7 +732,7 @@ export default function FairwayApp() {
               ) : (
                 <Icon size={20} strokeWidth={1.7} />
               )}
-              <span>{label}</span>
+              <span className="nav-label">{label}</span>
               {id === "mensajes" && unreadMessages > 0 && (
                 <span className="count">{unreadMessages}</span>
               )}
@@ -751,7 +751,11 @@ export default function FairwayApp() {
                     }
                   </span>
                 )}
-              {page === id && <span className="nav-dot" />}
+              {page === id && (
+                <span className="nav-dot" aria-hidden="true">
+                  <CourseIcon part="green" size={20} />
+                </span>
+              )}
             </button>
           ))}
         </nav>
@@ -770,7 +774,12 @@ export default function FairwayApp() {
               ) : (
                 <Icon size={19} strokeWidth={1.7} />
               )}
-              {label}
+              <span className="nav-label">{label}</span>
+              {page === id && (
+                <span className="nav-dot" aria-hidden="true">
+                  <CourseIcon part="green" size={20} />
+                </span>
+              )}
             </button>
           ))}
         </nav>
@@ -784,20 +793,40 @@ export default function FairwayApp() {
             <br />
             esperándote.
           </p>
-          <button onClick={() => go("hoy")}>
+          <button
+            aria-current={page === "hoy" ? "page" : undefined}
+            onClick={() => go("hoy")}
+          >
             Encuentra compañía
-            <ArrowUpRight size={16} />
+            {page === "hoy" ? (
+              <CourseIcon part="green" size={20} />
+            ) : (
+              <ArrowUpRight size={16} />
+            )}
           </button>
         </div>
         <div className="sidebar-bottom">
           <button
-            className="nav-item"
+            className={cn(
+              "nav-item",
+              ["ajustes", "privacidad"].includes(page) && "active",
+            )}
+            aria-current={
+              ["ajustes", "privacidad"].includes(page) ? "page" : undefined
+            }
             onClick={() =>
               go(data.user || data.demo ? "ajustes" : "privacidad")
             }
           >
             <SettingsIcon size={18} />
-            {data.user || data.demo ? "Ajustes y privacidad" : "Privacidad"}
+            <span className="nav-label">
+              {data.user || data.demo ? "Ajustes y privacidad" : "Privacidad"}
+            </span>
+            {["ajustes", "privacidad"].includes(page) && (
+              <span className="nav-dot" aria-hidden="true">
+                <CourseIcon part="green" size={20} />
+              </span>
+            )}
           </button>
           {data.user && (
             <button className="nav-item" onClick={() => void logout()}>
@@ -806,9 +835,18 @@ export default function FairwayApp() {
             </button>
           )}
           {data.admin && (
-            <button className="nav-item" onClick={() => go("admin")}>
+            <button
+              className={cn("nav-item", page === "admin" && "active")}
+              aria-current={page === "admin" ? "page" : undefined}
+              onClick={() => go("admin")}
+            >
               <ShieldCheck size={18} />
-              Administración
+              <span className="nav-label">Administración</span>
+              {page === "admin" && (
+                <span className="nav-dot" aria-hidden="true">
+                  <CourseIcon part="green" size={20} />
+                </span>
+              )}
             </button>
           )}
           <button

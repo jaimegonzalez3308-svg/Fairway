@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="48" viewBox="0 0 220 48" fill="none">
+  <defs>
+    <clipPath id="fairway"><path d="M53 48C69 30 96 39 111 22S147 4 173 8s29 20 47 13v27Z"/></clipPath>
+    <pattern id="mowing" width="22" height="22" patternUnits="userSpaceOnUse" patternTransform="rotate(32)"><rect width="11" height="22" fill="#31573e"/></pattern>
+  </defs>
+  <path d="M53 48C69 30 96 39 111 22S147 4 173 8s29 20 47 13v27Z" fill="#244b37"/>
+  <g clip-path="url(#fairway)"><path d="M0 0h220v48H0Z" fill="url(#mowing)"/></g>
+  <path d="M49 48C63 26 92 34 106 18S146-2 176 3s28 17 44 12" stroke="#3b6248"/>
+  <ellipse cx="197" cy="26" rx="20" ry="15" fill="#31573e"/>
+  <ellipse cx="197" cy="26" rx="14" ry="10" stroke="#3b6248"/>
+</svg>
