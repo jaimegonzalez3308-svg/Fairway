@@ -21,6 +21,7 @@ import { golfDate, golfDateAfter } from "@/lib/parties";
 import { PasswordResetRequest } from "./password-recovery";
 import { StarRatingInput } from "./player-rating";
 import { canRatePlayer, ratingColumns } from "@/lib/ratings";
+import { CityField } from "./city-field";
 const authSchema = z.object({
   email: z.string().trim().pipe(z.email("Escribe un correo válido.")),
   password: z.string().min(1, "Escribe tu contraseña."),
@@ -304,7 +305,7 @@ export function ProfileForm({
   onDone: () => void;
 }) {
   const p = data.me;
-  const { register, handleSubmit } = useForm({
+  const { register, handleSubmit, watch, setValue } = useForm({
     defaultValues: {
       name: p.name,
       city: p.city,
@@ -396,9 +397,11 @@ export function ProfileForm({
         <Field label="Edad (solo 18+)">
           <input type="number" min={18} max={100} {...register("age")} />
         </Field>
-        <Field label="Ciudad">
-          <input {...register("city")} />
-        </Field>
+        <CityField
+          value={watch("city")}
+          onChange={(city) => setValue("city", city, { shouldDirty: true })}
+          disabled={busy}
+        />
         <Field
           label="Handicap declarado"
           hint="Vacío si aún no tienes handicap."

@@ -11,7 +11,9 @@ import {
   ShieldCheck,
   Users,
 } from "lucide-react";
-import { Button, Modal, SectionHeading } from "./ui";
+import { Button, Empty, Modal, SectionHeading } from "./ui";
+import { CityFilter } from "./city-field";
+import { matchesCity } from "@/lib/cities";
 import type { Club, Profile } from "@/lib/domain";
 import { accountFeatures } from "@/lib/access";
 
@@ -21,19 +23,28 @@ export function ClubDirectory({
   guest = false,
   live = true,
   profiles = [],
+  cityScope = "any",
+  ownCity = "León",
+  onCityScopeChange,
 }: {
   clubs: Club[];
   onPlayers: (id: string) => void;
   guest?: boolean;
   live?: boolean;
   profiles?: Profile[];
+  cityScope?: string;
+  ownCity?: string;
+  onCityScopeChange?: (scope: string) => void;
 }) {
+  const visible = clubs.filter((club) =>
+    matchesCity(club.city, cityScope, ownCity),
+  );
   return (
     <>
       <SectionHeading
         eyebrow="EL PUNTO DE ENCUENTRO"
         title="El golf empieza cerca de ti."
-        description="Explora los clubes de León y sus alrededores, sin necesidad de crear una cuenta."
+        description="Explora los clubes del directorio y consulta su información de acceso."
       />
       {guest && (
         <div className="guest-directory-note">
@@ -45,8 +56,34 @@ export function ClubDirectory({
           </span>
         </div>
       )}
+      {onCityScopeChange && (
+        <div className="city-explore-filter">
+          <CityFilter
+            scope={cityScope}
+            ownCity={ownCity}
+            cities={clubs.map((club) => club.city)}
+            onChange={onCityScopeChange}
+          />
+        </div>
+      )}
+      {!visible.length && (
+        <Empty
+          title="Todavía no hay clubes en esta ciudad"
+          description="Puedes consultar el directorio completo mientras añadimos más clubes."
+          action={
+            onCityScopeChange && (
+              <Button
+                variant="outline"
+                onClick={() => onCityScopeChange("any")}
+              >
+                Ver todas las ciudades
+              </Button>
+            )
+          }
+        />
+      )}
       <div className="club-grid">
-        {clubs.map((c, i) => (
+        {visible.map((c, i) => (
           <article className="panel club-card" key={c.id}>
             <div
               className="club-photo"
@@ -113,6 +150,11 @@ export function PublicPrivacy() {
             Users,
             "Una comunidad con respeto",
             "Puedes bloquear perfiles y reportar contenido. Las evaluaciones requieren una partida compartida y finalizada.",
+          ],
+          [
+            Compass,
+            "Ubicación opcional",
+            "Puedes escribir tu ciudad. Solo al pulsar «Usar mi ubicación» se solicita permiso y se envían coordenadas aproximadas a BigDataCloud para sugerirla. Fairway guarda únicamente la ciudad que confirmas al guardar el perfil, sin seguimiento.",
           ],
           [
             Flag,

@@ -43,7 +43,7 @@ export function Settings({
         <h3>Tu cuenta, a tu manera</h3>
         <p>Controla la visibilidad de tu perfil y de cada score.</p>
         <Button variant="outline" onClick={onEdit}>
-          Editar perfil y privacidad
+          Editar perfil, ciudad y privacidad
         </Button>
         <div className="button-row">
           <Button variant="outline" onClick={onLogout}>
@@ -143,9 +143,12 @@ export function Settings({
             conserva en el proveedor de autenticación y no se publica.
           </p>
           <p>
-            No recopilamos tu ubicación GPS exacta ni mostramos una fecha de
-            nacimiento completa. Cada score tiene su propio control de
-            visibilidad.
+            Tu ciudad ayuda a encontrar jugadores y clubes. Si pulsas «Usar mi
+            ubicación», el navegador pedirá permiso y enviará coordenadas
+            aproximadas a BigDataCloud para sugerirla. Fairway guarda solo la
+            ciudad confirmada al guardar el perfil, sin coordenadas ni
+            seguimiento. Puedes escribirla manualmente. Cada score tiene su
+            propio control de visibilidad.
           </p>
           <p>
             Las imágenes se almacenan en un depósito privado. Bloquear a alguien

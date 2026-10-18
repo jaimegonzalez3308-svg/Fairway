@@ -27,6 +27,7 @@ import {
 } from "@/lib/party-calendar";
 import { usePartyMonth } from "@/lib/use-party-month";
 import { timeFormat } from "@/lib/utils";
+import { gameMatchesCity } from "@/lib/cities";
 
 const weekdays = [
   "Lunes",
@@ -60,6 +61,7 @@ export function PartyMonthCalendar({
   club,
   openOnly,
   now,
+  cityScope = "any",
 }: {
   data: FairwayData;
   selectedDate: string;
@@ -70,6 +72,7 @@ export function PartyMonthCalendar({
   club: string;
   openOnly: boolean;
   now: Date;
+  cityScope?: string;
 }) {
   const month = selectedDate.slice(0, 7);
   const feed = usePartyMonth(month, data);
@@ -98,6 +101,7 @@ export function PartyMonthCalendar({
             ["confirmed", "requested"].includes(p.status),
         )) &&
       (!club || g.club_id === club) &&
+      (mine || gameMatchesCity(g, data.clubs, cityScope, data.me.city)) &&
       (!openOnly ||
         (gameIsUpcoming(g, now) &&
           g.status === "open" &&

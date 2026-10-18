@@ -91,6 +91,13 @@ import { useIllustratedSidebarIcons } from "@/lib/appearance";
 import { PlayerRating } from "./player-rating";
 import { RatingBeer } from "./rating-beer";
 import { CourseIcon } from "./course-icon";
+import { CityFilter } from "./city-field";
+import {
+  DEFAULT_CITY,
+  gameMatchesCity,
+  matchesCity,
+  normalizeCity,
+} from "@/lib/cities";
 import {
   canRatePlayer,
   ratingLabel,
@@ -119,6 +126,15 @@ const extras = [
 export default function FairwayApp() {
   const data = useFairway();
   const friends = useFriends(data);
+  const [cityScope, setCityScope] = useState("mine");
+  useEffect(() => setCityScope("mine"), [data.user?.id]);
+  const ownCity = normalizeCity(data.me.city || DEFAULT_CITY);
+  const exploringCity =
+    cityScope === "any"
+      ? "Todas las ciudades"
+      : cityScope === "mine"
+        ? ownCity
+        : cityScope;
   const [page, setPage] = useState("descubrir"),
     [modal, setModal] = useState<string | null>(null),
     [authNotice, setAuthNotice] = useState(""),
@@ -437,6 +453,7 @@ export default function FairwayApp() {
         .filter(
           (p) =>
             (tab === "Favoritos" || !data.decided.includes(p.id)) &&
+            (tab === "Favoritos" || matchesCity(p.city, cityScope, ownCity)) &&
             matchesFilters(p, filters, data.me) &&
             p.name.toLocaleLowerCase().includes(search.toLocaleLowerCase()) &&
             (tab !== "Favoritos" || data.favorites.includes(p.id)),
@@ -453,6 +470,8 @@ export default function FairwayApp() {
       filters,
       search,
       tab,
+      cityScope,
+      ownCity,
     ],
   );
   const activeFilterCount = Object.keys(filters).filter(
@@ -716,7 +735,7 @@ export default function FairwayApp() {
         </div>
         <div className="sidebar-city">
           <MapPin size={14} />
-          León, Guanajuato
+          {ownCity}
           <span className="live-dot" />
         </div>
         <span className="nav-caption">TU COMUNIDAD DE GOLF</span>
@@ -924,10 +943,16 @@ export default function FairwayApp() {
             </strong>
           </div>
           <div className="topbar-actions">
-            <span className="location">
+            <button
+              type="button"
+              className="location city-location-button"
+              onClick={() => setModal("city")}
+              aria-label={`Ciudad para explorar: ${exploringCity}. Cambiar ciudad`}
+            >
               <MapPin size={14} />
-              León, Gto.
-            </span>
+              <span>{exploringCity}</span>
+              <ChevronDown size={12} />
+            </button>
             <button
               className="notification-button icon-btn"
               aria-label={`Notificaciones, ${unread} sin leer`}
@@ -1053,6 +1078,9 @@ export default function FairwayApp() {
                   clubs={data.clubs}
                   guest
                   live={data.publicDirectoryLive}
+                  cityScope={cityScope}
+                  ownCity={ownCity}
+                  onCityScopeChange={setCityScope}
                   onPlayers={() => requireAccount("perfil")}
                 />
               )}
@@ -1096,7 +1124,8 @@ export default function FairwayApp() {
                     <div className="hero-content">
                       <span className="hero-eyebrow">
                         <span className="live-dot" />
-                        PARTIDAS ENTRE GOLFISTAS DE LEÓN
+                        PARTIDAS ENTRE GOLFISTAS
+                        {cityScope !== "any" ? ` · ${exploringCity}` : ""}
                       </span>
                       <h2>
                         ¿Te falta alguien
@@ -1120,6 +1149,17 @@ export default function FairwayApp() {
                       </span>
                     </div>
                   </section>
+                  <div className="city-explore-filter">
+                    <CityFilter
+                      scope={cityScope}
+                      ownCity={ownCity}
+                      cities={[
+                        ...data.clubs.map((c) => c.city),
+                        ...data.profiles.map((p) => p.city),
+                      ]}
+                      onChange={setCityScope}
+                    />
+                  </div>
                   <div className="discover-toolbar">
                     <div className="tabs">
                       <button
@@ -1201,9 +1241,10 @@ export default function FairwayApp() {
                             setFilters(initialFilters);
                             setSearch("");
                             setTab("Para ti");
+                            setCityScope("any");
                           }}
                         >
-                          Restablecer filtros
+                          Ver todas las ciudades
                         </Button>
                       }
                     />
@@ -1229,7 +1270,12 @@ export default function FairwayApp() {
                   </div>
                   <div className="game-grid">
                     {data.games
-                      .filter((g) => g.status === "open" && gameIsUpcoming(g))
+                      .filter(
+                        (g) =>
+                          g.status === "open" &&
+                          gameIsUpcoming(g) &&
+                          gameMatchesCity(g, data.clubs, cityScope, ownCity),
+                      )
                       .slice(0, 2)
                       .map((g) => (
                         <GameCard
@@ -1248,6 +1294,8 @@ export default function FairwayApp() {
               {page === "partidas" && (
                 <Parties
                   data={data}
+                  cityScope={cityScope}
+                  onCityScopeChange={setCityScope}
                   calendarDate={partyCalendarDate}
                   onCalendarDateChange={setPartyCalendarDate}
                   onCreate={(date) => {
@@ -1692,7 +1740,11 @@ export default function FairwayApp() {
                 <ClubDirectory
                   clubs={data.clubs}
                   profiles={[data.me, ...data.profiles]}
+                  cityScope={cityScope}
+                  ownCity={ownCity}
+                  onCityScopeChange={setCityScope}
                   onPlayers={(id) => {
+                    setCityScope("any");
                     setFilters({ ...initialFilters, club: id });
                     go("descubrir");
                   }}
@@ -1702,6 +1754,8 @@ export default function FairwayApp() {
               {page === "hoy" && (
                 <Availability
                   data={data}
+                  cityScope={cityScope}
+                  onCityScopeChange={setCityScope}
                   openProfile={openProfile}
                   onCreate={() => setModal("create-game")}
                 />
@@ -1773,6 +1827,40 @@ export default function FairwayApp() {
             <X size={15} />
           </button>
         </div>
+      )}
+      {modal === "city" && (
+        <Modal
+          title="Tu ciudad y dónde explorar"
+          onClose={() => setModal(null)}
+        >
+          <p className="form-intro">
+            Tu ciudad de perfil es {ownCity}. Explorar otra ciudad no cambia tu
+            perfil ni usa tu ubicación.
+          </p>
+          <CityFilter
+            scope={cityScope}
+            ownCity={ownCity}
+            cities={[
+              ...data.clubs.map((c) => c.city),
+              ...data.profiles.map((p) => p.city),
+            ]}
+            onChange={setCityScope}
+          />
+          <div className="button-row">
+            <Button type="button" onClick={() => setModal(null)}>
+              Listo
+            </Button>
+            {hasAuth && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setModal("edit-profile")}
+              >
+                Editar mi ciudad de perfil
+              </Button>
+            )}
+          </div>
+        </Modal>
       )}
       {modal === "account-required" && (
         <AccountRequired
@@ -2478,7 +2566,7 @@ function ProfileCard({
           </button>
           <span>
             <MapPin size={12} />
-            {p.city}, Gto.
+            {p.city}
           </span>
         </div>
       </div>
@@ -2819,10 +2907,14 @@ function Availability({
   data,
   openProfile,
   onCreate,
+  cityScope = "any",
+  onCityScopeChange,
 }: {
   data: ReturnType<typeof useFairway>;
   openProfile: (p: Profile) => void;
   onCreate: () => void;
+  cityScope?: string;
+  onCityScopeChange?: (scope: string) => void;
 }) {
   const [entries, setEntries] = useState<
     {
@@ -2845,6 +2937,12 @@ function Availability({
   useEffect(() => {
     void load();
   }, [data.user]);
+  const visibleEntries = entries.filter(
+    (entry) =>
+      entry.user_id !== data.user?.id &&
+      data.profiles.some((profile) => profile.id === entry.user_id) &&
+      gameMatchesCity(entry, data.clubs, cityScope, data.me.city),
+  );
   return (
     <>
       <SectionHeading
@@ -2858,6 +2956,16 @@ function Availability({
           </Button>
         }
       />
+      {onCityScopeChange && (
+        <div className="city-explore-filter">
+          <CityFilter
+            scope={cityScope}
+            ownCity={data.me.city}
+            cities={data.clubs.map((club) => club.city)}
+            onChange={onCityScopeChange}
+          />
+        </div>
+      )}
       <form
         className="panel availability-form"
         onSubmit={async (e) => {
@@ -2908,28 +3016,26 @@ function Availability({
         </Button>
       </form>
       <div className="profile-grid">
-        {entries
-          .filter((e) => e.user_id !== data.user?.id)
-          .map((e) => {
-            const p = data.profiles.find((p) => p.id === e.user_id);
-            return (
-              p && (
-                <article className="panel availability-card" key={e.user_id}>
-                  <Avatar profile={p} large />
-                  <h3>{p.name}</h3>
-                  <p>
-                    {dateFormat(e.starts_at)} · {timeFormat(e.starts_at)} ·{" "}
-                    {e.holes} hoyos
-                  </p>
-                  <Button variant="outline" onClick={() => openProfile(p)}>
-                    Ver perfil
-                  </Button>
-                </article>
-              )
-            );
-          })}
+        {visibleEntries.map((e) => {
+          const p = data.profiles.find((p) => p.id === e.user_id);
+          return (
+            p && (
+              <article className="panel availability-card" key={e.user_id}>
+                <Avatar profile={p} large />
+                <h3>{p.name}</h3>
+                <p>
+                  {dateFormat(e.starts_at)} · {timeFormat(e.starts_at)} ·{" "}
+                  {e.holes} hoyos
+                </p>
+                <Button variant="outline" onClick={() => openProfile(p)}>
+                  Ver perfil
+                </Button>
+              </article>
+            )
+          );
+        })}
       </div>
-      {!entries.length && (
+      {!visibleEntries.length && (
         <Empty
           title="Sé el primero en salir al green"
           description="La disponibilidad vence automáticamente. Publica la tuya para que otros golfistas te encuentren."

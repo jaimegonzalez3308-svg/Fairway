@@ -1,7 +1,13 @@
 import { z } from "zod";
+import { normalizeCity } from "./cities";
 export const profileSchema = z.object({
   name: z.string().trim().min(2).max(80),
-  city: z.string().min(2),
+  city: z
+    .string()
+    .trim()
+    .min(2, "Escribe tu ciudad.")
+    .max(80, "Usa hasta 80 caracteres para la ciudad.")
+    .transform(normalizeCity),
   age: z.coerce.number().min(18).max(100),
   handicap: z
     .union([z.coerce.number().min(-10).max(54), z.literal("")])

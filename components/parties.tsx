@@ -17,6 +17,8 @@ import type { FairwayData } from "@/lib/use-fairway";
 import type { Game } from "@/lib/domain";
 import { canRatePlayer } from "@/lib/ratings";
 import { CourseIcon } from "./course-icon";
+import { CityFilter } from "./city-field";
+import { gameMatchesCity } from "@/lib/cities";
 import { dateFormat, timeFormat } from "@/lib/utils";
 import {
   gameIsUpcoming,
@@ -33,12 +35,16 @@ export function Parties({
   onOpen,
   calendarDate,
   onCalendarDateChange,
+  cityScope = "any",
+  onCityScopeChange,
 }: {
   data: FairwayData;
   onCreate: (date?: string) => void;
   calendarDate: string;
   onCalendarDateChange: (date: string) => void;
   onOpen: (game: Game) => void;
+  cityScope?: string;
+  onCityScopeChange?: (scope: string) => void;
 }) {
   const [tab, setTab] = useState("explore");
   const [calendar, setCalendar] = useState(true);
@@ -83,6 +89,8 @@ export function Parties({
     .filter(
       (g) =>
         (!club || g.club_id === club) &&
+        (tab === "mine" ||
+          gameMatchesCity(g, data.clubs, cityScope, data.me.city)) &&
         matchesPartyPeriod(g, period, date, now) &&
         (tab === "mine" ||
           !openOnly ||
@@ -226,6 +234,19 @@ export function Parties({
           </button>
         </div>
       </div>
+      {tab === "explore" && onCityScopeChange && (
+        <div className="city-explore-filter">
+          <CityFilter
+            scope={cityScope}
+            ownCity={data.me.city}
+            cities={data.clubs.map((club) => club.city)}
+            onChange={(scope) => {
+              setClub("");
+              onCityScopeChange(scope);
+            }}
+          />
+        </div>
+      )}
       <div className={`party-filters panel ${calendar ? "is-month" : ""}`}>
         {!calendar && (
           <div className="party-date-filters" aria-label="Filtrar por fecha">
@@ -320,6 +341,7 @@ export function Parties({
           club={club}
           openOnly={tab === "mine" ? false : openOnly}
           now={now}
+          cityScope={cityScope}
         />
       ) : (
         <>

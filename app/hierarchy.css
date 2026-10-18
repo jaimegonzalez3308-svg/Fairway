@@ -4,6 +4,48 @@ main {
   padding-bottom: 48px;
 }
 
+.city-field {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+.city-location-note {
+  max-width: 65ch;
+  margin: 10px 0;
+  color: var(--forest);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.city-suggestion {
+  margin-top: 14px;
+}
+.city-explore-filter {
+  max-width: 430px;
+  margin: 22px 0;
+}
+.topbar .city-location-button {
+  display: inline-flex;
+  min-height: 40px;
+  padding: 7px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.city-location-button > span {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@media (max-width: 740px) {
+  .topbar .city-location-button {
+    min-width: 44px;
+    min-height: 44px;
+    justify-content: center;
+  }
+  .city-location-button > span {
+    display: none;
+  }
+}
+
 .section-heading {
   align-items: flex-end;
   margin: 44px 0 28px;

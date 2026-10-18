@@ -100,6 +100,36 @@ test("migraciones y reglas del MVP se ejecutan en PostgreSQL real (PGlite)", asy
     },
   );
   await t.test(
+    "cada usuario puede guardar su ciudad sin cambiar el perfil ajeno",
+    async () => {
+      await as(a);
+      await db.query("update profiles set city=$1 where id=$2", [
+        "Querétaro",
+        a,
+      ]);
+      assert.equal(
+        (await scalar(`select city from profiles where id='${a}'`))?.city,
+        "Querétaro",
+      );
+      assert.equal(
+        (
+          await db.query(
+            "update profiles set city=$1 where id=$2 returning id",
+            ["Silao", b],
+          )
+        ).rows.length,
+        0,
+      );
+      await as(b);
+      assert.equal(
+        (await scalar(`select city from profiles where id='${b}'`))?.city,
+        "León",
+      );
+      await as(a);
+      await db.query("update profiles set city=$1 where id=$2", ["León", a]);
+    },
+  );
+  await t.test(
     "un solo like no crea match; interés mutuo abre un chat",
     async () => {
       await as(a);

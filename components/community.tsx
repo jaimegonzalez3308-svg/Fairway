@@ -12,6 +12,7 @@ import { Button, Empty } from "./ui";
 import { supabase } from "@/lib/supabase";
 import type { FairwayData } from "@/lib/use-fairway";
 import { Stories } from "./stories";
+import { matchesCity } from "@/lib/cities";
 type Post = {
   id: string;
   user_id: string;
@@ -53,7 +54,7 @@ export function Community({ data }: { data: FairwayData }) {
     <>
       <Stories data={data} />
       <div className="tabs">
-        {["Para ti", "Siguiendo", "Mi club", "León"].map((t) => (
+        {["Para ti", "Siguiendo", "Mi club", "Mi ciudad"].map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -103,8 +104,8 @@ export function Community({ data }: { data: FairwayData }) {
             ? following.includes(p.user_id)
             : tab === "Mi club"
               ? profile?.club_id === data.me.club_id
-              : tab === "León"
-                ? profile?.city === "León"
+              : tab === "Mi ciudad"
+                ? matchesCity(profile?.city, "mine", data.me.city)
                 : true;
         })
         .map((p) => {
