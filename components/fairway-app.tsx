@@ -2347,7 +2347,12 @@ function ProfileCard({
           <button onClick={onOpen}>
             {p.name}
             <span>, {p.age}</span>
-            {p.verified && <ShieldCheck size={18} />}
+            {p.verified && (
+              <>
+                <ShieldCheck size={18} />
+                <span className="sr-only">Perfil verificado</span>
+              </>
+            )}
           </button>
           <span>
             <MapPin size={12} />

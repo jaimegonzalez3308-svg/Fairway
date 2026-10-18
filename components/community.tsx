@@ -178,7 +178,8 @@ export function Community({ data }: { data: FairwayData }) {
                   <Heart size={18} />
                   {p.reactions.length}
                 </button>
-                <span aria-label={`${p.comments.length} comentarios`}>
+                <span>
+                  <span className="sr-only">Comentarios: </span>
                   <MessageCircle size={18} />
                   {p.comments.length}
                 </span>
