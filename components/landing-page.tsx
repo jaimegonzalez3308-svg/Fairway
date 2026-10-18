@@ -244,8 +244,14 @@ export function LandingPage({
                 Escoge el campo, acuerda la hora y reúne al grupo en el chat de
                 la partida.
               </p>
-              <button className="fw-btn fw-btn-dark" onClick={onSignup}>
-                Buscar golfistas en León <ArrowUpRight size={19} />
+              <button
+                className="fw-btn fw-btn-dark fw-btn-round-arrow"
+                onClick={onSignup}
+              >
+                Buscar golfistas en León
+                <span className="fw-arrow-ring" aria-hidden="true">
+                  <ArrowUpRight size={19} />
+                </span>
               </button>
               <span className="fw-hero-note">
                 Crea tu cuenta con Google o correo · 18+
@@ -307,7 +313,10 @@ export function LandingPage({
             <span>El campo, la hora y quiénes van.</span>
           </div>
           <div className="fw-experience-intro" data-fw-reveal>
-            <h2 id="fw-experience-heading">Organiza esa salida del sábado.</h2>
+            <h2 id="fw-experience-heading" className="fw-sport-heading">
+              Organiza esa salida del{" "}
+              <span className="fw-sport-mark">sábado.</span>
+            </h2>
             <p>
               Pon el campo, los hoyos y la hora. Quien se apunte verá los
               detalles y tendrá el chat de la partida a la mano.
@@ -536,7 +545,10 @@ export function LandingPage({
               </div>
             </div>
             <div className="fw-local-copy" data-fw-reveal>
-              <h2 id="fw-local-heading">¿En qué campo sueles jugar?</h2>
+              <h2 id="fw-local-heading" className="fw-sport-heading">
+                ¿En qué <span className="fw-sport-mark">campo</span> sueles
+                jugar?
+              </h2>
               <p>
                 El Molino y Los Naranjos ya están en el directorio. Revisa la
                 información y confirma con el club cómo puedes jugar ahí.

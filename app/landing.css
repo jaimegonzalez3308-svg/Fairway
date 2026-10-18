@@ -6,6 +6,7 @@
   --fw-muted: #626d60;
   --fw-line: #d8ddcf;
   --fw-pencil: #ead06f;
+  --fw-lime: #d9e9a4;
   color: var(--fw-ink);
   background: var(--fw-paper) url("/images/paper-grain.svg") repeat;
   font-size: 15px;
@@ -157,6 +158,18 @@
 .fw-btn-dark:hover {
   background: #2b503c;
 }
+.fw-btn-round-arrow {
+  padding: 10px 12px 10px 22px;
+}
+.fw-arrow-ring {
+  display: grid;
+  place-items: center;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+}
 .fw-btn-pencil {
   background: var(--fw-pencil);
   color: #1b382a;
@@ -246,7 +259,7 @@
   aspect-ratio: 2.5;
   min-height: 400px;
   max-height: 570px;
-  border-radius: 12px;
+  border-radius: 22px;
   isolation: isolate;
   animation: fw-enter 1s 0.2s both;
 }
@@ -415,6 +428,18 @@
   font-size: clamp(37px, 4.2vw, 60px);
   line-height: 1.1;
   letter-spacing: -0.055em;
+}
+.fw-landing .fw-sport-heading {
+  font-weight: 650;
+  letter-spacing: -0.045em;
+}
+.fw-sport-mark {
+  background: linear-gradient(
+    transparent 79%,
+    var(--fw-lime) 79%,
+    var(--fw-lime) 94%,
+    transparent 94%
+  );
 }
 .fw-experience-intro > p {
   font-size: 14px;
@@ -763,7 +788,7 @@
 .fw-local-photo {
   position: relative;
   aspect-ratio: 0.88;
-  border-radius: 8px;
+  border-radius: 20px;
   overflow: hidden;
 }
 .fw-local-photo > img {

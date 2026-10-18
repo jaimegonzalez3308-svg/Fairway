@@ -20,6 +20,16 @@ main {
   margin-bottom: 14px;
 }
 
+.section-heading .eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 22px;
+  height: 4px;
+  margin-right: 9px;
+  vertical-align: middle;
+  background: #d9e9a4;
+}
+
 .section-heading p {
   max-width: 60ch;
   margin-top: 12px;

@@ -357,6 +357,8 @@ Las calificaciones incluyen un pequeño vaso de cerveza junto a las estrellas y 
 
 ## Estados de interacción
 
+La referencia deportiva se incorpora de forma puntual: dos títulos de la portada con mayor peso y un acento lima bajo una palabra, fotografías con esquinas más suaves y una flecha circular delineada dentro de la acción principal. En la app, las cejas de los títulos reciben una pequeña marca lima. Se mantienen la paleta crema/verde y las estructuras existentes; los acentos son decorativos.
+
 `app/interactions.css` unifica el feedback de botones principales/secundarios, iconos, pestañas, navegación lateral, acciones de tarjetas, contactos del chat, menús de cuenta, acciones sociales, calendario, campos editables y enlaces. Los botones reciben un movimiento de 1 px y sombra corta; las tarjetas se acentúan al interactuar con sus acciones; los enlaces usan subrayado. Se conserva el dibujo de campo del elemento lateral seleccionado y los estados ya elegidos de pestañas y filtros.
 
 El foco de teclado recibe feedback equivalente sin exigir ratón. Las mejoras de hover se limitan a dispositivos con hover y puntero fino; las preferencias de movimiento reducido suprimen el desplazamiento, y los botones deshabilitados no reciben el tratamiento de hover de botones activos. El CSS de accesibilidad continúa cargándose al final. La conexión de interfaz del navegador agotó su tiempo de espera durante esta revisión, por lo que queda pendiente la inspección visual de los estados en escritorio y móvil.
