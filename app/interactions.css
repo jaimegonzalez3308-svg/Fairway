@@ -1,0 +1,181 @@
+/* Shared interaction feedback. Keep selected states and decorative art intact. */
+:is(
+  .button,
+  .fw-btn,
+  .icon-btn,
+  .text-button,
+  .inline-link,
+  .profile-info-button,
+  .party-card-action,
+  .course-guide-options button,
+  .party-view-switch > button,
+  .tabs button,
+  .fw-login
+) {
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+:is(.button, .fw-btn):focus-visible:not(:disabled) {
+  box-shadow: 0 3px 0 #183c3026;
+}
+.golfer-card:focus-within,
+.party-card:focus-within {
+  border-color: #6c7b61;
+  box-shadow: 0 4px 14px #183c301a;
+}
+:is(.text-button, .inline-link, .profile-info-button, .fw-login):focus-visible,
+.fw-footer-top nav > button:focus-visible,
+.app-footer a:focus-visible,
+.app-footer button:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+}
+.party-card-action:focus-visible {
+  box-shadow: inset 0 -2px #6c7b61;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :is(.button, .fw-btn):hover:not(:disabled):not([aria-disabled="true"]) {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 0 #183c3026;
+  }
+  .button.outline:hover {
+    border-color: #6c7b61;
+    background: var(--wash);
+  }
+  .button.ghost:hover {
+    background: var(--wash);
+  }
+  .button.danger-button:hover {
+    background: #864739;
+    border-color: #864739;
+  }
+  .danger-zone .button:hover {
+    background: #f5e4dc;
+    color: #913e32;
+    border-color: #913e32;
+  }
+  .icon-btn:hover:not(:disabled):not([aria-disabled="true"]),
+  .party-view-switch > button:hover:not(.active):not(:disabled) {
+    color: #183c30;
+    background: #e1e9db;
+    box-shadow: 0 0 0 1px #b6c3aa;
+  }
+  .sidebar .nav-item:not(.active):hover {
+    color: #183c30;
+    background: #e1e6d8;
+    box-shadow: inset 2px 0 #72917a;
+  }
+  .sidebar .nav-item.active:hover {
+    box-shadow:
+      inset 2px 0 #ead06f,
+      0 3px 8px #183c3026;
+  }
+  .sidebar-promo button:not([aria-current="page"]):hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .tabs button:not(.active):hover {
+    color: #183c30;
+    box-shadow: inset 0 -2px #72917a;
+  }
+  .chat-contact:not(.active):hover,
+  .account-menu > summary:hover,
+  .sidebar-user:hover {
+    background: #e7ebdc;
+    box-shadow: inset 0 0 0 1px #b6c3aa;
+  }
+  .post-actions button:hover:not(:disabled) {
+    box-shadow: 0 0 0 4px var(--wash);
+    border-radius: 3px;
+  }
+  html[data-accessibility="true"] .like-button:hover {
+    color: #ffffff;
+  }
+  :is(.text-button, .inline-link, .profile-info-button, .fw-login):hover:not(
+      :disabled
+    ),
+  .fw-footer-top nav > button:hover:not(:disabled),
+  .app-footer a:hover,
+  .app-footer button:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-thickness: 1px;
+  }
+  .golfer-card:has(button:hover, a:hover),
+  .party-card:has(button:hover, a:hover) {
+    border-color: #6c7b61;
+    box-shadow: 0 4px 14px #183c301a;
+  }
+  :is(.pass-button, .like-button, .save-profile):hover:not(:disabled) {
+    transform: scale(1.04);
+    box-shadow: 0 0 0 3px #a17c4233;
+  }
+  .party-card-action:hover {
+    box-shadow: inset 0 -2px #6c7b61;
+  }
+  .party-month-navigation button:hover:not(:disabled),
+  .party-day-button:hover:not(:disabled),
+  .party-month-event:hover {
+    box-shadow: inset 0 0 0 1px #6c7b61;
+  }
+  .field
+    :is(
+      input:not([type="checkbox"]):not([type="radio"]),
+      select,
+      textarea
+    ):hover:not(:disabled):not([readonly]):not([aria-invalid="true"]) {
+    border-color: #6c7b61;
+  }
+  .course-guide-options button:hover,
+  .fw-choice-group button:hover {
+    box-shadow: 0 0 0 1px currentColor;
+  }
+  .fw-faq-list summary:hover {
+    background: #e7ebdc;
+    color: #183c30;
+  }
+}
+
+:is(.button, .fw-btn):active:not(:disabled):not([aria-disabled="true"]) {
+  transform: translateY(0);
+  box-shadow: inset 0 2px 3px #183c3026;
+}
+
+/* Disabled controls never acquire the enabled hover treatment. */
+.button.primary:is(:disabled, [aria-disabled="true"]):hover {
+  background: var(--forest);
+  border-color: var(--forest);
+}
+.button.outline:is(:disabled, [aria-disabled="true"]):hover {
+  background: var(--paper);
+  border-color: #bcc6b1;
+}
+.button.ghost:is(:disabled, [aria-disabled="true"]):hover,
+.icon-btn:is(:disabled, [aria-disabled="true"]):hover {
+  background: transparent;
+}
+.button.danger-button:is(:disabled, [aria-disabled="true"]):hover {
+  background: #9d564a;
+  border-color: #9d564a;
+}
+:is(.button, .fw-btn, .icon-btn):is(:disabled, [aria-disabled="true"]):hover {
+  transform: none;
+  box-shadow: none;
+}
+.star-rating-input:disabled .star-rating-choice:hover {
+  background: transparent;
+}
+
+@media (prefers-reduced-motion: reduce), (hover: none) {
+  :is(.button, .fw-btn, .pass-button, .like-button, .save-profile):hover,
+  :is(.button, .fw-btn):active {
+    transform: none !important;
+  }
+}

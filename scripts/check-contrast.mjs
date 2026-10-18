@@ -9,6 +9,7 @@ const files = [
   "app/clubhouse.css",
   "app/hierarchy.css",
   "app/landing.css",
+  "app/interactions.css",
   "app/accessibility.css",
 ];
 const load = (revision) =>
@@ -22,7 +23,11 @@ const load = (revision) =>
           })
         : readFileSync(file, "utf8");
     } catch {
-      if (file.endsWith("accessibility.css") && revision) return [];
+      if (
+        revision &&
+        ["app/accessibility.css", "app/interactions.css"].includes(file)
+      )
+        return [];
       throw new Error(`Cannot read ${file}`);
     }
     const rules = [];

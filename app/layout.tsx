@@ -8,6 +8,7 @@ import "./globals.css";
 import "./clubhouse.css";
 import "./hierarchy.css";
 import "./landing.css";
+import "./interactions.css";
 import "./accessibility.css";
 
 const inter = localFont({
