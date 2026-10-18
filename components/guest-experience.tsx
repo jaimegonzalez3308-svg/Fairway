@@ -154,7 +154,7 @@ export function PublicPrivacy() {
           [
             Compass,
             "Ubicación opcional",
-            "Puedes escribir tu ciudad. Solo al pulsar «Usar mi ubicación» se solicita permiso y se envían coordenadas aproximadas a BigDataCloud para sugerirla. Fairway guarda únicamente la ciudad que confirmas al guardar el perfil, sin seguimiento.",
+            "Puedes escribir tu ciudad. Solo al pulsar «Usar mi ubicación» se solicita permiso y se envían coordenadas aproximadas a BigDataCloud para sugerirla. Fairway guarda únicamente la ciudad que eliges al enviar el formulario, sin seguimiento.",
           ],
           [
             Flag,

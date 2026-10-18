@@ -11,6 +11,7 @@ import {
 } from "./demo";
 import type { Profile, Club, Game, Round } from "./domain";
 import { authErrorMessage } from "./auth";
+import { initialSignupCity, saveInitialSignupCity } from "./signup-city";
 import {
   withRating,
   type RatingSummary,
@@ -126,7 +127,7 @@ export function useFairway() {
       // Un alta con Google no tiene perfil ni acceso privado hasta declarar su edad.
       const ownProfile = await supabase
         .from("profiles")
-        .select("id")
+        .select("id,city,availability")
         .eq("id", u.id)
         .maybeSingle();
       if (currentUserId.current !== u.id) return;
@@ -134,6 +135,11 @@ export function useFairway() {
       if (!ownProfile.data && u.app_metadata.provider === "google") {
         setNeedsGoogleProfile(true);
         return;
+      }
+      if (ownProfile.data) {
+        const city = initialSignupCity(ownProfile.data, u.user_metadata);
+        if (city) await saveInitialSignupCity(supabase, u.id, city);
+        if (currentUserId.current !== u.id) return;
       }
       const r = await Promise.all([
         supabase.from("profiles").select("*"),

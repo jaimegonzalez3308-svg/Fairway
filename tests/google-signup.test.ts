@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import { PGlite } from "@electric-sql/pglite";
+import { initialSignupCity } from "../lib/signup-city";
 
 test("Google: alta sin edad y activación protegida por PostgreSQL", async (t) => {
   const db = new PGlite();
@@ -132,6 +133,46 @@ test("Google: alta sin edad y activación protegida por PostgreSQL", async (t) =
         ).rows[0],
         profile,
       );
+    },
+  );
+  await t.test(
+    "correo y Google conservan su ciudad inicial sin reemplazar cambios posteriores",
+    async () => {
+      for (const [id, city] of [
+        [emailUser, "Querétaro"],
+        [googleUser, "Silao"],
+      ]) {
+        await as(id);
+        const profile = (
+          await db.query<{ city: string; availability: string[] }>(
+            "select city,availability from profiles where id=$1",
+            [id],
+          )
+        ).rows[0];
+        const chosen = initialSignupCity(profile, { signup_city: city });
+        assert.equal(chosen, city);
+        const save = () =>
+          db.query(
+            "update profiles set city=$1 where id=$2 and city='León' and availability='{}'::text[] returning city",
+            [chosen, id],
+          );
+        assert.equal((await save()).rows.length, 1);
+        assert.equal((await save()).rows.length, 0);
+        await db.query(
+          "update profiles set city='León', availability='{Sábado}' where id=$1",
+          [id],
+        );
+        assert.equal((await save()).rows.length, 0);
+        assert.equal(
+          (
+            await db.query<{ city: string }>(
+              "select city from profiles where id=$1",
+              [id],
+            )
+          ).rows[0].city,
+          "León",
+        );
+      }
     },
   );
   await t.test(

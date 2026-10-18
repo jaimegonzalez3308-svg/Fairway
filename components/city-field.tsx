@@ -13,10 +13,12 @@ export function CityField({
   value,
   onChange,
   disabled = false,
+  label = "Ciudad",
 }: {
   value: string;
   onChange: (value: string) => void;
   disabled?: boolean;
+  label?: string;
 }) {
   const id = useId();
   const request = useRef<AbortController | null>(null);
@@ -34,7 +36,7 @@ export function CityField({
   return (
     <div className="city-field">
       <Field
-        label="Ciudad"
+        label={label}
         hint="Elige la ciudad donde sueles jugar. Podrás cambiarla en tu perfil."
       >
         <input
@@ -64,8 +66,8 @@ export function CityField({
       </Field>
       <p className="city-location-note" id={`${id}-privacy`}>
         Opcional: para sugerir tu ciudad, enviaremos tu ubicación aproximada a
-        BigDataCloud. Fairway solo guardará la ciudad que confirmes al guardar
-        el perfil.
+        BigDataCloud. Fairway solo guardará la ciudad que elijas al enviar el
+        formulario.
       </p>
       <Button
         type="button"
@@ -125,7 +127,9 @@ export function CityField({
             onClick={() => {
               onChange(suggestion);
               setSuggestion("");
-              setMessage("Ciudad elegida. Guarda el perfil para conservarla.");
+              setMessage(
+                "Ciudad elegida. Se guardará al enviar el formulario.",
+              );
             }}
           >
             Usar {suggestion}

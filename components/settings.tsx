@@ -146,7 +146,7 @@ export function Settings({
             Tu ciudad ayuda a encontrar jugadores y clubes. Si pulsas «Usar mi
             ubicación», el navegador pedirá permiso y enviará coordenadas
             aproximadas a BigDataCloud para sugerirla. Fairway guarda solo la
-            ciudad confirmada al guardar el perfil, sin coordenadas ni
+            ciudad elegida al enviar el formulario, sin coordenadas ni
             seguimiento. Puedes escribirla manualmente. Cada score tiene su
             propio control de visibilidad.
           </p>

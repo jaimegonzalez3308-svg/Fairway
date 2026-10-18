@@ -22,6 +22,7 @@ import { PasswordResetRequest } from "./password-recovery";
 import { StarRatingInput } from "./player-rating";
 import { canRatePlayer, ratingColumns } from "@/lib/ratings";
 import { CityField } from "./city-field";
+import { DEFAULT_CITY } from "@/lib/cities";
 const authSchema = z.object({
   email: z.string().trim().pipe(z.email("Escribe un correo válido.")),
   password: z.string().min(1, "Escribe tu contraseña."),
@@ -44,6 +45,7 @@ export function AuthForm({
     [resendBusy, setResendBusy] = useState(false),
     [recovering, setRecovering] = useState(false),
     [resendWait, setResendWait] = useState(0);
+  const [city, setCity] = useState(DEFAULT_CITY);
   useEffect(() => {
     if (resendWait <= 0) return;
     const timer = setTimeout(() => setResendWait((value) => value - 1), 1000);
@@ -135,6 +137,12 @@ export function AuthForm({
           const form = document.getElementById("auth-form") as HTMLFormElement;
           const fd = new FormData(form);
           const age = Number(fd.get("age"));
+          const parsedCity = profileSchema.shape.city.safeParse(city);
+          if (signup && !parsedCity.success) {
+            setMessage(parsedCity.error.issues[0].message);
+            setBusy(false);
+            return;
+          }
           if (signup && (!Number.isInteger(age) || age < 18 || age > 100)) {
             setMessage("Debes tener entre 18 y 100 años.");
             setBusy(false);
@@ -150,7 +158,13 @@ export function AuthForm({
               ? await supabase.auth.signUp({
                   ...values,
                   options: {
-                    data: { name: fd.get("name"), age },
+                    data: {
+                      name: fd.get("name"),
+                      age,
+                      signup_city: parsedCity.success
+                        ? parsedCity.data
+                        : DEFAULT_CITY,
+                    },
                     emailRedirectTo: authRedirectUrl(
                       window.location.origin,
                       false,
@@ -191,6 +205,12 @@ export function AuthForm({
             <Field label="Edad">
               <input name="age" type="number" min={18} max={100} required />
             </Field>
+            <CityField
+              label="¿En qué ciudad sueles jugar?"
+              value={city}
+              onChange={setCity}
+              disabled={busy || googleBusy || resendBusy}
+            />
           </div>
         )}
         <Field label="Correo electrónico" error={errors.email?.message}>
