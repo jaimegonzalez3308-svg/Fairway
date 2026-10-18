@@ -121,16 +121,16 @@ export function Empty({
   title,
   description,
   action,
+  icon,
 }: {
   title: string;
   description: string;
   action?: React.ReactNode;
+  icon?: React.ReactNode;
 }) {
   return (
     <div className="empty">
-      <span className="empty-icon">
-        <Flag size={28} />
-      </span>
+      <span className="empty-icon">{icon ?? <Flag size={28} />}</span>
       <h3>{title}</h3>
       <p>{description}</p>
       {action}

@@ -89,6 +89,7 @@ import { gameIsUpcoming, golfDate } from "@/lib/parties";
 import { SidebarIcon } from "./sidebar-icon";
 import { useIllustratedSidebarIcons } from "@/lib/appearance";
 import { PlayerRating } from "./player-rating";
+import { CourseIcon } from "./course-icon";
 import {
   canRatePlayer,
   ratingLabel,
@@ -775,7 +776,7 @@ export default function FairwayApp() {
         </nav>
         <div className="sidebar-promo">
           <span className="mini-sun">
-            <Sun size={23} strokeWidth={1.4} />
+            <CourseIcon part="rough" size={26} />
           </span>
           <h3>¿Quién juega hoy?</h3>
           <p>
@@ -1072,7 +1073,7 @@ export default function FairwayApp() {
                       </button>
                     </div>
                     <div className="hero-stamp">
-                      <Flag size={23} strokeWidth={1.2} />
+                      <CourseIcon part="fairway" size={26} />
                       <span>
                         GOOD GOLF.
                         <br />
@@ -1472,7 +1473,10 @@ export default function FairwayApp() {
                     className="panel player-reputation"
                     aria-label="Tu calificación como compañero"
                   >
-                    <h3>Tu calificación como compañero</h3>
+                    <h3 className="course-heading">
+                      <CourseIcon part="green" size={24} /> Tu calificación como
+                      compañero
+                    </h3>
                     <PlayerRating profile={data.me} />
                     <p>
                       Promedio de quienes compartieron contigo una partida

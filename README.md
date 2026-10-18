@@ -342,3 +342,11 @@ El perfil propio y el perfil de cada compañero visible muestran las estrellas, 
 La base de datos permite una sola calificación por pareja de personas y partida, entre participantes confirmados de partidas finalizadas; rechaza autoevaluaciones, valores fuera de 1–5 y duplicados. La interfaz también bloquea envíos repetidos y muestra «Calificado» cuando corresponde. Se respetan la visibilidad de perfiles y los bloqueos existentes. La app comprueba los registros de participación, no verifica físicamente que la ronda se haya jugado.
 
 Este cambio utiliza `reviews` y `rating_summary()` existentes, sin migración SQL nueva. El selector global guarda el mismo valor en las cuatro categorías históricas para que el cálculo actual del servidor produzca exactamente la estrella elegida; las reseñas anteriores y su promedio se conservan. Las pruebas cubren permisos y promedios en PostgreSQL/PGlite, elegibilidad, límites, estados sin votos y controles de estrellas con radios nativos. El recorrido con cuentas reales y la revisión visual en navegador siguen pendientes; no se insertaron calificaciones de prueba en producción.
+
+## Elementos del campo en la interfaz
+
+El planificador ilustrativo de la landing incluye **tee box, fairway, rough, bunker, green y hazards**. Sus seis botones permiten resaltar cada parte y leer una explicación breve en español; la selección usa `aria-pressed`, foco visible y un anuncio de estado. Es una ilustración de ejemplo, no el plano real de un club.
+
+Los mismos iconos SVG aparecen de forma puntual en la app: tee box para crear una partida, fairway en el descubrimiento, rough en el panel de juego para hoy, bunker en resultados vacíos de partidas, green junto al resumen de scores y calificaciones tras jugar, y hazards en la sección de eliminación de cuenta. Los nombres de las acciones siguen siendo explícitos. No se añadieron campos de datos de bunker/rough/penalizaciones a las tarjetas ni se modificaron reglas de puntuación.
+
+Los gráficos se dibujan en SVG, sin imágenes externas nuevas. Las pruebas comprueban los controles, su estado inicial, la explicación asociada y la independencia de identificadores entre diagramas. La ilustración se revisó mediante un render del SVG; la composición final y las interacciones en navegador de escritorio/móvil siguen pendientes de verificación.

@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import type { Club } from "@/lib/domain";
 import { AccessibilityToggle } from "./accessibility-mode";
+import { CourseGuide } from "./course-guide";
 
 type Props = {
   onSignup: () => void;
@@ -466,71 +467,10 @@ export function LandingPage({
                 <Brand />
                 <span>VISTA DE EJEMPLO</span>
               </div>
-              <div className="fw-course-art" aria-hidden="true">
-                <svg
-                  viewBox="0 0 460 250"
-                  fill="none"
-                  className="fw-course-svg"
-                >
-                  <path
-                    className="fw-contour"
-                    d="M-45 219C4 114 82 276 150 191S248 5 336 54s162 30 192-49M-47 194c68-100 120 56 183-24S251-21 341 25 476 54 527-5M-46 163c63-83 117 52 171-17S245-47 349-4M-20 246c79-77 127 52 194-47S284 34 356 88s119 24 151-20M1 272c73-61 128 49 190-45S285 67 357 119s116 35 152-22"
-                    stroke="#c8d1ad"
-                  />
-                  <path
-                    d="M86 189c-35-38 1-87 46-82 39 5 45-26 56-53 14-37 77-41 102-14s2 60 30 82c25 20 27 79-6 91-35 12-57-21-90-11-48 15-103 25-138-13Z"
-                    fill="#b8c995"
-                  />
-                  <path
-                    d="M118 182c-19-23-8-48 17-49 58-2 58-31 74-64 13-27 45-30 61-11 14 17-3 57 21 79 16 15 14 41-5 48-22 7-46-12-66-5-41 14-82 27-102 2Z"
-                    fill="#7e9d60"
-                  />
-                  <path
-                    d="M231 58c4-13 25-15 32-5 9 13-3 29-16 27-10-1-19-12-16-22Z"
-                    fill="#e9e2bf"
-                  />
-                  <path
-                    d="M142 184c9-5 20-3 22 4s-9 12-20 9-11-9-2-13Z"
-                    fill="#ede4bf"
-                  />
-                  <path
-                    key={`${holes}-${rhythm}-${time}`}
-                    className="fw-shot-path"
-                    d={
-                      holes === 9
-                        ? "M147 172Q148 101 250 65"
-                        : "M147 172Q290 176 250 65"
-                    }
-                    pathLength="1"
-                    stroke="#fffdf1"
-                    strokeWidth="2"
-                    strokeDasharray="0.025 0.02"
-                  />
-                  <circle cx="147" cy="172" r="6" fill="#fffdf1" />
-                  <circle
-                    cx="147"
-                    cy="172"
-                    r="11"
-                    stroke="#fffdf1"
-                    strokeOpacity=".5"
-                  />
-                  <path
-                    d="M250 67V33l26 8-26 9"
-                    stroke="#203d2d"
-                    strokeWidth="2.5"
-                    strokeLinejoin="round"
-                    fill="#203d2d"
-                  />
-                  <circle cx="250" cy="69" r="4" fill="#203d2d" />
-                </svg>
-                <div className="fw-hole-number">
-                  {holes}
-                  <span>HOYOS</span>
-                </div>
-                <span className="fw-map-tag">
-                  <Sun size={13} /> PROPUESTA ILUSTRATIVA
-                </span>
-              </div>
+              <CourseGuide
+                holes={holes}
+                routeKey={`${holes}-${rhythm}-${time}`}
+              />
               <div
                 className="fw-plan-result"
                 aria-live="polite"

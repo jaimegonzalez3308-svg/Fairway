@@ -16,6 +16,7 @@ import { PartyMonthCalendar } from "./party-month-calendar";
 import type { FairwayData } from "@/lib/use-fairway";
 import type { Game } from "@/lib/domain";
 import { canRatePlayer } from "@/lib/ratings";
+import { CourseIcon } from "./course-icon";
 import { dateFormat, timeFormat } from "@/lib/utils";
 import {
   gameIsUpcoming,
@@ -103,7 +104,7 @@ export function Parties({
         description="Explora las parties del mes, elige un día y encuentra tu próxima ronda. También puedes organizar la tuya."
         action={
           <Button onClick={() => onCreate()}>
-            <Plus size={17} />
+            <CourseIcon part="tee" size={19} />
             Crear party
           </Button>
         }
@@ -334,6 +335,7 @@ export function Parties({
           </div>
           {!visible.length ? (
             <Empty
+              icon={<CourseIcon part="bunker" size={32} />}
               title={
                 tab === "mine"
                   ? "Tu próxima ronda está por escribirse."

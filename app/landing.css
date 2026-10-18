@@ -1650,3 +1650,75 @@
 .fw-footer-top nav > button {
   min-height: 44px;
 }
+
+/* The existing plan preview doubles as a small, explorable course diagram. */
+.course-guide .fw-course-svg {
+  display: block;
+}
+.course-region {
+  stroke-width: 1;
+  stroke-linejoin: round;
+}
+.course-region.is-selected {
+  stroke: #183c30;
+  stroke-width: 3;
+  stroke-dasharray: 5 3;
+}
+.course-guide-controls {
+  border: 0;
+  padding: 0;
+  margin: 18px 0 0;
+  min-width: 0;
+}
+.course-guide-controls legend {
+  color: #183c30;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0;
+  margin-bottom: 10px;
+}
+.course-guide-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+.course-guide-options button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 8px 6px;
+  border: 1px solid #6c7b61;
+  border-radius: 5px;
+  color: #183c30;
+  background: #fffbf2;
+  font-size: 12px;
+  line-height: 1.4;
+}
+.course-guide-options button:hover {
+  background: #e1e9db;
+}
+.course-guide-options button[aria-pressed="true"] {
+  background: #183c30;
+  border-color: #183c30;
+  color: #fffbf2;
+}
+.course-guide-options button:focus-visible {
+  outline: 3px solid #183c30;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px #fffbf2;
+}
+.course-guide-detail {
+  color: #42563f;
+  font-size: 12px;
+  line-height: 1.6;
+  min-height: 58px;
+  margin: 12px 0 0;
+}
+@media (max-width: 420px) {
+  .course-guide-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

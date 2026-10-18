@@ -671,3 +671,27 @@ legend {
   text-align: left;
   max-width: 100%;
 }
+
+/* Course cues stay decorative; action and navigation labels stay explicit. */
+.course-icon {
+  flex: 0 0 auto;
+  vertical-align: middle;
+}
+.course-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.course-heading .course-icon {
+  color: var(--forest);
+}
+.danger-zone .course-hazard-heading,
+.course-hazard-heading .course-icon {
+  color: #913e32;
+}
+.course-score-heading {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--forest);
+  margin: 8px 0 0;
+}

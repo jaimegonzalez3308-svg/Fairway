@@ -5,6 +5,7 @@ import { Button, Field } from "./ui";
 import { type Round, type Hole, summarize, holeColor } from "@/lib/domain";
 import { supabase } from "@/lib/supabase";
 import type { FairwayData } from "@/lib/use-fairway";
+import { CourseIcon } from "./course-icon";
 export function Scorecard({
   data,
   round,
@@ -258,6 +259,9 @@ export function Scorecard({
             ))}
         </select>
       </Field>
+      <p className="course-heading course-score-heading">
+        <CourseIcon part="green" size={24} /> Resumen de tu ronda
+      </p>
       <div className="score-summary">
         <div>
           <span>Golpes</span>

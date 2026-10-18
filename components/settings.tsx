@@ -4,6 +4,7 @@ import { Button, Field, Empty } from "./ui";
 import type { FairwayData } from "@/lib/use-fairway";
 import { supabase } from "@/lib/supabase";
 import { AccessibilitySetting } from "./accessibility-mode";
+import { CourseIcon } from "./course-icon";
 export function Settings({
   data,
   onEdit,
@@ -158,7 +159,9 @@ export function Settings({
           </div>
         </div>
         <div className="panel danger-zone">
-          <h3>Eliminar cuenta y datos</h3>
+          <h3 className="course-heading course-hazard-heading">
+            <CourseIcon part="hazards" size={24} /> Eliminar cuenta y datos
+          </h3>
           <p>
             Eliminará tu perfil y los datos asociados. Esta acción no se puede
             deshacer.
