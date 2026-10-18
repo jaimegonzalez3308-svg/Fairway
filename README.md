@@ -310,3 +310,9 @@ Fotografía principal: [Keith Tanner en Unsplash](https://unsplash.com/photos/ae
 
 
 Validación de la landing: TypeScript y compilación estática correctos, 92 pruebas aprobadas y respuesta HTTP 200 de la portada local. La inspección visual e interacción en navegador de escritorio/móvil quedan sin verificar: el control de Chrome no respondió durante esta actualización. No se simularon inicios de sesión ni se crearon partidas reales como prueba.
+
+## Accesibilidad
+
+Se reforzaron contraste, foco y navegación con teclado, etiquetas/errores de formularios, anuncios del chat y resultados, estados de controles, tablas de scores y preferencias de movimiento/colores forzados. Se conserva el diseño restaurado y los flujos de autenticación. Consulta el [informe de accesibilidad](docs/accessibility.md) para mediciones antes/después, comprobaciones automatizadas y pruebas manuales pendientes. La revisión no equivale a una declaración de conformidad WCAG del sitio completo.
+
+Comprobar colores declarados: `node scripts/check-contrast.mjs`. Las pruebas de componentes y negocio se ejecutan con `pnpm test`.

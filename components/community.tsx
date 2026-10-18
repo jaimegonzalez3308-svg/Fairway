@@ -58,6 +58,7 @@ export function Community({ data }: { data: FairwayData }) {
             key={t}
             onClick={() => setTab(t)}
             className={t === tab ? "active" : ""}
+            aria-pressed={t === tab}
           >
             {t}
           </button>
@@ -150,6 +151,10 @@ export function Community({ data }: { data: FairwayData }) {
               )}
               <div className="post-actions">
                 <button
+                  aria-label={`${p.reactions.some((r) => r.user_id === data.user?.id) ? "Quitar me gusta" : "Me gusta"}, ${p.reactions.length} reacciones`}
+                  aria-pressed={p.reactions.some(
+                    (r) => r.user_id === data.user?.id,
+                  )}
                   className={
                     p.reactions.some((r) => r.user_id === data.user?.id)
                       ? "liked"
@@ -173,7 +178,7 @@ export function Community({ data }: { data: FairwayData }) {
                   <Heart size={18} />
                   {p.reactions.length}
                 </button>
-                <span>
+                <span aria-label={`${p.comments.length} comentarios`}>
                   <MessageCircle size={18} />
                   {p.comments.length}
                 </span>

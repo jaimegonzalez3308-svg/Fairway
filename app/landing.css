@@ -78,7 +78,7 @@
   color: var(--fw-green);
 }
 .fw-wordmark > span {
-  color: #819a60;
+  color: #52604f;
   margin-left: -6px;
 }
 .fw-wordmark > svg {
@@ -239,7 +239,7 @@
   display: block;
   font-size: 10px;
   margin-top: 12px;
-  color: #67725e;
+  color: #52604f;
 }
 .fw-hero-image {
   position: relative;
@@ -350,7 +350,7 @@
 .fw-hero-ticket > div > span {
   font-size: 8px;
   letter-spacing: 0.11em;
-  color: #62724d;
+  color: #52604f;
   font-weight: 600;
 }
 .fw-hero-ticket p {
@@ -371,7 +371,7 @@
   justify-content: space-between;
   gap: 20px;
   margin-top: 45px;
-  color: #7b8272;
+  color: #52604f;
   font-size: 8px;
   letter-spacing: 0.06em;
 }
@@ -508,7 +508,7 @@
   background: #e9ce6e25;
 }
 .fw-scorecard td {
-  color: #969d89;
+  color: #52604f;
 }
 .fw-feature-list article {
   padding: 22px 0 26px;
@@ -641,7 +641,7 @@
   width: 18px;
 }
 .fw-preview-top > span {
-  color: #6a765e;
+  color: #52604f;
   font-size: 7px;
   letter-spacing: 0.12em;
 }
@@ -695,7 +695,7 @@
   padding-top: 23px;
 }
 .fw-preview-label {
-  color: #697459;
+  color: #52604f;
   font-size: 8px;
   letter-spacing: 0.1em;
 }
@@ -732,7 +732,7 @@
 }
 .fw-plan-result > p:last-child {
   font-size: 11px;
-  color: #626f59;
+  color: #52604f;
   min-height: 55px;
 }
 .fw-preview-cta {
@@ -746,7 +746,7 @@
   text-align: center;
   font-size: 8px;
   line-height: 1.5;
-  color: #69745f;
+  color: #52604f;
   margin-top: 12px;
 }
 .fw-local {
@@ -836,7 +836,7 @@
 }
 .fw-club-list small {
   display: block;
-  color: #73806b;
+  color: #52604f;
   font-size: 9px;
   margin-top: 5px;
 }
@@ -850,10 +850,10 @@
 .fw-directory-note > span {
   font-size: 7px;
   letter-spacing: 0.09em;
-  color: #73806a;
+  color: #52604f;
 }
 .fw-directory-note > p {
-  color: #6b7561;
+  color: #52604f;
   font-size: 10px;
   max-width: 45ch;
   margin-top: 7px;
@@ -984,7 +984,7 @@
 }
 .fw-footer-top > p > strong {
   font-weight: 400;
-  color: #7b866f;
+  color: #52604f;
 }
 .fw-footer-top > nav {
   display: flex;
@@ -1018,7 +1018,7 @@
   color: var(--fw-green);
 }
 .fw-footer-wordmark > span {
-  color: #7d965c;
+  color: #52604f;
 }
 .fw-footer-wordmark > svg {
   margin: 45px 0 0 auto;
@@ -1035,7 +1035,7 @@
   padding-top: 22px;
   font-size: 7px;
   letter-spacing: 0.1em;
-  color: #64705b;
+  color: #52604f;
 }
 .fw-footer-bottom button {
   display: flex;

@@ -89,7 +89,7 @@ h3 {
 }
 
 .sidebar-promo p {
-  color: #63725b;
+  color: #52604f;
 }
 
 .topbar {
@@ -114,7 +114,7 @@ textarea {
 
 input::placeholder,
 textarea::placeholder {
-  color: #747c6d;
+  color: #52604f;
 }
 
 .button {
@@ -290,7 +290,7 @@ textarea::placeholder {
 .welcome-features svg,
 .public-privacy-grid svg,
 .stat-card svg {
-  color: #607953;
+  color: #52604f;
 }
 
 .welcome-features > div {
@@ -299,7 +299,7 @@ textarea::placeholder {
 }
 
 .welcome .eyebrow {
-  color: #876a37;
+  color: #765522;
 }
 
 .guest-join {
@@ -313,7 +313,7 @@ textarea::placeholder {
 }
 
 .tabs button {
-  color: #65725c;
+  color: #52604f;
   font-weight: 600;
 }
 
@@ -327,7 +327,7 @@ textarea::placeholder {
 .guest-directory-note,
 .golfer-club,
 .party-day-label {
-  color: #63735b;
+  color: #52604f;
 }
 
 .golfer-tags span,
@@ -353,7 +353,7 @@ textarea::placeholder {
 
 .stat-card span,
 .score-summary span {
-  color: #617057;
+  color: #52604f;
 }
 
 .score-summary {
@@ -468,7 +468,7 @@ textarea::placeholder {
 
 .party-month-instructions {
   background: #f1f2e7;
-  color: #65725c;
+  color: #52604f;
 }
 
 .modal {
@@ -489,6 +489,7 @@ textarea::placeholder {
 }
 
 .field > span,
+.field > label,
 legend {
   font-weight: 600;
 }
@@ -505,7 +506,7 @@ legend {
 }
 
 .mobile-nav button {
-  color: #68795d;
+  color: #52604f;
 }
 
 @media (max-width: 740px) {

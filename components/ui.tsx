@@ -1,5 +1,13 @@
 "use client";
 import * as Dialog from "@radix-ui/react-dialog";
+import {
+  Children,
+  cloneElement,
+  isValidElement,
+  useId,
+  type ReactElement,
+  type AriaAttributes,
+} from "react";
 import { X, Flag, ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 export function Button({
@@ -53,17 +61,60 @@ export function Field({
   label,
   children,
   hint,
+  error,
 }: {
   label: string;
   children: React.ReactNode;
   hint?: string;
+  error?: string;
 }) {
+  const generated = useId();
+  type ControlProps = {
+    id?: string;
+    "aria-describedby"?: string;
+    "aria-invalid"?: AriaAttributes["aria-invalid"];
+  };
+  const controls = Children.toArray(children).filter(
+    (child) =>
+      isValidElement(child) &&
+      typeof child.type === "string" &&
+      ["input", "select", "textarea"].includes(child.type),
+  ) as ReactElement<ControlProps>[];
+  const id = controls[0]?.props.id || generated;
+  const hintId = hint ? `${generated}-hint` : undefined;
+  const errorId = error ? `${generated}-error` : undefined;
+  let controlIndex = 0;
   return (
-    <label className="field">
-      <span>{label}</span>
-      {children}
-      {hint && <small>{hint}</small>}
-    </label>
+    <div className="field">
+      <label htmlFor={id}>{label}</label>
+      {Children.map(children, (child) => {
+        if (
+          !isValidElement(child) ||
+          typeof child.type !== "string" ||
+          !["input", "select", "textarea"].includes(child.type)
+        )
+          return child;
+        const control = child as ReactElement<ControlProps>;
+        const controlId =
+          control.props.id ||
+          (controlIndex === 0 ? id : `${generated}-${controlIndex}`);
+        controlIndex += 1;
+        return cloneElement(control, {
+          id: controlId,
+          "aria-describedby":
+            [control.props["aria-describedby"], hintId, errorId]
+              .filter(Boolean)
+              .join(" ") || undefined,
+          "aria-invalid": error ? true : control.props["aria-invalid"],
+        });
+      })}
+      {hint && <small id={hintId}>{hint}</small>}
+      {error && (
+        <small id={errorId} className="error-text field-error">
+          {error}
+        </small>
+      )}
+    </div>
   );
 }
 export function Empty({

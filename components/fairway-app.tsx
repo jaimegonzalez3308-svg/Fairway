@@ -128,7 +128,23 @@ export default function FairwayApp() {
   const chatEnd = useRef<HTMLDivElement>(null);
   const sidebarRef = useRef<HTMLElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const mainContentRef = useRef<HTMLElement>(null);
+  const focusNextPage = useRef(false);
   const sidebarVisible = isMobile ? mobileOpen : !sidebarCollapsed;
+
+  useEffect(() => {
+    const content =
+      mainContentRef.current || document.querySelector<HTMLElement>("#fw-main");
+    if (focusNextPage.current && !data.loading && !modal && content) {
+      content.focus({ preventScroll: true });
+      focusNextPage.current = false;
+    }
+  }, [page, data.loading, modal, data.user?.id]);
+
+  useEffect(() => {
+    const title = mainContentRef.current?.querySelector("h1")?.textContent;
+    if (title) document.title = `${title} · Fairway`;
+  }, [page, data.loading, data.user?.id]);
 
   useEffect(() => {
     const media = window.matchMedia("(max-width: 740px)");
@@ -201,6 +217,7 @@ export default function FairwayApp() {
       data.notify(error.message);
       return;
     }
+    focusNextPage.current = true;
     setModal(null);
     setMobileOpen(false);
     setPage("inicio");
@@ -289,12 +306,22 @@ export default function FairwayApp() {
   }, [data.user?.id, data.loading, data.passwordRecovery]);
   function go(p: string) {
     if (p === "inicio" && data.user) p = "descubrir";
+    focusNextPage.current = true;
+    if (p === page && !modal) {
+      mainContentRef.current?.focus({ preventScroll: true });
+      focusNextPage.current = false;
+    }
     setPage(p);
     setMobileOpen(false);
     if (!requiresAccount(p)) lastPublicPage.current = p;
     if (!data.user && !data.demo && requiresAccount(p)) requireAccount(p);
     window.history.replaceState(null, "", "#" + p);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({
+      top: 0,
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "instant"
+        : "smooth",
+    });
   }
   useEffect(() => {
     const routes = [
@@ -331,7 +358,8 @@ export default function FairwayApp() {
       );
       return true;
     };
-    const change = () => {
+    const change = (event?: HashChangeEvent) => {
+      if (event) focusNextPage.current = true;
       if (recovery) {
         setPage("ajustes");
         return;
@@ -365,7 +393,12 @@ export default function FairwayApp() {
       });
   }, [data.user]);
   useEffect(() => {
-    chatEnd.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    chatEnd.current?.scrollIntoView({
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "instant"
+        : "smooth",
+      block: "nearest",
+    });
   }, [data.messages, activeChat]);
   useEffect(() => {
     if (!activeChat || !supabase || !data.user) return;
@@ -530,6 +563,7 @@ export default function FairwayApp() {
         signedIn={!!data.user}
         error={passwordRecoveryError(data.authReturnIssue)}
         onDone={() => {
+          focusNextPage.current = true;
           data.finishPasswordRecovery();
           setModal(null);
           setPage("descubrir");
@@ -586,6 +620,7 @@ export default function FairwayApp() {
               initialMessage={authNotice}
               initialMode={authMode}
               onDone={() => {
+                focusNextPage.current = true;
                 setAuthNotice("");
                 setModal(null);
                 setPage("perfil");
@@ -609,6 +644,17 @@ export default function FairwayApp() {
         mobileOpen && "mobile-sidebar-open",
       )}
     >
+      <a
+        className="skip-link"
+        href="#main-content"
+        onClick={(event) => {
+          event.preventDefault();
+          mainContentRef.current?.focus();
+          mainContentRef.current?.scrollIntoView({ block: "start" });
+        }}
+      >
+        Saltar al contenido
+      </a>
       <aside
         id="fairway-sidebar"
         ref={sidebarRef}
@@ -651,6 +697,7 @@ export default function FairwayApp() {
             <button
               key={id}
               className={cn("nav-item", page === id && "active")}
+              aria-current={page === id ? "page" : undefined}
               onClick={() => go(id)}
             >
               {useIllustratedSidebarIcons ? (
@@ -688,6 +735,7 @@ export default function FairwayApp() {
             <button
               key={id}
               className={cn("nav-item", page === id && "active")}
+              aria-current={page === id ? "page" : undefined}
               onClick={() => go(id)}
             >
               {useIllustratedSidebarIcons ? (
@@ -892,7 +940,12 @@ export default function FairwayApp() {
             )}
           </div>
         </header>
-        <main data-page={page}>
+        <main
+          id="main-content"
+          ref={mainContentRef}
+          tabIndex={-1}
+          data-page={page}
+        >
           {data.demo && (
             <div className="demo-notice">
               <span>
@@ -1004,12 +1057,14 @@ export default function FairwayApp() {
                       <button
                         onClick={() => setTab("Para ti")}
                         className={tab === "Para ti" ? "active" : ""}
+                        aria-pressed={tab === "Para ti"}
                       >
                         Para ti<span>{visible.length}</span>
                       </button>
                       <button
                         onClick={() => setTab("Favoritos")}
                         className={tab === "Favoritos" ? "active" : ""}
+                        aria-pressed={tab === "Favoritos"}
                       >
                         Favoritos
                         <Bookmark size={13} />
@@ -1026,6 +1081,7 @@ export default function FairwayApp() {
                       <Search size={16} />
                       <input
                         aria-label="Buscar golfista"
+                        type="search"
                         placeholder="Buscar golfista"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
@@ -1033,7 +1089,10 @@ export default function FairwayApp() {
                     </label>
                   </div>
                   <div className="discovery-subline">
-                    <p>
+                    <p aria-live="polite" aria-atomic="true">
+                      <span className="sr-only">
+                        {visible.length} golfistas encontrados.{" "}
+                      </span>
                       <span className="live-dot" />
                       {tab === "Favoritos"
                         ? "Tus compañeros guardados"
@@ -1237,7 +1296,14 @@ export default function FairwayApp() {
                               </div>
                             )}
                           </div>
-                          <div className="chat-messages">
+                          <div
+                            className="chat-messages"
+                            role="log"
+                            aria-label="Mensajes de la conversación"
+                            aria-live="polite"
+                            aria-relevant="additions text"
+                            tabIndex={0}
+                          >
                             {currentChat.game_id &&
                               !data.messages.some(
                                 (m) => m.conversation_id === activeChat,
@@ -1604,6 +1670,7 @@ export default function FairwayApp() {
             <button
               key={id}
               className={page === id ? "active" : ""}
+              aria-current={page === id ? "page" : undefined}
               onClick={() => go(id)}
             >
               <Icon size={20} />
@@ -1612,7 +1679,12 @@ export default function FairwayApp() {
           ))}
       </nav>
       {data.toast && (
-        <div className="toast" role="status">
+        <div
+          className="toast"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        >
           <Check size={17} />
           {data.toast}
           <button aria-label="Cerrar aviso" onClick={() => data.notify("")}>
@@ -1679,6 +1751,7 @@ export default function FairwayApp() {
             initialMessage={authNotice}
             initialMode={authMode}
             onDone={() => {
+              focusNextPage.current = true;
               setAuthNotice("");
               setModal(null);
               setSelected(null);
@@ -2264,6 +2337,7 @@ function ProfileCard({
         <button
           className={cn("save-profile", favorite && "saved")}
           aria-label={favorite ? "Quitar de favoritos" : "Guardar perfil"}
+          aria-pressed={favorite}
           onClick={onFavorite}
         >
           <Bookmark size={17} fill={favorite ? "currentColor" : "none"} />
@@ -2398,16 +2472,26 @@ function Rounds({
         <span className="badge">{data.rounds.length} rondas</span>
       </div>
       {data.rounds.length ? (
-        <div className="table-scroll">
+        <div
+          className="table-scroll"
+          role="region"
+          aria-label="Historial de rondas, desplaza para ver todas las columnas"
+          tabIndex={0}
+        >
           <table className="rounds-table">
+            <caption className="sr-only">
+              Tus rondas registradas, resultados y estado de publicación.
+            </caption>
             <thead>
               <tr>
-                <th>Campo / fecha</th>
-                <th>Modalidad</th>
-                <th>Score</th>
-                <th>Contra par</th>
-                <th>Estado</th>
-                <th />
+                <th scope="col">Campo / fecha</th>
+                <th scope="col">Modalidad</th>
+                <th scope="col">Score</th>
+                <th scope="col">Contra par</th>
+                <th scope="col">Estado</th>
+                <th scope="col">
+                  <span className="sr-only">Acciones</span>
+                </th>
               </tr>
             </thead>
             <tbody>

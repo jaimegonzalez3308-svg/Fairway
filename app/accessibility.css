@@ -1,0 +1,225 @@
+/* Contrast and keyboard support. Keep the existing composition and palette. */
+:root {
+  --muted: #52604f;
+  --a11y-control-border: #6c7b61;
+  --a11y-focus-dark: #183c30;
+  --a11y-focus-light: #fffbf2;
+}
+.fw-landing {
+  --fw-muted: #52604f;
+}
+.nav-caption {
+  color: #52604f;
+}
+.nav-item {
+  color: #42563f;
+}
+.nav-item.active {
+  color: #f8f9f6;
+}
+
+/* A two-color indicator stays visible on both cream and green surfaces. */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
+[tabindex="0"]:focus-visible,
+.fw-landing button:focus-visible,
+.fw-landing a:focus-visible,
+.fw-landing summary:focus-visible {
+  outline: 3px solid var(--a11y-focus-dark);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px var(--a11y-focus-light);
+}
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea,
+.friends-search > div,
+.search-input:focus-within,
+.button.outline,
+.fw-plain-button {
+  border-color: var(--a11y-control-border);
+}
+input::placeholder,
+textarea::placeholder,
+.search-input input::placeholder {
+  color: #52604f;
+  opacity: 1;
+}
+.score-table td input,
+.score-table td select {
+  border-color: var(--a11y-control-border);
+}
+.error-text {
+  color: #913e32 !important;
+}
+.count {
+  background: #806028;
+  color: #ffffff;
+}
+.story-count {
+  background: #806028;
+  color: #ffffff;
+}
+.rating,
+.post-actions .liked {
+  color: #765522;
+}
+.chat-bubble small {
+  color: #52604f;
+}
+.chat-bubble.own small {
+  color: #e0e6d6;
+}
+.score-table td.birdie {
+  color: #3e6332;
+}
+.score-table td.bogey,
+.score-table td.eagle {
+  color: #765522;
+}
+.score-table td.double {
+  color: #913e32;
+}
+.score-table td input {
+  color: inherit;
+}
+.pass-button,
+.like-button {
+  border-color: var(--a11y-control-border);
+}
+.party-month-grid td.selected-day {
+  box-shadow: inset 0 0 0 2px #42613d;
+}
+
+/* User images are unpredictable: back text and controls with a known dark color. */
+.hero-image {
+  background-image:
+    linear-gradient(90deg, #10271ce6, #10271ccc),
+    url("/images/fairway-landscape.webp");
+}
+.hero-stamp {
+  background: #183c30;
+}
+.golfer-name {
+  background: #183c30;
+  border-radius: 4px;
+  padding: 8px;
+}
+.save-profile {
+  background: #183c30;
+  border-color: #fffbf2;
+  backdrop-filter: none;
+}
+.save-profile.saved {
+  background: #806028;
+  border-color: #fffbf2;
+}
+.club-photo .badge {
+  background: #fffbf2;
+  color: #765522;
+}
+.story-viewer-top {
+  background: #0f1c16eb;
+}
+.story-viewer-bottom {
+  background: #0f1c16eb;
+}
+.story-author small,
+.story-viewer-signature small,
+.story-keyboard-hint {
+  color: #e0e6d6;
+}
+.fw-image-caption,
+.fw-hero-image-copy,
+.fw-local-photo > div {
+  background: #183c30;
+  border-radius: 4px;
+  padding: 8px;
+}
+.fw-explore-orb,
+.fw-explore-orb:hover {
+  background: #183c30;
+}
+
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 1000;
+  transform: translateY(-180%);
+  padding: 12px 18px;
+  background: #183c30;
+  color: #ffffff;
+  border-radius: 4px;
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+button,
+summary {
+  min-height: 24px;
+  min-width: 24px;
+}
+.app-shell .workspace {
+  min-width: 0;
+}
+.app-shell main {
+  overflow-wrap: anywhere;
+}
+.notice,
+.error-banner,
+.error-text {
+  overflow-wrap: anywhere;
+}
+.field > .field-error {
+  font-size: 12px;
+}
+.notice,
+.secure-note,
+.auth-divider,
+.checkbox,
+.field > span,
+.field > label {
+  font-size: 12px;
+}
+.search-input input,
+.text-button,
+.profile-info-button {
+  font-size: 12px;
+}
+
+@media (max-width: 740px) {
+  .toolbar,
+  .party-board-heading,
+  .party-filter-fields {
+    flex-wrap: wrap;
+  }
+  .profile-header-actions {
+    flex-wrap: wrap;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+@media (forced-colors: active) {
+  button,
+  input,
+  select,
+  textarea {
+    border: 1px solid ButtonText;
+  }
+  :focus-visible {
+    outline: 3px solid Highlight !important;
+    box-shadow: none !important;
+  }
+}

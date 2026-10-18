@@ -309,13 +309,24 @@ export function Scorecard({
           </div>
         )}
       </div>
-      <div className="score-table-wrap">
+      <div
+        className="score-table-wrap"
+        role="region"
+        aria-label="Tarjeta de score, desplaza para ver todos los hoyos"
+        tabIndex={0}
+      >
         <table className="score-table">
+          <caption className="sr-only">
+            {nine === 0 ? "Hoyos 1 al 9" : "Hoyos 10 al 18"}: par, golpes, putts
+            y resultado contra par.
+          </caption>
           <thead>
             <tr>
-              <th>Hoyo</th>
+              <th scope="col">Hoyo</th>
               {scores.slice(nine * 9, nine * 9 + 9).map((h) => (
-                <th key={h.hole}>{h.hole}</th>
+                <th scope="col" key={h.hole}>
+                  {h.hole}
+                </th>
               ))}
             </tr>
           </thead>
@@ -328,7 +339,7 @@ export function Scorecard({
               ["putts", "Putts"],
             ].map(([key, label]) => (
               <tr key={key}>
-                <th>{label}</th>
+                <th scope="row">{label}</th>
                 {scores.slice(nine * 9, nine * 9 + 9).map((h, j) => (
                   <td
                     key={h.hole}
@@ -373,7 +384,7 @@ export function Scorecard({
               ["gir", "Green en regulación"],
             ].map(([key, label]) => (
               <tr key={key}>
-                <th>{label}</th>
+                <th scope="row">{label}</th>
                 {scores.slice(nine * 9, nine * 9 + 9).map((h, j) => (
                   <td key={h.hole}>
                     <select
@@ -402,7 +413,7 @@ export function Scorecard({
               </tr>
             ))}
             <tr>
-              <th>Contra par</th>
+              <th scope="row">Contra par</th>
               {scores.slice(nine * 9, nine * 9 + 9).map((h) => (
                 <td key={h.hole}>
                   {h.par !== null && h.strokes !== null

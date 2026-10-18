@@ -156,12 +156,14 @@ export function Parties({
         <div className="tabs">
           <button
             className={tab === "explore" ? "active" : ""}
+            aria-pressed={tab === "explore"}
             onClick={() => setTab("explore")}
           >
             Explorar partidas
           </button>
           <button
             className={tab === "mine" ? "active" : ""}
+            aria-pressed={tab === "mine"}
             onClick={() => setTab("mine")}
           >
             Mis planes <span>{data.games.filter(mine).length}</span>

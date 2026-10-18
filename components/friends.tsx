@@ -238,6 +238,7 @@ export function Friends({
           <button
             key={t}
             className={tab === t ? "active" : ""}
+            aria-pressed={tab === t}
             onClick={() => setTab(t)}
           >
             {t}

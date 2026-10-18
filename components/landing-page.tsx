@@ -133,7 +133,14 @@ export function LandingPage({
 
   return (
     <div className="fw-landing" ref={root}>
-      <a href="#fw-main" className="fw-skip">
+      <a
+        href="#fw-main"
+        className="fw-skip"
+        onClick={(event) => {
+          event.preventDefault();
+          root.current?.querySelector<HTMLElement>("#fw-main")?.focus();
+        }}
+      >
         Saltar al contenido
       </a>
       <header className="fw-header">
@@ -211,7 +218,7 @@ export function LandingPage({
         )}
       </header>
 
-      <main id="fw-main" className="fw-main">
+      <main id="fw-main" className="fw-main" tabIndex={-1}>
         <section className="fw-hero" aria-labelledby="fw-headline">
           <div className="fw-hero-intro">
             <div className="fw-hero-heading">

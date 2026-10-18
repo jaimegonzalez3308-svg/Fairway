@@ -4,6 +4,7 @@ import "./globals.css";
 import "./clubhouse.css";
 import "./hierarchy.css";
 import "./landing.css";
+import "./accessibility.css";
 
 const inter = localFont({
   src: [

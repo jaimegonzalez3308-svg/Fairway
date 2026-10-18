@@ -190,21 +190,15 @@ export function AuthForm({
             </Field>
           </div>
         )}
-        <Field label="Correo electrónico">
+        <Field label="Correo electrónico" error={errors.email?.message}>
           <input type="email" autoComplete="email" {...register("email")} />
-          {errors.email && (
-            <small className="error-text">{errors.email.message}</small>
-          )}
         </Field>
-        <Field label="Contraseña">
+        <Field label="Contraseña" error={errors.password?.message}>
           <input
             type="password"
             autoComplete={signup ? "new-password" : "current-password"}
             {...register("password")}
           />
-          {errors.password && (
-            <small className="error-text">{errors.password.message}</small>
-          )}
         </Field>
         {signup && (
           <label className="checkbox">
@@ -558,7 +552,11 @@ export function ProfileForm({
           />
         </Field>
       </div>
-      {err && <p className="error-text">{err}</p>}
+      {err && (
+        <p className="error-text" role="alert">
+          {err}
+        </p>
+      )}
       <Button disabled={busy}>
         {busy ? "Guardando…" : "Guardar mi perfil"}
       </Button>
