@@ -138,7 +138,17 @@ export function useFairway() {
       }
       if (ownProfile.data) {
         const city = initialSignupCity(ownProfile.data, u.user_metadata);
-        if (city) await saveInitialSignupCity(supabase, u.id, city);
+        if (city) {
+          try {
+            await saveInitialSignupCity(supabase, u.id, city);
+          } catch {
+            if (currentUserId.current !== u.id) return;
+            // A rejected city must not prevent access to the profile editor.
+            setError(
+              "No pudimos guardar tu ciudad de registro. Puedes corregirla en Editar perfil.",
+            );
+          }
+        }
         if (currentUserId.current !== u.id) return;
       }
       const r = await Promise.all([
