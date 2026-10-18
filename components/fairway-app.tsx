@@ -1006,7 +1006,7 @@ export default function FairwayApp() {
                   <SectionHeading
                     eyebrow="MEJOR GOLF. MEJOR COMPAÑÍA."
                     title="Encuentra tu próximo foursome."
-                    description="Conecta con golfistas que comparten tu ritmo, tu nivel y tu pasión."
+                    description="Filtra por club, handicap y días disponibles para encontrar con quién jugar."
                     action={
                       <Button
                         variant="outline"
@@ -1030,14 +1030,16 @@ export default function FairwayApp() {
                     <div className="hero-content">
                       <span className="hero-eyebrow">
                         <span className="live-dot" />
-                        EL GOLF SE DISFRUTA MÁS EN COMPAÑÍA
+                        PARTIDAS ENTRE GOLFISTAS DE LEÓN
                       </span>
                       <h2>
-                        El siguiente gran encuentro
+                        ¿Te falta alguien
                         <br />
-                        puede ser en el green.
+                        para completar el grupo?
                       </h2>
-                      <p>Tu comunidad de golf, aquí en León.</p>
+                      <p>
+                        Consulta las partidas y acuerda el horario en el chat.
+                      </p>
                       <button onClick={() => go("partidas")}>
                         Explorar partidas
                         <ArrowUpRight size={16} />

@@ -244,7 +244,7 @@ export function LandingPage({
                 la partida.
               </p>
               <button className="fw-btn fw-btn-dark" onClick={onSignup}>
-                Encuentra tu foursome <ArrowUpRight size={19} />
+                Buscar golfistas en León <ArrowUpRight size={19} />
               </button>
               <span className="fw-hero-note">
                 Crea tu cuenta con Google o correo · 18+

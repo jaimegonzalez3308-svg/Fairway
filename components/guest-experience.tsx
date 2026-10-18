@@ -151,16 +151,16 @@ export function GuestDiscover({
       <SectionHeading
         eyebrow="MEJOR GOLF. MEJOR COMPAÑÍA."
         title="Tu próximo foursome empieza aquí."
-        description="Descubre cómo Fairway te ayuda a encontrar personas con quienes compartir el juego."
+        description="Consulta los clubes de la zona y crea tu perfil para conectar con otros golfistas."
       />
       <section className="golf-hero guest-hero">
         <div className="hero-image" />
         <div className="hero-content">
           <span className="hero-eyebrow">TU COMUNIDAD DE GOLF EN LEÓN</span>
           <h2>
-            Un buen swing se disfruta.
+            Consulta los clubes
             <br />
-            Una buena compañía se recuerda.
+            de León y alrededores.
           </h2>
           <p>Conoce los clubes y, cuando estés listo, encuentra a tu grupo.</p>
           <button onClick={onClubs}>

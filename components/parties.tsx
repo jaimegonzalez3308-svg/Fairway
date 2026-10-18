@@ -88,7 +88,7 @@ export function Parties({
   return (
     <>
       <SectionHeading
-        eyebrow="LA BUENA COMPAÑÍA SE PLANEA"
+        eyebrow="CALENDARIO DE PARTIDAS"
         title="Ponle fecha a tu próxima ronda."
         description="Explora las parties del mes, elige un día y encuentra tu próxima ronda. También puedes organizar la tuya."
         action={
@@ -105,12 +105,12 @@ export function Parties({
         >
           <div className="party-planner-copy">
             <span className="party-hero-eyebrow">
-              <span className="live-dot" /> UN PLAN ABIERTO A BUENA COMPAÑÍA
+              <span className="live-dot" /> INVITA A OTROS GOLFISTAS
             </span>
             <h2>
-              Una fecha.
+              Publica una partida
               <br />
-              Un campo. <em>Tu próximo grupo.</em>
+              <em>con lugares disponibles.</em>
             </h2>
             <p>
               Publica tu ronda con anticipación. Los demás ven los lugares
@@ -147,7 +147,7 @@ export function Parties({
               </span>
             </div>
             <div className="party-hero-note">
-              <Check size={13} /> El plan lo pones tú.
+              <Check size={13} /> Comparte campo, fecha y hora.
             </div>
           </div>
         </section>
