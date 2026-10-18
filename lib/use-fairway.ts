@@ -11,6 +11,11 @@ import {
 } from "./demo";
 import type { Profile, Club, Game, Round } from "./domain";
 import { authErrorMessage } from "./auth";
+import {
+  withRating,
+  type RatingSummary,
+  type SubmittedReview,
+} from "./ratings";
 const anonymousProfile: Profile = {
   id: "",
   name: "Mi cuenta",
@@ -74,6 +79,18 @@ export function useFairway() {
   const [publicDirectoryLive, setPublicDirectoryLive] = useState(false);
   const [needsGoogleProfile, setNeedsGoogleProfile] = useState(false);
   const [partiesAvailable, setPartiesAvailable] = useState(!supabase);
+  const [ratings, setRatings] = useState<RatingSummary[]>(
+    supabase
+      ? []
+      : [demoMe, ...demoProfiles]
+          .filter((p) => p.review_count)
+          .map((p) => ({
+            user_id: p.id,
+            rating: p.rating!,
+            review_count: p.review_count!,
+          })),
+  );
+  const [myReviews, setMyReviews] = useState<SubmittedReview[]>([]);
   const currentUserId = useRef(user?.id);
   currentUserId.current = user?.id;
   const demo = !supabase;
@@ -146,11 +163,15 @@ export function useFairway() {
           .single(),
         supabase.rpc("rating_summary"),
         supabase.from("games").select("join_mode").limit(0),
+        supabase
+          .from("reviews")
+          .select("game_id,target_id,punctuality,respect,pace,company")
+          .eq("reviewer_id", u.id),
       ]);
       if (currentUserId.current !== u.id) return;
       // La actualización de parties es opcional para las bases existentes.
       setPartiesAvailable(!r[11].error);
-      const failed = r.slice(0, 11).find((x) => x.error);
+      const failed = [...r.slice(0, 11), r[12]].find((x) => x.error);
       if (failed?.error) throw failed.error;
       const all = r[0].data as Profile[];
       const own = all.find((x) => x.id === u.id);
@@ -167,18 +188,14 @@ export function useFairway() {
           return { ...p, photo: data?.signedUrl || "" };
         }),
       );
-      const ratings = r[10].data as {
-        user_id: string;
-        rating: number;
-        review_count: number;
-      }[];
+      const ratings = r[10].data as RatingSummary[];
       if (currentUserId.current !== u.id) return;
-      setMe(photos.find((p) => p.id === u.id) || own);
+      setRatings(ratings);
+      setMyReviews(r[12].data as SubmittedReview[]);
+      setMe(withRating(photos.find((p) => p.id === u.id) || own, ratings));
       setNeedsGoogleProfile(false);
       setProfiles(
-        photos
-          .filter((x) => x.id !== u.id)
-          .map((p) => ({ ...p, ...ratings.find((x) => x.user_id === p.id) })),
+        photos.filter((x) => x.id !== u.id).map((p) => withRating(p, ratings)),
       );
       setClubs(r[1].data as Club[]);
       setGames(r[2].data as Game[]);
@@ -247,12 +264,51 @@ export function useFairway() {
         setRounds([]);
         setConversations([]);
         setMessages([]);
+        setRatings([]);
+        setMyReviews([]);
         setPartiesAvailable(false);
         setLoading(false);
       }
     });
     return () => data.subscription.unsubscribe();
   }, [load]);
+  const refreshRatings = useCallback(async () => {
+    const userId = user?.id;
+    if (!supabase || !userId) return false;
+    try {
+      const [summary, reviews] = await Promise.all([
+        supabase.rpc("rating_summary"),
+        supabase
+          .from("reviews")
+          .select("game_id,target_id,punctuality,respect,pace,company")
+          .eq("reviewer_id", userId),
+      ]);
+      if (currentUserId.current !== userId || summary.error || reviews.error)
+        return false;
+      const rows = summary.data as RatingSummary[];
+      setRatings(rows);
+      setMyReviews(reviews.data as SubmittedReview[]);
+      setMe((profile) => withRating(profile, rows));
+      setProfiles((profiles) =>
+        profiles.map((profile) => withRating(profile, rows)),
+      );
+      return true;
+    } catch {
+      return false;
+    }
+  }, [user?.id]);
+  useEffect(() => {
+    if (!user || passwordRecovery) return;
+    const refresh = () => {
+      if (!document.hidden) void refreshRatings();
+    };
+    window.addEventListener("focus", refresh);
+    document.addEventListener("visibilitychange", refresh);
+    return () => {
+      window.removeEventListener("focus", refresh);
+      document.removeEventListener("visibilitychange", refresh);
+    };
+  }, [user?.id, passwordRecovery, refreshRatings]);
   const refreshGames = useCallback(async () => {
     const userId = user?.id;
     if (!supabase || !userId) return false;
@@ -445,6 +501,9 @@ export function useFairway() {
     publicDirectoryLive,
     needsGoogleProfile,
     partiesAvailable,
+    ratings,
+    myReviews,
+    refreshRatings,
     refreshGames,
     partyChat,
     run,

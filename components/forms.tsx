@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,6 +19,8 @@ import type { FairwayData } from "@/lib/use-fairway";
 import { authErrorMessage, authRedirectUrl } from "@/lib/auth";
 import { golfDate, golfDateAfter } from "@/lib/parties";
 import { PasswordResetRequest } from "./password-recovery";
+import { StarRatingInput } from "./player-rating";
+import { canRatePlayer, ratingColumns } from "@/lib/ratings";
 const authSchema = z.object({
   email: z.string().trim().pipe(z.email("Escribe un correo válido.")),
   password: z.string().min(1, "Escribe tu contraseña."),
@@ -796,53 +798,70 @@ export function ReviewForm({
   target: Profile;
   onDone: () => void;
 }) {
+  const [rating, setRating] = useState(0);
+  const [busy, setBusy] = useState(false);
+  const submitting = useRef(false);
+  const eligible = canRatePlayer(
+    game,
+    data.user?.id,
+    target.id,
+    data.myReviews,
+  );
   return (
     <form
       className="form"
       onSubmit={async (e) => {
         e.preventDefault();
+        if (submitting.current || !eligible || !rating) return;
         const f = new FormData(e.currentTarget);
-        const ok = await data.run(
-          () =>
-            supabase!.from("reviews").insert({
+        submitting.current = true;
+        setBusy(true);
+        try {
+          const ok = await data.run(async () => {
+            const result = await supabase!.from("reviews").insert({
               game_id: game.id,
               reviewer_id: data.user!.id,
               target_id: target.id,
-              punctuality: Number(f.get("punctuality")),
-              respect: Number(f.get("respect")),
-              pace: Number(f.get("pace")),
-              company: Number(f.get("company")),
-              body: f.get("body"),
-            }),
-          "Evaluación registrada.",
-        );
-        if (ok) onDone();
+              ...ratingColumns(rating),
+              body: String(f.get("body") || "").trim() || null,
+            });
+            if (result.error?.code === "23505")
+              return {
+                error: {
+                  message: "Ya calificaste a este compañero en esta partida.",
+                },
+              };
+            return result;
+          }, "Calificación guardada.");
+          if (ok) onDone();
+        } finally {
+          submitting.current = false;
+          setBusy(false);
+        }
       }}
     >
       <p>
-        Evalúa tu experiencia como compañero de {target.name}, no su habilidad
-        de golf.
+        ¿Cómo fue jugar con {target.name}? Califica la convivencia y el respeto,
+        no su habilidad de golf. Tu calificación se incluirá en el promedio de
+        su perfil.
       </p>
-      {[
-        ["punctuality", "Puntualidad"],
-        ["respect", "Actitud y respeto"],
-        ["pace", "Ritmo de juego"],
-        ["company", "Convivencia general"],
-      ].map(([k, l]) => (
-        <Field label={l} key={k}>
-          <select name={k}>
-            {[5, 4, 3, 2, 1].map((n) => (
-              <option key={n} value={n}>
-                {n} estrellas
-              </option>
-            ))}
-          </select>
-        </Field>
-      ))}
-      <Field label="Reseña">
-        <textarea name="body" maxLength={1000} />
+      {!eligible && (
+        <p role="status">
+          Solo puedes calificar una vez a cada compañero confirmado de una
+          partida finalizada.
+        </p>
+      )}
+      <StarRatingInput
+        value={rating}
+        onChange={setRating}
+        disabled={busy || !eligible}
+      />
+      <Field label="Comentario (opcional)">
+        <textarea name="body" maxLength={1000} disabled={busy || !eligible} />
       </Field>
-      <Button>Enviar evaluación</Button>
+      <Button disabled={busy || !eligible || !rating}>
+        {busy ? "Guardando…" : "Enviar calificación"}
+      </Button>
     </form>
   );
 }

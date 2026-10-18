@@ -88,6 +88,14 @@ import { GameJoinActions } from "./game-join-actions";
 import { gameIsUpcoming, golfDate } from "@/lib/parties";
 import { SidebarIcon } from "./sidebar-icon";
 import { useIllustratedSidebarIcons } from "@/lib/appearance";
+import { PlayerRating } from "./player-rating";
+import {
+  canRatePlayer,
+  ratingLabel,
+  reviewForPlayer,
+  reviewValue,
+  withRating,
+} from "@/lib/ratings";
 
 // Recharts is only needed when a member opens their statistics.
 const Stats = dynamic(() => import("./stats").then((module) => module.Stats), {
@@ -151,6 +159,10 @@ export default function FairwayApp() {
     const title = mainContentRef.current?.querySelector("h1")?.textContent;
     document.title = title ? `${title} · Fairway` : site.title;
   }, [page, data.loading, data.user?.id]);
+
+  useEffect(() => {
+    if (page === "perfil" || modal === "profile") void data.refreshRatings();
+  }, [page, modal, selected?.id, data.refreshRatings]);
 
   useEffect(() => {
     const media = window.matchMedia("(max-width: 740px)");
@@ -1456,6 +1468,17 @@ export default function FairwayApp() {
                       </div>
                     </div>
                   </div>
+                  <section
+                    className="panel player-reputation"
+                    aria-label="Tu calificación como compañero"
+                  >
+                    <h3>Tu calificación como compañero</h3>
+                    <PlayerRating profile={data.me} />
+                    <p>
+                      Promedio de quienes compartieron contigo una partida
+                      finalizada.
+                    </p>
+                  </section>
                   <div className="profile-friends-link panel">
                     <Users size={21} />
                     <div>
@@ -1922,11 +1945,14 @@ export default function FairwayApp() {
               </span>
             ))}
           </div>
-          <p className="muted">
-            {selected.review_count
-              ? `${selected.rating} / 5 · ${selected.review_count} evaluaciones como compañero`
-              : "Aún no tiene evaluaciones."}
-          </p>
+          <section
+            className="player-reputation"
+            aria-label="Calificación como compañero"
+          >
+            <h3>Calificación como compañero</h3>
+            <PlayerRating profile={withRating(selected, data.ratings)} />
+            <p>Solo califican compañeros de partidas finalizadas.</p>
+          </section>
           <div className="button-row">
             <FriendshipActions
               personId={selected.id}
@@ -2040,7 +2066,8 @@ export default function FairwayApp() {
                 <span className="badge">Confirmado</span>
               </div>
             ))}
-          {currentGame.host_id === data.user?.id ? (
+          {currentGame.host_id === data.user?.id &&
+          ["open", "full"].includes(currentGame.status) ? (
             <>
               <form
                 className="form"
@@ -2153,6 +2180,10 @@ export default function FairwayApp() {
             ) && (
               <>
                 <h3>Califica a tus compañeros</h3>
+                <p>
+                  De 1 a 5 estrellas. Una calificación por compañero en esta
+                  partida.
+                </p>
                 {currentGame.participants
                   .filter(
                     (p) =>
@@ -2160,19 +2191,42 @@ export default function FairwayApp() {
                   )
                   .map((p) => {
                     const target = allProfiles.find((u) => u.id === p.user_id);
+                    const submitted = reviewForPlayer(
+                      data.myReviews,
+                      currentGame.id,
+                      p.user_id,
+                    );
                     return (
                       target && (
-                        <Button
-                          variant="outline"
-                          key={p.user_id}
-                          onClick={() => {
-                            setReviewTarget(target);
-                            setModal("review");
-                          }}
-                        >
-                          <Star size={15} />
-                          {target.name}
-                        </Button>
+                        <div className="review-player-row" key={p.user_id}>
+                          <span>{target.name}</span>
+                          {submitted ? (
+                            <span className="review-submitted" role="status">
+                              <Check size={15} aria-hidden="true" /> Calificado:{" "}
+                              {reviewValue(submitted)} de 5
+                            </span>
+                          ) : (
+                            <Button
+                              variant="outline"
+                              disabled={
+                                !canRatePlayer(
+                                  currentGame,
+                                  data.user?.id,
+                                  target.id,
+                                  data.myReviews,
+                                )
+                              }
+                              aria-label={`Calificar a ${target.name}`}
+                              onClick={() => {
+                                setReviewTarget(target);
+                                setModal("review");
+                              }}
+                            >
+                              <Star size={15} aria-hidden="true" />
+                              Calificar
+                            </Button>
+                          )}
+                        </div>
                       )
                     );
                   })}
@@ -2181,12 +2235,21 @@ export default function FairwayApp() {
         </Modal>
       )}
       {modal === "review" && reviewTarget && currentGame && (
-        <Modal title="Una buena compañía se reconoce" onClose={close}>
+        <Modal
+          title={`Calificar a ${reviewTarget.name}`}
+          onClose={() => {
+            setReviewTarget(null);
+            setModal("game");
+          }}
+        >
           <ReviewForm
             data={data}
             game={currentGame}
             target={reviewTarget}
-            onDone={close}
+            onDone={() => {
+              setReviewTarget(null);
+              setModal("game");
+            }}
           />
         </Modal>
       )}
@@ -2381,8 +2444,8 @@ function ProfileCard({
           <span className="handicap-chip">
             HCP <strong>{p.handicap ?? "S/H"}</strong>
           </span>
-          <span className="rating">
-            <Star size={12} fill="currentColor" />
+          <span className="rating" role="img" aria-label={ratingLabel(p)}>
+            <Star size={12} fill="currentColor" aria-hidden="true" />
             {p.review_count ? p.rating : "—"}
             <small>{p.review_count ? `(${p.review_count})` : ""}</small>
           </span>

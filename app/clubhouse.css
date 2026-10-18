@@ -540,3 +540,134 @@ legend {
 }
 
 /* Portraits, story rings, score markers and calendar dates stay circular. */
+
+/* Player reputation: native radio choices support touch and arrow keys. */
+.star-rating-input {
+  border: 0;
+  padding: 0;
+  margin: 6px 0;
+  min-width: 0;
+}
+.star-rating-input legend {
+  color: var(--forest);
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+.star-rating-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.star-rating-choice {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  color: #6c7b61;
+  cursor: pointer;
+}
+.star-rating-choice.is-filled {
+  color: #806028;
+}
+.star-rating-choice:hover {
+  background: var(--wash);
+}
+.star-rating-choice:focus-within {
+  outline: 3px solid #183c30;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px #fffbf2;
+}
+.star-rating-choice > input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  cursor: inherit;
+}
+.star-rating-input:disabled .star-rating-choice {
+  cursor: default;
+  opacity: 0.55;
+}
+.star-rating-help {
+  font-size: 12px;
+  color: var(--forest);
+  margin: 10px 0 0;
+}
+.player-reputation {
+  margin: 20px 0;
+}
+.player-reputation h3 {
+  margin-bottom: 12px;
+}
+.player-reputation > p {
+  margin: 10px 0 0;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.player-rating {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  color: var(--forest);
+}
+.player-rating > strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+.player-rating-stars {
+  display: inline-flex;
+  gap: 3px;
+  color: #806028;
+}
+.player-rating-star {
+  position: relative;
+  width: 20px;
+  height: 20px;
+}
+.player-rating-star > span {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  height: 20px;
+}
+.player-rating-star svg {
+  display: block;
+  max-width: none;
+}
+.review-player-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+.review-player-row > span:first-child {
+  overflow-wrap: anywhere;
+}
+.review-submitted {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--forest);
+}
+.review-reminder {
+  margin-bottom: 28px;
+}
+.review-reminder > p {
+  margin: 10px 0 16px;
+}
+.review-reminder .button {
+  white-space: normal;
+  text-align: left;
+  max-width: 100%;
+}

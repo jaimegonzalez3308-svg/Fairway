@@ -15,6 +15,7 @@ import { Button, Empty, SectionHeading } from "./ui";
 import { PartyMonthCalendar } from "./party-month-calendar";
 import type { FairwayData } from "@/lib/use-fairway";
 import type { Game } from "@/lib/domain";
+import { canRatePlayer } from "@/lib/ratings";
 import { dateFormat, timeFormat } from "@/lib/utils";
 import {
   gameIsUpcoming,
@@ -68,6 +69,15 @@ export function Parties({
         ["confirmed", "requested"].includes(p.status),
     );
   const upcoming = data.games.filter((g) => gameIsUpcoming(g, now));
+  const pendingReviews = data.games
+    .filter((game) =>
+      game.participants?.some(
+        (p) =>
+          data.profiles.some((profile) => profile.id === p.user_id) &&
+          canRatePlayer(game, data.user?.id, p.user_id, data.myReviews),
+      ),
+    )
+    .sort((a, b) => b.starts_at.localeCompare(a.starts_at));
   const visible = (tab === "mine" ? data.games.filter(mine) : upcoming)
     .filter(
       (g) =>
@@ -149,6 +159,31 @@ export function Parties({
             <div className="party-hero-note">
               <Check size={13} /> Comparte campo, fecha y hora.
             </div>
+          </div>
+        </section>
+      )}
+      {pendingReviews.length > 0 && (
+        <section
+          className="panel review-reminder"
+          aria-label="Calificaciones pendientes"
+        >
+          <h3>Tienes compañeros por calificar</h3>
+          <p>
+            Abre una partida finalizada y comparte cómo fue jugar con tu grupo.
+          </p>
+          <div className="button-row">
+            {pendingReviews.slice(0, 3).map((game) => (
+              <Button
+                key={game.id}
+                variant="outline"
+                onClick={() => onOpen(game)}
+              >
+                Calificar ·{" "}
+                {data.clubs.find((club) => club.id === game.club_id)?.name ||
+                  "Partida"}{" "}
+                · {dateFormat(game.starts_at)}
+              </Button>
+            ))}
           </div>
         </section>
       )}
@@ -411,15 +446,22 @@ function PartyCard({
         </span>
       </div>
       <button className="party-card-action" onClick={onOpen}>
-        {own
-          ? "Administrar mi plan"
-          : member?.status === "confirmed"
-            ? "Ver mi grupo"
-            : member?.status === "requested"
-              ? "Ver mi solicitud"
-              : direct && remaining && upcoming
-                ? "Ver party y unirme"
-                : "Ver partida"}
+        {game.status === "finished" &&
+        game.participants?.some(
+          (p) =>
+            data.profiles.some((profile) => profile.id === p.user_id) &&
+            canRatePlayer(game, data.user?.id, p.user_id, data.myReviews),
+        )
+          ? "Calificar compañeros"
+          : own
+            ? "Administrar mi plan"
+            : member?.status === "confirmed"
+              ? "Ver mi grupo"
+              : member?.status === "requested"
+                ? "Ver mi solicitud"
+                : direct && remaining && upcoming
+                  ? "Ver party y unirme"
+                  : "Ver partida"}
         <ArrowUpRight size={16} />
       </button>
       {own || member?.status === "confirmed" ? (

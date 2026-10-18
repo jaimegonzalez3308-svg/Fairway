@@ -166,6 +166,43 @@ test("migraciones y reglas del MVP se ejecutan en PostgreSQL real (PGlite)", asy
       await db.exec(review(b));
       await assert.rejects(db.exec(review(b)), /duplicate key/);
       await assert.rejects(db.exec(review(c)), /row-level security/);
+      await assert.rejects(
+        db.exec(review(a)),
+        /check constraint|row-level security/,
+      );
+      await as(b);
+      for (const invalid of [0, 6])
+        await assert.rejects(
+          db.exec(
+            `insert into reviews(game_id,reviewer_id,target_id,punctuality,respect,pace,company) values('${gid}','${b}','${a}',${invalid},${invalid},${invalid},${invalid})`,
+          ),
+          /check constraint/,
+        );
+      await db.exec(
+        `insert into reviews(game_id,reviewer_id,target_id,punctuality,respect,pace,company) values('${gid}','${b}','${a}',4,4,4,4)`,
+      );
+      const own = await scalar(
+        `select * from rating_summary() where user_id='${a}'`,
+      );
+      assert.equal(Number(own!.rating), 4);
+      assert.equal(Number(own!.review_count), 1);
+      // A second shared, finished game can contribute a different score.
+      await db.exec("reset role");
+      const second = (await scalar(
+        `insert into games(host_id,club_id,starts_at,holes,capacity,format,kind,status,description,access_conditions) values('${a}','${club}',now()-interval '2 days',18,2,'Casual','social','finished','Segunda ronda de prueba','Acceso autorizado por el club') returning id`,
+      ))!.id;
+      await db.exec(
+        `insert into game_participants(game_id,user_id,status) values('${second}','${b}','confirmed')`,
+      );
+      await as(a);
+      await db.exec(
+        `insert into reviews(game_id,reviewer_id,target_id,punctuality,respect,pace,company) values('${second}','${a}','${b}',1,1,1,1)`,
+      );
+      const average = await scalar(
+        `select * from rating_summary() where user_id='${b}'`,
+      );
+      assert.equal(Number(average!.rating), 3);
+      assert.equal(Number(average!.review_count), 2);
     },
   );
   await t.test(
