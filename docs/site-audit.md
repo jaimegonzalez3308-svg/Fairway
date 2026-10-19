@@ -4,7 +4,7 @@ Revisión del código y la exportación estática frente a la lista compartida p
 
 | Punto | Resultado y alcance |
 | --- | --- |
-| Privacidad | Página pública `/legal/privacidad/`, accesible antes del registro. Responsables y correo confirmados por el propietario. **Pendiente el domicilio y completar la conservación/canal operativo de solicitudes**. No se inventaron plazos ni dirección. |
+| Privacidad | Página pública `/legal/privacidad/`, accesible antes del registro. Responsables, domicilio y correo confirmados por el propietario. **Pendiente completar la conservación y el proceso operativo de solicitudes**. No se inventaron plazos ni dirección. |
 | Términos | Página pública `/legal/terminos/`: mayores de 18, convivencia, derechos sobre contenido, datos declarados y alcance de partidas/directorio. Requiere revisión del responsable antes de considerarse documento definitivo. |
 | Reembolsos | `/legal/pagos/` explica el estado actual sin cobros o suscripciones de Fairway. No hay pasarela de pago en el código revisado. Los acuerdos con clubes son externos; no se presenta una cláusula ficticia de «sin reembolsos». |
 | Almacenamiento/cookies | `/legal/cookies/` documenta sesión Supabase, preferencia de accesibilidad y marca local de pregunta de ubicación. No se detectaron analítica, píxeles publicitarios o embeds sociales en el código. No se añadió un banner de consentimiento ficticio para rastreadores inexistentes. Reevaluar antes de integrar seguimiento opcional. |
@@ -16,7 +16,7 @@ Revisión del código y la exportación estática frente a la lista compartida p
 | Alt text | Revisión de etiquetas `img`: todas tienen atributo `alt`; los avatares repetidos junto al nombre usan `alt` vacío. Fondos decorativos no se presentan como fotos verificadas del club. No se inventan descripciones detalladas de contenido subido por usuarios. |
 | Teclado/etiquetas | Se conservan los arreglos de etiquetas, errores, foco y navegación de la revisión de accesibilidad anterior. Pestañas del perfil anuncian selección. Documentos legales con HTML estático, un h1, secciones h2, enlaces reales, foco visible y salto al contenido. Pendiente verificación completa con teclado y lectores de pantalla. |
 | Contraste | Se conserva el modo opcional solicitado. El modo estándar **aún tiene pares de bajo contraste** documentados en `docs/accessibility.md`. El verificador cubre 49 pares declarados del modo activado; no prueba todos los estados renderizados. Los documentos nuevos usan colores oscuros sobre fondo claro en ambos modos. |
-| Leyes locales/datos reales | Se consultaron fuentes oficiales de México para identificar información faltante; no se declara cumplimiento integral. Contacto confirmado: Jaime Gonzalez Alvarez y Rodrigo Calderon Knight, fairway.rj@gmail.com. Falta domicilio, proceso operativo de privacidad y revisión final de textos/retención por el responsable. |
+| Leyes locales/datos reales | Se consultaron fuentes oficiales de México para identificar información faltante; no se declara cumplimiento integral. Contacto confirmado: Jaime Gonzalez Alvarez y Rodrigo Calderon Knight, fairway.rj@gmail.com; Jardín de los Cardenales 630, El Bosque Country Club. Falta el proceso operativo de privacidad y revisión final de textos/retención por el responsable. |
 
 ## Verificación
 

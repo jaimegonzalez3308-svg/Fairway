@@ -19,9 +19,9 @@ function Operator() {
       )}
       {(!legalOperator.address || !legalOperator.email) && (
         <p className="legal-pending" role="note">
-          Aviso pendiente de completar: falta publicar el domicilio de contacto.
-          Esta información sobre el producto no sustituye un aviso integral
-          completo.
+          Aviso pendiente de completar: faltan datos de contacto del
+          responsable. Esta información sobre el producto no sustituye un aviso
+          integral completo.
         </p>
       )}
     </section>
@@ -102,8 +102,7 @@ export function LegalDocument({ document }: { document: LegalDocumentId }) {
               Ajustes. El borrado requiere verificar tu identidad. Para
               solicitudes de acceso, rectificación, cancelación u oposición
               (ARCO), revocación o limitación del uso de datos, debe utilizarse
-              el canal de privacidad indicado en este aviso; el domicilio del
-              responsable sigue pendiente de publicar.
+              el correo de privacidad indicado en este aviso.
             </p>
             <p>
               Los datos de la cuenta se utilizan mientras se prestan sus

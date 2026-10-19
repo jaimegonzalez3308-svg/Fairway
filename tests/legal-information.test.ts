@@ -13,13 +13,20 @@ const data = {
   me: demoMe,
   clubs,
 } as unknown as FairwayData;
-test("privacidad presenta el contacto confirmado y hace visible el domicilio pendiente, sin inventarlo", () => {
+test("privacidad presenta los responsables, correo y domicilio confirmados", () => {
   const html = renderToStaticMarkup(
     createElement(LegalDocument, { document: "privacidad" }),
   );
   assert.match(html, /Jaime Gonzalez Alvarez y Rodrigo Calderon Knight/);
   assert.match(html, /href="mailto:fairway.rj@gmail.com"/);
-  assert.match(html, /falta publicar el domicilio de contacto/);
+  assert.match(
+    html,
+    /Domicilio de contacto: Jardín de los Cardenales 630, El Bosque Country Club/,
+  );
+  assert.doesNotMatch(
+    html,
+    /Aviso pendiente de completar|domicilio.*pendiente/,
+  );
   assert.match(html, /elegir la ciudad manualmente/);
 });
 test("correo y Google permiten leer privacidad y términos antes del consentimiento obligatorio sin perder el formulario", () => {

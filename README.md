@@ -391,6 +391,6 @@ Referencias de implementación: [MDN: geolocalización y permiso en HTTPS](https
 
 ## Avisos públicos y revisión de publicación
 
-Los documentos de `/legal/privacidad/`, `/legal/terminos/`, `/legal/cookies/`, `/legal/pagos/` y `/legal/creditos/` se exportan como HTML legible sin iniciar sesión ni ejecutar JavaScript. Registro por correo y Google enlazan los avisos antes del consentimiento. `lib/legal.ts` contiene los datos públicos confirmados de los responsables; el domicilio permanece pendiente y se indica explícitamente en el aviso. No se inventaron datos ni se declara cumplimiento integral.
+Los documentos de `/legal/privacidad/`, `/legal/terminos/`, `/legal/cookies/`, `/legal/pagos/` y `/legal/creditos/` se exportan como HTML legible sin iniciar sesión ni ejecutar JavaScript. Registro por correo y Google enlazan los avisos antes del consentimiento. `lib/legal.ts` contiene los datos públicos confirmados de los responsables, incluido el domicilio de contacto proporcionado por el propietario. No se inventaron datos ni se declara cumplimiento integral.
 
 Ver [revisión del sitio](docs/site-audit.md) para el estado de cada punto, las fuentes oficiales y las limitaciones. Las páginas legales y sus metadatos se comprueban también al validar la exportación. El servicio actual no integra cobros ni analítica publicitaria.

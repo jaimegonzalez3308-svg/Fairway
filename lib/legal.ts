@@ -1,7 +1,8 @@
 /** Public operator information. Never fill missing details with inferred personal data. */
 export const legalOperator = {
   names: "Jaime Gonzalez Alvarez y Rodrigo Calderon Knight",
-  address: null as string | null,
+  address: "Jardín de los Cardenales 630, El Bosque Country Club" as
+    string | null,
   email: "fairway.rj@gmail.com" as string | null,
 };
 export const legalRevision = "19 de octubre de 2026";

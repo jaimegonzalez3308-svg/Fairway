@@ -157,8 +157,8 @@ export function Settings({
             limita el acceso mutuo al perfil y a las conversaciones.
           </p>
           <p>
-            Consulta los avisos completos, el contacto de privacidad y los datos
-            pendientes del responsable:
+            Consulta los avisos completos y los datos de contacto de los
+            responsables:
           </p>
           <LegalLinks />
         </div>

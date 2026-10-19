@@ -178,8 +178,7 @@ export function PublicPrivacy() {
       </div>
       <div className="notice">
         Fairway es para mayores de 18 años. Consulta la información completa de
-        privacidad, los responsables y el canal de contacto. El domicilio del
-        responsable está pendiente de publicar.
+        privacidad, los responsables, el domicilio y el canal de contacto.
       </div>
       <LegalLinks />
     </>
