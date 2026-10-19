@@ -1,4 +1,5 @@
 "use client";
+import { LegalLinks } from "./legal-links";
 import { useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { site } from "@/lib/site";
@@ -598,6 +599,7 @@ export default function FairwayApp() {
             organizar partidas.
           </p>
           <p role="status">Recuperando tu sesión…</p>
+          <LegalLinks />
           <noscript>
             Activa JavaScript para iniciar sesión y utilizar Fairway.
           </noscript>
@@ -1598,6 +1600,7 @@ export default function FairwayApp() {
                       <button
                         key={t}
                         className={profileTab === t ? "active" : ""}
+                        aria-pressed={profileTab === t}
                         onClick={() => setProfileTab(t)}
                       >
                         {t}
@@ -1791,7 +1794,7 @@ export default function FairwayApp() {
               fairway.
             </a>
             <span>El golf conecta.</span>
-            <button onClick={() => go("privacidad")}>Privacidad</button>
+            <LegalLinks />
             <span>Hecho para compartir el juego.</span>
           </footer>
         </main>

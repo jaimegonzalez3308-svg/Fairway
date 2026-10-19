@@ -52,13 +52,28 @@ assert.ok(
 assert.match(missing, /href="\/"[^>]*>.*?Volver a Fairway/s);
 const robots = readFileSync("out/robots.txt", "utf8");
 assert.ok(robots.includes(`Sitemap: ${new URL("sitemap.xml", url).href}`));
+const legalIds = ["privacidad", "terminos", "cookies", "pagos", "creditos"];
+for (const id of legalIds) {
+  const html = readFileSync(`out/legal/${id}/index.html`, "utf8");
+  assert.equal(tags(html, "h1").length, 1);
+  assert.equal(
+    tags(html, "link").find((t) => t.rel === "canonical")?.href,
+    new URL(`legal/${id}/`, url).href,
+  );
+  assert.ok(
+    tags(html, "meta").some(
+      (t) => t.name === "description" && t.content.length > 20,
+    ),
+  );
+  assert.match(html, /Volver a Fairway/);
+}
 const sitemap = readFileSync("out/sitemap.xml", "utf8");
 const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(
   ([, value]) => value,
 );
 assert.deepEqual(
   urls,
-  [url.href],
+  [url.href, ...legalIds.map((id) => new URL(`legal/${id}/`, url).href)],
   "Only canonical public URLs belong in the sitemap",
 );
 const files = (dir) =>

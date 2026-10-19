@@ -624,7 +624,7 @@ h1 {
       rgba(17, 40, 27, 0.63) 48%,
       rgba(21, 45, 22, 0.08)
     ),
-    url("https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=1800&auto=format&fit=crop");
+    url("/images/fairway-aerial.webp");
   background-size: cover;
   background-position: center 48%;
   position: absolute;
@@ -1629,7 +1629,7 @@ h1 {
   height: 165px;
   background:
     linear-gradient(90deg, #16382b55, #16382b11),
-    url("https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=1600&auto=format&fit=crop")
+    url("/images/fairway-aerial.webp")
       center 40% / cover;
 }
 .profile-cover-content {
@@ -2279,7 +2279,7 @@ h1 {
   margin-top: 50px;
   width: 100%;
   height: 300px;
-  background: url("https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=1600&auto=format&fit=crop")
+  background: url("/images/fairway-aerial.webp")
     center 45% / cover;
   border-radius: 16px;
 }
@@ -2731,7 +2731,7 @@ h1 {
     background-position: 62% center;
     background-image:
       linear-gradient(90deg, #102e24e6, #153d2a55),
-      url("https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=900&auto=format&fit=crop");
+      url("/images/fairway-aerial.webp");
   }
   .tabs {
     gap: 23px;

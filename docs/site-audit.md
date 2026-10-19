@@ -1,0 +1,33 @@
+# Revisión del sitio · 19 de octubre de 2026
+
+Revisión del código y la exportación estática frente a la lista compartida por el propietario. No constituye certificación legal ni WCAG. No incluye una auditoría de contratos, logs, respaldos o configuración interna de proveedores.
+
+| Punto | Resultado y alcance |
+| --- | --- |
+| Privacidad | Página pública `/legal/privacidad/`, accesible antes del registro. Responsables y correo confirmados por el propietario. **Pendiente el domicilio y completar la conservación/canal operativo de solicitudes**. No se inventaron plazos ni dirección. |
+| Términos | Página pública `/legal/terminos/`: mayores de 18, convivencia, derechos sobre contenido, datos declarados y alcance de partidas/directorio. Requiere revisión del responsable antes de considerarse documento definitivo. |
+| Reembolsos | `/legal/pagos/` explica el estado actual sin cobros o suscripciones de Fairway. No hay pasarela de pago en el código revisado. Los acuerdos con clubes son externos; no se presenta una cláusula ficticia de «sin reembolsos». |
+| Almacenamiento/cookies | `/legal/cookies/` documenta sesión Supabase, preferencia de accesibilidad y marca local de pregunta de ubicación. No se detectaron analítica, píxeles publicitarios o embeds sociales en el código. No se añadió un banner de consentimiento ficticio para rastreadores inexistentes. Reevaluar antes de integrar seguimiento opcional. |
+| Proveedores externos | Supabase y Google para las funciones de cuenta. BigDataCloud recibe coordenadas aproximadas e IP al usar ubicación con permiso; existe alternativa manual. El alojamiento recibe datos técnicos al servir la página. No se auditó el tratamiento interno de proveedores. |
+| Consentimiento/formularios | Enlaces legibles a privacidad y términos antes del registro por correo/Google, abren una pestaña nueva para conservar el formulario. Checkbox obligatorio sin preselección. Esto no equivale a un registro probatorio completo de versiones de consentimiento. |
+| Datos necesarios | No se solicitan género/ocupación a nuevos perfiles. Se conservan los datos anteriores salvo eliminación elegida por el usuario al guardar. Se pide nombre para el perfil, edad (18+), ciudad y preferencias de golf. No se añade fecha de nacimiento, teléfono ni dirección personal. |
+| Imágenes/atribución | Fotos de diseño y directorio servidas localmente; fuente verificable Keith Tanner/Unsplash. Directorio marcado como ilustrativo. Retratos ficticios de demo sustituidos por avatar SVG. Antigua foto sin atribución comprobada conservada fuera de `public`, en `docs/assets`. Créditos y licencias públicas en `/legal/creditos/`. Las subidas de miembros siguen requiriendo permisos del autor; no se certifican sus derechos. |
+| Opiniones/afirmaciones | En producción configurada no se usa demo como sustituto de datos vacíos o errores. La demo identificada conserva datos ficticios. Evaluaciones requieren partida compartida y finalizada; no se afirma acreditar asistencia real mediante GPS. Handicap/membresía declarados y clubes pendientes de confirmar identificados. |
+| Alt text | Revisión de etiquetas `img`: todas tienen atributo `alt`; los avatares repetidos junto al nombre usan `alt` vacío. Fondos decorativos no se presentan como fotos verificadas del club. No se inventan descripciones detalladas de contenido subido por usuarios. |
+| Teclado/etiquetas | Se conservan los arreglos de etiquetas, errores, foco y navegación de la revisión de accesibilidad anterior. Pestañas del perfil anuncian selección. Documentos legales con HTML estático, un h1, secciones h2, enlaces reales, foco visible y salto al contenido. Pendiente verificación completa con teclado y lectores de pantalla. |
+| Contraste | Se conserva el modo opcional solicitado. El modo estándar **aún tiene pares de bajo contraste** documentados en `docs/accessibility.md`. El verificador cubre 49 pares declarados del modo activado; no prueba todos los estados renderizados. Los documentos nuevos usan colores oscuros sobre fondo claro en ambos modos. |
+| Leyes locales/datos reales | Se consultaron fuentes oficiales de México para identificar información faltante; no se declara cumplimiento integral. Contacto confirmado: Jaime Gonzalez Alvarez y Rodrigo Calderon Knight, fairway.rj@gmail.com. Falta domicilio, proceso operativo de privacidad y revisión final de textos/retención por el responsable. |
+
+## Verificación
+
+- Suite de pruebas del proyecto, TypeScript, colores declarados y construcción/exportación de Next.
+- `scripts/check-site-output.mjs` comprueba HTML estático, títulos, canonical, descripciones, imagen social, sitemap público y ausencia de source maps de producción. Incluye las cinco páginas nuevas, sin enlaces a perfiles, chats o recuperación en sitemap.
+- No se dispone de un navegador controlable en este entorno. No se afirma ausencia de errores de consola ni conformidad de todos los recorridos renderizados; falta revisión visual, de teclado y con tecnologías de asistencia.
+
+## Referencias primarias
+
+- [Ley Federal de Protección de Datos Personales en Posesión de los Particulares, artículos 15 y 16](https://www.diputados.gob.mx/LeyesBiblio/pdf/LFPDPPP.pdf): identidad/domicilio y contenido del aviso; disponibilidad al recabar datos.
+- [Ley Federal de Protección al Consumidor](https://www.diputados.gob.mx/LeyesBiblio/pdf/LFPC.pdf): revisar obligaciones de comercio electrónico antes de incorporar cobros.
+- [Licencia Unsplash](https://unsplash.com/license) y [fotografía de Keith Tanner](https://unsplash.com/photos/aerial-view-of-a-beautiful-golf-course-4WSLeNydrlo).
+- [Funcionamiento del servicio de BigDataCloud](https://www.bigdatacloud.com/docs/article/why-is-reverse-geocoding-api-free).
+- [WCAG: contraste mínimo](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html).

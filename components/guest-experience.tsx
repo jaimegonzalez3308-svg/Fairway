@@ -1,4 +1,5 @@
 "use client";
+import { LegalLinks } from "./legal-links";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -83,16 +84,19 @@ export function ClubDirectory({
         />
       )}
       <div className="club-grid">
-        {visible.map((c, i) => (
+        {visible.map((c) => (
           <article className="panel club-card" key={c.id}>
             <div
               className="club-photo"
               style={{
-                backgroundImage: `url(https://images.unsplash.com/photo-${i === 1 ? "1593111774240-d529f12cf4bb" : "1535131749006-b7f58c99034b"}?w=900&auto=format&fit=crop)`,
+                backgroundImage: "url(/images/fairway-aerial.webp)",
               }}
             >
               <span className="badge">
                 {c.verified ? "Datos verificados" : "Datos por confirmar"}
+              </span>
+              <span className="club-photo-caption">
+                Imagen ilustrativa · No representa este club
               </span>
             </div>
             <div className="club-content">
@@ -173,11 +177,11 @@ export function PublicPrivacy() {
         })}
       </div>
       <div className="notice">
-        Información de privacidad del producto en preparación. El operador debe
-        completar su aviso de privacidad con sus datos y canal de atención para
-        solicitudes ARCO antes del lanzamiento definitivo. Fairway es para
-        mayores de 18 años.
+        Fairway es para mayores de 18 años. Consulta la información completa de
+        privacidad, los responsables y el canal de contacto. El domicilio del
+        responsable está pendiente de publicar.
       </div>
+      <LegalLinks />
     </>
   );
 }

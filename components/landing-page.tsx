@@ -1,4 +1,5 @@
 "use client";
+import { LegalLinks } from "./legal-links";
 
 import { useEffect, useRef, useState } from "react";
 import {
@@ -533,10 +534,10 @@ export function LandingPage({
           <div className="fw-local-grid">
             <div className="fw-local-photo" data-fw-reveal>
               <img
-                src="/images/fairway-landscape.webp"
-                alt="Golfista terminando su swing en un campo. Imagen ilustrativa, no representa a un miembro de Fairway."
-                width={2200}
-                height={1467}
+                src="/images/fairway-aerial.webp"
+                alt="Vista aérea de un campo de golf. Imagen ilustrativa, no representa un club de León."
+                width={2100}
+                height={1300}
                 loading="lazy"
               />
               <div>
@@ -680,6 +681,7 @@ export function LandingPage({
           fairway<span>.</span>
           <ArrowUpRight />
         </div>
+        <LegalLinks />
         <div className="fw-footer-bottom">
           <span>FAIRWAY · LEÓN, GUANAJUATO</span>
           <span>PARA MAYORES DE 18 AÑOS</span>

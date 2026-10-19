@@ -158,7 +158,7 @@ Quedan para fases posteriores: retos, push, recomendaciones avanzadas, integraci
 
 La membresía declarada no concede acceso a un club. No existe integración con World Handicap System ni cálculo de un handicap oficial. El handicap declarado se mantiene separado de las estadísticas internas.
 
-Fotos de demostración e imágenes ilustrativas: Unsplash. No representan a usuarios registrados ni verifican la identidad o membresía de nadie.
+Las cuentas de demostración usan avatares SVG locales. La fotografía de diseño y las imágenes ilustrativas del directorio son de Keith Tanner (Unsplash); no representan a usuarios registrados ni verifican un club, la identidad o membresía de nadie.
 
 Referencias técnicas: [Next.js static exports](https://nextjs.org/docs/app/guides/static-exports), [Supabase RLS](https://supabase.com/docs/guides/database/postgres/row-level-security), [Supabase Postgres Changes](https://supabase.com/docs/guides/realtime/postgres-changes).
 
@@ -306,7 +306,7 @@ La portada conserva el titular con serif únicamente en el hero. El resto usa pr
 
 Criterios consultados: [NNGroup: principios de una homepage](https://www.nngroup.com/articles/homepage-design-principles/), [web.dev: animaciones eficientes](https://web.dev/articles/animations-guide), [web.dev: preferencias de movimiento reducido](https://web.dev/articles/prefers-reduced-motion), [W3C: pausar, detener u ocultar movimiento](https://www.w3.org/WAI/WCAG21/Understanding/pause-stop-hide.html).
 
-Fotografía principal: [Keith Tanner en Unsplash](https://unsplash.com/photos/aerial-view-of-a-beautiful-golf-course-4WSLeNydrlo). Fotografía de swing: imagen de Unsplash ya utilizada por Fairway (`photo-1535131749006-b7f58c99034b`). Son imágenes ilustrativas; no representan un club de León ni miembros reales. Se sirven desde `public/images` en WebP para evitar descargas de terceros durante la visita.
+Fotografía principal: [Keith Tanner en Unsplash](https://unsplash.com/photos/aerial-view-of-a-beautiful-golf-course-4WSLeNydrlo). La antigua fotografía de swing sin atribución comprobada se conserva solo en `docs/assets`, fuera del sitio publicado. Son imágenes ilustrativas; no representan un club de León ni miembros reales. Se sirven desde `public/images` en WebP para evitar descargas de terceros durante la visita.
 
 
 Validación de la landing: TypeScript y compilación estática correctos, 92 pruebas aprobadas y respuesta HTTP 200 de la portada local. La inspección visual e interacción en navegador de escritorio/móvil quedan sin verificar: el control de Chrome no respondió durante esta actualización. No se simularon inicios de sesión ni se crearon partidas reales como prueba.
@@ -321,7 +321,7 @@ Las etiquetas/errores de formularios, navegación por teclado, anuncios del chat
 
 ## Metadatos, rastreo y publicación
 
-La identidad pública y URL canónica viven en `lib/site.ts`. La portada incluye título/descripción en español, canonical, Open Graph/Twitter con una imagen propia de 1200×630 y datos estructurados `WebSite`. Se generan `/robots.txt` y `/sitemap.xml`; este último solo enumera la portada pública. Los perfiles, chats y enlaces de recuperación no se incluyen. Los estados de la app usan fragmentos y no son páginas independientes para buscadores.
+La identidad pública y URL canónica viven en `lib/site.ts`. La portada incluye título/descripción en español, canonical, Open Graph/Twitter con una imagen propia de 1200×630 y datos estructurados `WebSite`. Se generan `/robots.txt` y `/sitemap.xml`; este último enumera la portada y los documentos públicos de `/legal/`. Los perfiles, chats y enlaces de recuperación no se incluyen. Los estados de la app usan fragmentos y no son páginas independientes para buscadores.
 
 La página 404 tiene texto en español, una acción para volver a Fairway y `noindex`. La comprobación de sesión mantiene un encabezado y descripción útiles en el HTML inicial, sin mostrar la app privada antes de autenticar. El contenido completo y las funciones de Fairway requieren JavaScript. Se conserva el retorno directo de usuarios con sesión iniciada.
 
@@ -388,3 +388,9 @@ El club principal y los clubes adicionales del formulario se filtran según la c
 La comparación ignora mayúsculas y acentos y unifica los nombres habituales de León. Los clubes de «Alrededores de León» comparten esa categoría; «Por confirmar» queda sin clasificar y se muestra al consultar todas las ciudades. La agrupación usa nombres de ciudad, no distancias ni límites municipales verificados. Viajar no cambia automáticamente la ciudad. Las horas de las partidas conservan la zona de León y su etiqueta UTC−6; esta actualización no añade zonas horarias por campo.
 
 Referencias de implementación: [MDN: geolocalización y permiso en HTTPS](https://developer.mozilla.org/en-US/docs/Web/API/Geolocation/getCurrentPosition) y [BigDataCloud: API de ciudad desde el navegador](https://www.bigdatacloud.com/free-api/free-reverse-geocode-to-city-api). Las pruebas cubren entrada manual, normalización, errores, cancelación, ausencia de consulta tras denegar permiso, coordenadas aproximadas, filtros del calendario y permisos de guardado en PostgreSQL/PGlite. Chrome no respondió al control de interfaz: quedan pendientes el permiso real de ubicación, la respuesta del proveedor desde un navegador y la revisión visual en móvil/escritorio.
+
+## Avisos públicos y revisión de publicación
+
+Los documentos de `/legal/privacidad/`, `/legal/terminos/`, `/legal/cookies/`, `/legal/pagos/` y `/legal/creditos/` se exportan como HTML legible sin iniciar sesión ni ejecutar JavaScript. Registro por correo y Google enlazan los avisos antes del consentimiento. `lib/legal.ts` contiene los datos públicos confirmados de los responsables; el domicilio permanece pendiente y se indica explícitamente en el aviso. No se inventaron datos ni se declara cumplimiento integral.
+
+Ver [revisión del sitio](docs/site-audit.md) para el estado de cada punto, las fuentes oficiales y las limitaciones. Las páginas legales y sus metadatos se comprueban también al validar la exportación. El servicio actual no integra cobros ni analítica publicitaria.

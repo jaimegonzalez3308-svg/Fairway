@@ -64,8 +64,7 @@ export const demoMe: Profile = {
   availability: ["Sábado", "Domingo"],
   holes: 18,
   style: "social",
-  photo:
-    "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=180&h=180&fit=crop&crop=faces",
+  photo: "/images/avatar.svg",
   verified: false,
   accepts_guests: true,
   beginner_friendly: true,
@@ -78,8 +77,7 @@ export const demoProfiles: Profile[] = [
     age: 28,
     handicap: 10,
     bio: "El mejor plan de sábado: 18 hoyos, buena compañía y un café al terminar.",
-    photo:
-      "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=700&h=800&fit=crop&crop=faces",
+    photo: "/images/avatar.svg",
     rating: 4.9,
     review_count: 12,
   },
@@ -91,8 +89,7 @@ export const demoProfiles: Profile[] = [
     club_id: "bosque",
     handicap: 16,
     bio: "Aquí por los buenos swings y las mejores conversaciones. ¿Armamos una ronda?",
-    photo:
-      "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=700&h=800&fit=crop&crop=faces",
+    photo: "/images/avatar.svg",
     rating: 4.9,
     review_count: 8,
     availability: ["Viernes", "Sábado"],
@@ -104,8 +101,7 @@ export const demoProfiles: Profile[] = [
     age: 32,
     handicap: 8,
     bio: "Golf sin prisa, pero con ganas de mejorar. Siempre listo para conocer un nuevo foursome.",
-    photo:
-      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=700&h=800&fit=crop&crop=faces",
+    photo: "/images/avatar.svg",
     rating: 4.8,
     review_count: 16,
   },
@@ -117,8 +113,7 @@ export const demoProfiles: Profile[] = [
     handicap: null,
     club_id: null,
     bio: "Aprendiendo un swing a la vez. Busco compañeros con paciencia y buena actitud.",
-    photo:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=700&h=800&fit=crop&crop=faces",
+    photo: "/images/avatar.svg",
     rating: 4.9,
     review_count: 6,
   },
@@ -130,8 +125,7 @@ export const demoProfiles: Profile[] = [
     handicap: 5,
     club_id: "bosque",
     style: "competitivo",
-    photo:
-      "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=700&h=800&fit=crop&crop=faces",
+    photo: "/images/avatar.svg",
     rating: 4.7,
     review_count: 10,
   },

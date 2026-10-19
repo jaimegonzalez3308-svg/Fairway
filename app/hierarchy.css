@@ -775,3 +775,127 @@ main {
     padding: 26px;
   }
 }
+
+/* Public documents remain readable independently of app preferences. */
+.legal-page {
+  min-height: 100vh;
+  background: #faf9f3;
+  color: #203d31;
+  padding: 24px clamp(20px, 5vw, 64px);
+  font-size: 16px;
+  line-height: 1.7;
+}
+.legal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  max-width: 1100px;
+  margin: 0 auto 48px;
+  flex-wrap: wrap;
+}
+.legal-page .legal-brand {
+  font-size: 30px;
+  font-weight: 800;
+  text-decoration: none;
+}
+.legal-page main {
+  max-width: 760px;
+  margin: auto;
+}
+.legal-page h1 {
+  font-size: clamp(30px, 5vw, 48px);
+  line-height: 1.15;
+  margin: 24px 0;
+  letter-spacing: -0.035em;
+}
+.legal-page h2 {
+  font-size: 23px;
+  line-height: 1.3;
+  margin: 0 0 14px;
+}
+.legal-copy section {
+  margin: 32px 0;
+}
+.legal-copy p {
+  margin: 12px 0;
+}
+.legal-page a,
+.legal-copy a {
+  color: #174e73;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.legal-page a:focus-visible,
+.legal-links a:focus-visible,
+.checkbox a:focus-visible {
+  outline: 3px solid #174e73;
+  outline-offset: 4px;
+}
+.legal-pending {
+  border-left: 4px solid #9a6514;
+  background: #fff0cf;
+  padding: 16px;
+  color: #423312;
+}
+.legal-date {
+  color: #4d6056;
+}
+.legal-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 22px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.legal-links a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  padding: 6px 0;
+}
+.legal-page footer {
+  max-width: 1100px;
+  margin: 64px auto 0;
+  border-top: 1px solid #b5c0b7;
+  padding-top: 24px;
+}
+.fw-footer .legal-links {
+  padding: 20px 0;
+}
+.club-photo .club-photo-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 9px 12px;
+  color: #fff;
+  background: #132b23e8;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.legacy-profile-data {
+  grid-column: 1 / -1;
+}
+.app-footer {
+  flex-wrap: wrap;
+}
+.app-footer .legal-links {
+  flex: 1 1 100%;
+}
+.app-footer .legal-links a {
+  font-size: 13px;
+  letter-spacing: normal;
+  color: #365a45;
+  font-weight: 500;
+}
+.checkbox a {
+  color: #174e73;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.checkbox input[type="checkbox"] {
+  flex-shrink: 0;
+}
+.fw-footer > .legal-links {
+  color: var(--fw-ink, #203c2f);
+}

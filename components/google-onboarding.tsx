@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Button, Field } from "./ui";
+import { RegistrationConsent } from "./legal-links";
 import { supabase } from "@/lib/supabase";
 import type { FairwayData } from "@/lib/use-fairway";
 import { authErrorMessage } from "@/lib/auth";
@@ -72,7 +73,7 @@ export function GoogleOnboarding({ data }: { data: FairwayData }) {
             }
           }}
         >
-          <Field label="Nombre y apellido">
+          <Field label="Nombre para tu perfil">
             <input
               name="name"
               autoComplete="name"
@@ -104,8 +105,7 @@ export function GoogleOnboarding({ data }: { data: FairwayData }) {
           />
           <label className="checkbox">
             <input name="consent" type="checkbox" required />
-            Soy mayor de edad y acepto el tratamiento de mis datos para usar
-            Fairway. He leído la información de privacidad.
+            <RegistrationConsent />
           </label>
           <button
             type="button"

@@ -1,4 +1,5 @@
 "use client";
+import { LegalLinks } from "./legal-links";
 import { useState, useEffect } from "react";
 import { Button, Field, Empty } from "./ui";
 import type { FairwayData } from "@/lib/use-fairway";
@@ -155,12 +156,11 @@ export function Settings({
             Las imágenes se almacenan en un depósito privado. Bloquear a alguien
             limita el acceso mutuo al perfil y a las conversaciones.
           </p>
-          <div className="notice">
-            Antes del lanzamiento público, el operador debe completar su aviso
-            de privacidad con identidad, domicilio y canal para solicitudes de
-            acceso, rectificación, cancelación y oposición. La plataforma está
-            en preparación.
-          </div>
+          <p>
+            Consulta los avisos completos, el contacto de privacidad y los datos
+            pendientes del responsable:
+          </p>
+          <LegalLinks />
         </div>
         <div className="panel danger-zone">
           <h3 className="course-heading course-hazard-heading">

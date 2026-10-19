@@ -13,6 +13,7 @@ import {
   CalendarDays,
 } from "lucide-react";
 import { Button, Field } from "./ui";
+import { RegistrationConsent } from "./legal-links";
 import { supabase, signInWithGoogle } from "@/lib/supabase";
 import { days, profileSchema, type Profile, type Game } from "@/lib/domain";
 import type { FairwayData } from "@/lib/use-fairway";
@@ -199,7 +200,7 @@ export function AuthForm({
       >
         {signup && (
           <div className="form-grid">
-            <Field label="Nombre y apellido">
+            <Field label="Nombre para tu perfil">
               <input name="name" required minLength={2} maxLength={80} />
             </Field>
             <Field label="Edad">
@@ -226,8 +227,7 @@ export function AuthForm({
         {signup && (
           <label className="checkbox">
             <input type="checkbox" required />
-            Soy mayor de edad y acepto el tratamiento de mis datos para usar
-            Fairway. He leído la información de privacidad en Ajustes.
+            <RegistrationConsent />
           </label>
         )}
         {message && (
@@ -428,7 +428,7 @@ export function ProfileForm({
         revisión real de la administración.
       </div>
       <div className="form-grid">
-        <Field label="Nombre y apellido">
+        <Field label="Nombre para tu perfil">
           <input {...register("name")} required />
         </Field>
         <Field label="Edad (solo 18+)">
@@ -529,12 +529,29 @@ export function ProfileForm({
             <option value="public">Público dentro de Fairway</option>
           </select>
         </Field>
-        <Field label="Ocupación (opcional)">
-          <input {...register("occupation")} />
-        </Field>
-        <Field label="Género (opcional)">
-          <input {...register("gender")} />
-        </Field>
+        {(p.occupation || p.gender) && (
+          <div className="notice legacy-profile-data">
+            <p>
+              Tu perfil conserva datos opcionales anteriores:{" "}
+              {p.occupation && `ocupación: ${p.occupation}`}{" "}
+              {p.gender && `género: ${p.gender}`}. Ya no los pedimos para jugar.
+            </p>
+            <button
+              type="button"
+              className="text-button"
+              disabled={!watch("occupation") && !watch("gender")}
+              onClick={() => {
+                setValue("occupation", "", { shouldDirty: true });
+                setValue("gender", "", { shouldDirty: true });
+              }}
+            >
+              Eliminar estos datos al guardar
+            </button>
+            {!watch("occupation") && !watch("gender") && (
+              <p role="status">Se eliminarán cuando guardes el perfil.</p>
+            )}
+          </div>
+        )}
       </div>
       <Field
         label="Biografía (opcional)"
@@ -611,7 +628,10 @@ export function ProfileForm({
         </fieldset>
       )}
       <div className="form-grid">
-        <Field label="Fotografía de perfil">
+        <Field
+          label="Fotografía de perfil"
+          hint="Sube solo imágenes tuyas o que tengas permiso de compartir."
+        >
           <input
             type="file"
             accept="image/png,image/jpeg,image/webp"
