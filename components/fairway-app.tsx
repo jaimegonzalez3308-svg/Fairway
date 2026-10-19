@@ -91,6 +91,7 @@ import { useIllustratedSidebarIcons } from "@/lib/appearance";
 import { PlayerRating } from "./player-rating";
 import { RatingBeer } from "./rating-beer";
 import { CourseIcon } from "./course-icon";
+import { ProfileBio, ProfileBioEditor } from "./profile-bio";
 import { CityFilter } from "./city-field";
 import {
   DEFAULT_CITY,
@@ -1556,6 +1557,10 @@ export default function FairwayApp() {
                       </div>
                     </div>
                   </div>
+                  <ProfileBio
+                    bio={data.me.bio}
+                    onEdit={() => setModal("edit-bio")}
+                  />
                   <section
                     className="panel player-reputation"
                     aria-label="Tu calificación como compañero"
@@ -1615,11 +1620,7 @@ export default function FairwayApp() {
                   ) : (
                     <div className="panel profile-info">
                       <Gallery paths={data.me.gallery || []} />
-                      <h3>Sobre mí</h3>
-                      <p>
-                        {data.me.bio ||
-                          "Cuéntale a la comunidad qué disfrutas del golf."}
-                      </p>
+                      <h3>Preferencias de golf</h3>
                       <div className="info-grid">
                         <InfoItem
                           label="Disponibilidad"
@@ -1936,6 +1937,26 @@ export default function FairwayApp() {
           <ProfileForm data={data} onDone={close} />
         </Modal>
       )}
+      {modal === "edit-bio" && (
+        <Modal title="Tu biografía" onClose={close}>
+          <ProfileBioEditor
+            initialBio={data.me.bio}
+            onDone={close}
+            onSave={(bio) =>
+              data.run(
+                () =>
+                  supabase!
+                    .from("profiles")
+                    .update({ bio })
+                    .eq("id", data.user!.id)
+                    .select("id")
+                    .single(),
+                "Biografía actualizada.",
+              )
+            }
+          />
+        </Modal>
+      )}
       {(modal === "create-game" || modal === "create-party") && (
         <Modal
           title={
@@ -2051,7 +2072,7 @@ export default function FairwayApp() {
               {compatibility(data.me, selected).score}% compatible
             </span>
           </div>
-          <p>{selected.bio}</p>
+          <ProfileBio bio={selected.bio} />
           <div className="info-grid">
             <InfoItem
               label="Handicap declarado"

@@ -536,8 +536,19 @@ export function ProfileForm({
           <input {...register("gender")} />
         </Field>
       </div>
-      <Field label="Sobre ti">
-        <textarea rows={3} maxLength={500} {...register("bio")} />
+      <Field
+        label="Biografía (opcional)"
+        hint="Hasta 500 caracteres. Visible para quienes puedan ver tu perfil."
+      >
+        <textarea
+          rows={3}
+          maxLength={500}
+          placeholder="Cuéntanos qué disfrutas del golf y qué tipo de ronda te gusta jugar."
+          {...register("bio")}
+        />
+        <small className="bio-character-count" aria-hidden="true">
+          {watch("bio").length}/500 caracteres
+        </small>
       </Field>
       <fieldset>
         <legend>Disponibilidad habitual</legend>

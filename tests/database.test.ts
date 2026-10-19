@@ -130,6 +130,48 @@ test("migraciones y reglas del MVP se ejecutan en PostgreSQL real (PGlite)", asy
     },
   );
   await t.test(
+    "la biografía se guarda y borra sola, respeta su límite y no modifica otros perfiles",
+    async () => {
+      await as(a);
+      const before = await scalar(
+        `select city,club_id,availability,name from profiles where id='${a}'`,
+      );
+      const bio = "Juego los sábados.\nPrefiero caminar 9 hoyos.";
+      await db.query("update profiles set bio=$1 where id=$2", [bio, a]);
+      assert.equal(
+        (await scalar(`select bio from profiles where id='${a}'`))?.bio,
+        bio,
+      );
+      assert.deepEqual(
+        await scalar(
+          `select city,club_id,availability,name from profiles where id='${a}'`,
+        ),
+        before,
+      );
+      assert.equal(
+        (
+          await db.query(
+            "update profiles set bio=$1 where id=$2 returning id",
+            ["No autorizado", b],
+          )
+        ).rows.length,
+        0,
+      );
+      await assert.rejects(
+        db.query("update profiles set bio=$1 where id=$2", [
+          "x".repeat(501),
+          a,
+        ]),
+        /check constraint/,
+      );
+      await db.query("update profiles set bio='' where id=$1", [a]);
+      assert.equal(
+        (await scalar(`select bio from profiles where id='${a}'`))?.bio,
+        "",
+      );
+    },
+  );
+  await t.test(
     "un solo like no crea match; interés mutuo abre un chat",
     async () => {
       await as(a);

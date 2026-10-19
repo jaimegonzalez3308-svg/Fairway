@@ -4,6 +4,37 @@ main {
   padding-bottom: 48px;
 }
 
+.profile-bio {
+  margin: 18px 0;
+}
+.profile-bio-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.profile-bio-heading h3 {
+  margin: 0;
+}
+.profile-bio .profile-bio-text {
+  margin: 0;
+  color: var(--forest);
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.profile-bio-embedded {
+  margin: 24px 0;
+}
+.field .bio-character-count {
+  display: block;
+  text-align: right;
+  color: var(--forest);
+  font-size: 12px;
+}
+
 .city-field {
   grid-column: 1 / -1;
   min-width: 0;

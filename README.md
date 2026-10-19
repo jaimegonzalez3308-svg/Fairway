@@ -333,6 +333,10 @@ No se inventa una dirección de negocio ni se usa schema `LocalBusiness`: Fairwa
 
 Referencias: [Next.js: metadatos y OG](https://nextjs.org/docs/app/getting-started/metadata-and-og-images), [Google: nombres de sitio y WebSite](https://developers.google.com/search/docs/appearance/site-names), [Google: estructura de URLs y fragmentos](https://developers.google.com/search/docs/crawling-indexing/url-structure).
 
+## Biografía del perfil
+
+En **Mi perfil**, la biografía aparece bajo la cabecera y permanece visible al cambiar de pestaña. **Añadir bio / Editar bio** abre un editor de hasta 500 caracteres con contador, saltos de línea y opción de dejarla vacía para eliminarla. El guardado rápido actualiza únicamente `profiles.bio`, sin exigir completar los demás campos del perfil. También se puede editar desde el formulario completo. Los perfiles de otros jugadores muestran su biografía cuando existe, respetando las reglas de visibilidad y bloqueos del perfil. Se conserva el campo existente y su límite en Supabase, sin migración nueva.
+
 ## Calificaciones de compañeros
 
 En **Partidas**, el organizador abre su partida y selecciona **Finalizar partida** cuando ya ocurrió. Los participantes confirmados pueden abrirla y usar **Califica a tus compañeros** para elegir de 1 a 5 estrellas, con comentario opcional. El aviso de calificaciones pendientes permite llegar a las partidas finalizadas sin buscarlas en el calendario. Al enviar una calificación, se vuelve a la partida para poder calificar al resto del grupo.
