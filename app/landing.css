@@ -7,6 +7,8 @@
   --fw-line: #d8ddcf;
   --fw-pencil: #ead06f;
   --fw-lime: #d9e9a4;
+  --fw-blue: #174bcc;
+  --fw-blue-deep: #12399c;
   color: var(--fw-ink);
   background: var(--fw-paper) url("/images/paper-grain.svg") repeat;
   font-size: 15px;
@@ -157,6 +159,18 @@
 }
 .fw-btn-dark:hover {
   background: #2b503c;
+}
+.fw-btn-blue {
+  background: var(--fw-blue);
+  color: #ffffff;
+}
+.fw-btn-blue:hover {
+  background: var(--fw-blue-deep);
+}
+.fw-btn-blue .fw-arrow-ring {
+  color: var(--fw-blue);
+  background: #ffffff;
+  border-color: #ffffff;
 }
 .fw-btn-round-arrow {
   padding: 10px 12px 10px 22px;
@@ -407,6 +421,7 @@
   scroll-margin-top: 30px;
 }
 .fw-experience {
+  position: relative;
   padding-top: 115px;
   padding-bottom: 110px;
 }
@@ -444,8 +459,8 @@
 .fw-sport-mark {
   background: linear-gradient(
     transparent 79%,
-    var(--fw-lime) 79%,
-    var(--fw-lime) 94%,
+    #bfd2ff 79%,
+    #bfd2ff 94%,
     transparent 94%
   );
 }
@@ -466,7 +481,7 @@
   padding: clamp(22px, 3vw, 40px);
   background: #fcfaf1 url("/images/paper-grain.svg") repeat;
   border: 1px solid #cdd2bf;
-  border-top: 5px solid var(--fw-pencil);
+  border-top: 5px solid var(--fw-blue);
   box-shadow: 0 8px 24px #223d2c08;
 }
 .fw-round-note header {
@@ -538,7 +553,8 @@
   letter-spacing: 0.02em;
 }
 .fw-scorecard thead {
-  background: #e9ce6e25;
+  background: var(--fw-blue);
+  color: #ffffff;
 }
 .fw-scorecard td {
   color: #969d89;
@@ -937,7 +953,7 @@
   max-width: 58ch;
 }
 .fw-finale {
-  background: var(--fw-green);
+  background: var(--fw-blue);
   color: var(--fw-paper);
   text-align: center;
   position: relative;
@@ -950,7 +966,7 @@
 }
 .fw-finale .fw-kicker {
   justify-content: center;
-  color: #ccd7b8;
+  color: #eef3ff;
   font-size: 9px;
 }
 .fw-finale h2 {
@@ -965,6 +981,14 @@
 }
 .fw-finale .fw-btn {
   min-width: 236px;
+  background: #fff9e9;
+  color: var(--fw-blue-deep);
+}
+.fw-finale .fw-btn:hover {
+  background: #e1eaff;
+}
+.fw-finale :is(button, a):focus-visible {
+  outline-color: #ffffff;
 }
 .fw-finale-note {
   margin-top: 17px;
@@ -973,7 +997,7 @@
   justify-content: center;
   gap: 5px;
   font-size: 9px;
-  color: #bbc9ac;
+  color: #eef3ff;
 }
 .fw-finale-art {
   position: absolute;
@@ -981,23 +1005,72 @@
   overflow: hidden;
   pointer-events: none;
 }
-.fw-finale-art > span {
+.fw-golf-tee,
+.fw-course-contours,
+.fw-putting-flag {
+  pointer-events: none;
+  user-select: none;
+}
+.fw-golf-tee {
   position: absolute;
-  width: 90%;
-  aspect-ratio: 1.5;
-  border: 1px solid #c7e09218;
-  border-radius: 45%;
-  left: -60%;
-  top: -15%;
-  transform: rotate(20deg);
+  width: 106px;
+  height: 159px;
+  top: 85px;
+  right: 51px;
+  transform: rotate(12deg);
+  filter: drop-shadow(0 10px 14px #102c3b30);
 }
-.fw-finale-art > span:nth-child(2) {
-  left: -56%;
-  top: -17%;
+.fw-experience-contours {
+  position: absolute;
+  width: 235px;
+  height: 220px;
+  top: 12px;
+  right: -130px;
+  color: var(--fw-blue);
+  opacity: 0.28;
 }
-.fw-finale-art > span:nth-child(3) {
-  left: 77%;
-  top: 6%;
+.fw-putting-flag {
+  position: absolute;
+  left: 4%;
+  top: 50%;
+  transform: translateY(-50%) rotate(-8deg);
+  width: clamp(140px, 20vw, 265px);
+  height: auto;
+}
+.fw-finale-contours {
+  position: absolute;
+  right: -4%;
+  top: -65px;
+  width: 410px;
+  height: 385px;
+  color: #c4d7ff;
+  opacity: 0.32;
+  transform: rotate(25deg);
+}
+@media (max-width: 1000px) {
+  .fw-putting-flag {
+    left: -80px;
+    opacity: 0.55;
+  }
+}
+@media (max-width: 740px) {
+  .fw-golf-tee {
+    width: 72px;
+    height: 108px;
+    right: 24px;
+    top: 83px;
+  }
+  .fw-experience-contours {
+    width: 175px;
+    height: 165px;
+    right: -110px;
+    top: 20px;
+  }
+  .fw-finale-contours {
+    right: -180px;
+    top: -20px;
+    opacity: 0.23;
+  }
 }
 .fw-footer {
   max-width: 1440px;

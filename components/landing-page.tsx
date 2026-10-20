@@ -1,5 +1,6 @@
 "use client";
 import { CoursePhoto } from "./course-photo";
+import { CourseContours, GolfBallTee, PuttingFlag } from "./landing-golf-decor";
 import { LegalLinks } from "./legal-links";
 
 import { useEffect, useRef, useState } from "react";
@@ -172,7 +173,7 @@ export function LandingPage({
             {signedIn ? "Mi perfil" : "Iniciar sesión"}{" "}
             <ArrowUpRight size={15} />
           </button>
-          <button className="fw-btn fw-btn-dark fw-nav-cta" onClick={onSignup}>
+          <button className="fw-btn fw-btn-blue fw-nav-cta" onClick={onSignup}>
             {signedIn ? "Ir a Fairway" : "Ser parte"} <ArrowUpRight size={16} />
           </button>
           <button
@@ -247,7 +248,7 @@ export function LandingPage({
                 la partida.
               </p>
               <button
-                className="fw-btn fw-btn-dark fw-btn-round-arrow"
+                className="fw-btn fw-btn-blue fw-btn-round-arrow"
                 onClick={onSignup}
               >
                 Buscar golfistas en León
@@ -266,6 +267,7 @@ export function LandingPage({
               alt="Vista aérea de los fairways y lagos de un campo de golf. Fotografía ilustrativa."
             />
             <div className="fw-image-shade" />
+            <GolfBallTee />
             <div className="fw-image-caption">
               <span className="fw-outline-dot" /> LEÓN, GUANAJUATO
             </div>
@@ -307,6 +309,7 @@ export function LandingPage({
           id="fw-experience"
           aria-labelledby="fw-experience-heading"
         >
+          <CourseContours className="fw-experience-contours" />
           <div className="fw-section-top" data-fw-reveal>
             <p className="fw-kicker">ASÍ SE USA FAIRWAY</p>
             <span>El campo, la hora y quiénes van.</span>
@@ -505,7 +508,7 @@ export function LandingPage({
                 <p>{plan.description}</p>
               </div>
               <button
-                className="fw-btn fw-btn-dark fw-preview-cta"
+                className="fw-btn fw-btn-blue fw-preview-cta"
                 onClick={onSignup}
               >
                 Buscar partidas reales <ArrowUpRight size={18} />
@@ -625,9 +628,8 @@ export function LandingPage({
 
         <section className="fw-finale" aria-labelledby="fw-finale-heading">
           <div className="fw-finale-art" aria-hidden="true">
-            <span />
-            <span />
-            <span />
+            <PuttingFlag />
+            <CourseContours className="fw-finale-contours" />
           </div>
           <div className="fw-finale-inner" data-fw-reveal>
             <p className="fw-kicker">FAIRWAY EN LEÓN</p>

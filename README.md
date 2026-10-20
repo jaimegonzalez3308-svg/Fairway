@@ -435,4 +435,6 @@ Referencia: [Supabase: control de acceso de Storage con RLS](https://supabase.co
 
 ## Rendimiento · 20 de octubre de 2026
 
+La portada incorpora decoración de golf en SVG: pelota con dimples sobre un tee, curvas de campo con trayectoria y una bandera sobre el green. El azul cobalto acentúa las acciones principales, la tarjeta de ejemplo y el cierre. El arte no intercepta clics ni se anuncia como contenido a lectores de pantalla; conserva tamaños acotados en móvil y no añade imágenes o librerías externas.
+
 Se redujeron los archivos iniciales con pantallas diferidas, imágenes adaptadas en AVIF/WebP y fuentes WOFF2 con un conjunto de caracteres más pequeño. El JavaScript inicial pasó de 343,0 a 272,1 KB gzip y las fuentes de 740,2 a 225,6 KB. Ver [mediciones, reproducción y pendientes](docs/performance.md). `node scripts/measure-performance.mjs out --check` comprueba los presupuestos de tamaño tras construir. Lighthouse y la prueba interactiva con red lenta siguen pendientes; no se declara una puntuación ni una mejora de LCP sin medirla.
