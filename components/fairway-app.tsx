@@ -92,6 +92,7 @@ import { useIllustratedSidebarIcons } from "@/lib/appearance";
 import { PlayerRating } from "./player-rating";
 import { RatingBeer } from "./rating-beer";
 import { CourseIcon } from "./course-icon";
+import { ProfilePhotoEditor } from "./profile-photo";
 import { ProfileBio, ProfileBioEditor } from "./profile-bio";
 import { CityFilter } from "./city-field";
 import {
@@ -1523,6 +1524,12 @@ export default function FairwayApp() {
                       <div className="button-row profile-header-actions">
                         <Button
                           variant="outline"
+                          onClick={() => setModal("edit-photo")}
+                        >
+                          Cambiar foto
+                        </Button>
+                        <Button
+                          variant="outline"
                           onClick={() => setModal("profile-qr")}
                         >
                           <QrCode size={17} />
@@ -1938,6 +1945,16 @@ export default function FairwayApp() {
       {modal === "edit-profile" && (
         <Modal title="Tu perfil de golfista" onClose={close} wide>
           <ProfileForm data={data} onDone={close} />
+        </Modal>
+      )}
+      {modal === "edit-photo" && (
+        <Modal title="Tu foto de perfil" onClose={close}>
+          <ProfilePhotoEditor
+            currentPhoto={data.me.photo}
+            hasPhoto={!!(data.me.photo_path || data.me.photo)}
+            onSave={data.changePhoto}
+            onDone={close}
+          />
         </Modal>
       )}
       {modal === "edit-bio" && (

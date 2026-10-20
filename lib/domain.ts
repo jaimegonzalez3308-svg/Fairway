@@ -41,6 +41,8 @@ export type Profile = {
   holes: number;
   style: string;
   photo: string;
+  /** Storage reference kept separately from the expiring display URL. */
+  photo_path?: string;
   verified: boolean;
   accepts_guests: boolean;
   beginner_friendly: boolean;

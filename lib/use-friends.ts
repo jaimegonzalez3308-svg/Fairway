@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "./supabase";
 import type { FairwayData } from "./use-fairway";
+import { resolveProfilePhoto } from "./profile-images";
 import type { Profile } from "./domain";
 export type Friendship = {
   id: string;
@@ -12,12 +13,7 @@ export type Friendship = {
 };
 export type FriendAction = "accept" | "reject" | "cancel" | "remove";
 export async function profileWithPhoto(profile: Profile): Promise<Profile> {
-  if (!profile.photo || profile.photo.startsWith("http") || !supabase)
-    return profile;
-  const { data } = await supabase.storage
-    .from("profile-images")
-    .createSignedUrl(profile.photo, 3600);
-  return { ...profile, photo: data?.signedUrl || "" };
+  return supabase ? resolveProfilePhoto(supabase, profile) : profile;
 }
 export function useFriends(data: FairwayData) {
   const [relations, setRelations] = useState<Friendship[]>([]),

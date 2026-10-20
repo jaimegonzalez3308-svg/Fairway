@@ -11,6 +11,11 @@ import {
 } from "./demo";
 import type { Profile, Club, Game, Round } from "./domain";
 import { authErrorMessage } from "./auth";
+import {
+  resolveProfilePhoto,
+  saveProfilePhoto,
+  PROFILE_PHOTO_REFRESH_MS,
+} from "./profile-images";
 import { initialSignupCity, saveInitialSignupCity } from "./signup-city";
 import {
   withRating,
@@ -92,6 +97,8 @@ export function useFairway() {
           })),
   );
   const [myReviews, setMyReviews] = useState<SubmittedReview[]>([]);
+  const photosRefreshedAt = useRef(0);
+  const photoRevision = useRef(0);
   const currentUserId = useRef(user?.id);
   currentUserId.current = user?.id;
   const demo = !supabase;
@@ -121,6 +128,7 @@ export function useFairway() {
   }, [toast]);
   const load = useCallback(async (u: User, quiet = false) => {
     if (!supabase || currentUserId.current !== u.id) return;
+    const loadedPhotoRevision = photoRevision.current;
     if (!quiet) setLoading(true);
     setError("");
     try {
@@ -196,19 +204,34 @@ export function useFairway() {
           "No se encontró tu perfil. Revisa la migración y el estado de la cuenta.",
         );
       const photos = await Promise.all(
-        all.map(async (p) => {
-          if (!p.photo || p.photo.startsWith("http")) return p;
-          const { data } = await supabase!.storage
-            .from("profile-images")
-            .createSignedUrl(p.photo, 3600);
-          return { ...p, photo: data?.signedUrl || "" };
-        }),
+        all.map((p) => resolveProfilePhoto(supabase!, p)),
       );
+      photosRefreshedAt.current = Date.now();
       const ratings = r[10].data as RatingSummary[];
       if (currentUserId.current !== u.id) return;
       setRatings(ratings);
       setMyReviews(r[12].data as SubmittedReview[]);
-      setMe(withRating(photos.find((p) => p.id === u.id) || own, ratings));
+      const ownPhoto = photos.find((p) => p.id === u.id) || own;
+      setMe((current) =>
+        withRating(
+          photoRevision.current === loadedPhotoRevision
+            ? ownPhoto
+            : {
+                ...ownPhoto,
+                photo: current.photo,
+                photo_path: current.photo_path,
+              },
+          ratings,
+        ),
+      );
+      if (
+        photoRevision.current === loadedPhotoRevision &&
+        ownPhoto.photo_path &&
+        !ownPhoto.photo
+      )
+        setError(
+          "Tu foto está guardada, pero no pudimos cargarla. Recarga la página para reintentar o usa Cambiar foto para elegir otra.",
+        );
       setNeedsGoogleProfile(false);
       setProfiles(
         photos.filter((x) => x.id !== u.id).map((p) => withRating(p, ratings)),
@@ -316,15 +339,20 @@ export function useFairway() {
   useEffect(() => {
     if (!user || passwordRecovery) return;
     const refresh = () => {
-      if (!document.hidden) void refreshRatings();
+      if (document.hidden) return;
+      void refreshRatings();
+      if (Date.now() - photosRefreshedAt.current >= PROFILE_PHOTO_REFRESH_MS)
+        void load(user, true);
     };
+    const timer = setInterval(refresh, PROFILE_PHOTO_REFRESH_MS);
     window.addEventListener("focus", refresh);
     document.addEventListener("visibilitychange", refresh);
     return () => {
+      clearInterval(timer);
       window.removeEventListener("focus", refresh);
       document.removeEventListener("visibilitychange", refresh);
     };
-  }, [user?.id, passwordRecovery, refreshRatings]);
+  }, [user, passwordRecovery, refreshRatings, load]);
   const refreshGames = useCallback(async () => {
     const userId = user?.id;
     if (!supabase || !userId) return false;
@@ -412,6 +440,28 @@ export function useFairway() {
       void supabase!.removeChannel(channel);
     };
   }, [user, load]);
+  async function changePhoto(file: File | null) {
+    if (!supabase || !user)
+      throw new Error("Inicia sesión para guardar tu fotografía.");
+    const userId = user.id;
+    const saved = await saveProfilePhoto(supabase, userId, file);
+    if (currentUserId.current !== userId)
+      throw new Error("Tu sesión cambió. Vuelve a iniciar sesión.");
+    photoRevision.current++;
+    setError((current) =>
+      current.startsWith("Tu foto está guardada,") ? "" : current,
+    );
+    setMe((profile) => ({
+      ...profile,
+      photo: saved.photo,
+      photo_path: saved.photo_path,
+    }));
+    notify(
+      saved.photo_path && !saved.photo
+        ? "Foto guardada, pero no se pudo cargar su vista previa. Recarga la página para reintentar."
+        : "Foto de perfil actualizada.",
+    );
+  }
   async function run(
     fn: () => PromiseLike<{ error: unknown; data?: unknown }>,
     success?: string,
@@ -523,6 +573,7 @@ export function useFairway() {
     refreshGames,
     partyChat,
     run,
+    changePhoto,
     decide,
     favorite,
     reload: () => user && load(user),

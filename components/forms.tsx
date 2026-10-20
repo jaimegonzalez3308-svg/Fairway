@@ -13,6 +13,12 @@ import {
   CalendarDays,
 } from "lucide-react";
 import { Button, Field } from "./ui";
+import { ProfilePhotoPicker } from "./profile-photo";
+import {
+  prepareProfileImage,
+  uploadProfileImage,
+  profileImageError,
+} from "@/lib/profile-images";
 import { RegistrationConsent } from "./legal-links";
 import { supabase, signInWithGoogle } from "@/lib/supabase";
 import { days, profileSchema, type Profile, type Game } from "@/lib/domain";
@@ -380,47 +386,63 @@ export function ProfileForm({
           setErr(parsed.error.issues[0].message);
           return;
         }
+        if (busy) return;
         setBusy(true);
-        let path: string | undefined;
-        const galleryPaths = [...keepGallery];
-        if (supabase && data.user) {
-          for (const file of [...(photo ? [photo] : []), ...gallery]) {
-            if (
-              file.size > 5 * 1024 * 1024 ||
-              !["image/jpeg", "image/png", "image/webp"].includes(file.type)
-            ) {
-              setErr("Cada imagen debe ser JPG, PNG o WebP de hasta 5 MB.");
-              setBusy(false);
-              return;
-            }
-            const name = `${data.user.id}/${crypto.randomUUID()}.${file.type.split("/")[1]}`;
-            const { error } = await supabase.storage
-              .from("profile-images")
-              .upload(name, file);
-            if (error) {
-              setErr(error.message);
-              setBusy(false);
-              return;
-            }
-            if (file === photo) path = name;
-            else galleryPaths.push(name);
+        setErr("");
+        try {
+          if (!supabase || !data.user)
+            throw new Error("Inicia sesión para guardar los cambios.");
+          if (keepGallery.length + gallery.length > 6)
+            throw new Error(
+              "Puedes conservar hasta 6 fotos en la galería. Retira alguna antes de añadir más.",
+            );
+          // Prepare all selected images before beginning any upload.
+          const selected = [...(photo ? [photo] : []), ...gallery];
+          const prepared: File[] = [];
+          for (let index = 0; index < selected.length; index++) {
+            prepared.push(
+              await prepareProfileImage(
+                selected[index],
+                photo && index === 0 ? 1024 : 1600,
+              ),
+            );
           }
+          let path: string | undefined;
+          const galleryPaths = [...keepGallery];
+          for (let index = 0; index < prepared.length; index++) {
+            const uploaded = await uploadProfileImage(
+              supabase,
+              data.user.id,
+              prepared[index],
+            );
+            if (photo && index === 0) path = uploaded;
+            else galleryPaths.push(uploaded);
+          }
+          const ok = await data.run(
+            () =>
+              supabase!
+                .from("profiles")
+                .update({
+                  ...parsed.data,
+                  club_id: parsed.data.club_id || null,
+                  ...(path ? { photo: path } : {}),
+                  gallery: galleryPaths,
+                })
+                .eq("id", data.user!.id)
+                .select("id")
+                .single(),
+            "Perfil actualizado.",
+          );
+          if (ok) onDone();
+          else
+            setErr(
+              "No se guardaron los cambios del perfil. Revisa el aviso e inténtalo de nuevo.",
+            );
+        } catch (error) {
+          setErr(profileImageError(error));
+        } finally {
+          setBusy(false);
         }
-        const ok = await data.run(
-          () =>
-            supabase!
-              .from("profiles")
-              .update({
-                ...parsed.data,
-                club_id: parsed.data.club_id || null,
-                ...(path ? { photo: path } : {}),
-                gallery: galleryPaths.slice(0, 6),
-              })
-              .eq("id", data.user!.id),
-          "Perfil actualizado.",
-        );
-        setBusy(false);
-        if (ok) onDone();
       })}
     >
       <div className="notice">
@@ -628,21 +650,24 @@ export function ProfileForm({
         </fieldset>
       )}
       <div className="form-grid">
+        <ProfilePhotoPicker
+          currentPhoto={p.photo}
+          value={photo}
+          disabled={busy}
+          onChange={(file) => {
+            setPhoto(file);
+            setErr("");
+          }}
+        />
         <Field
-          label="Fotografía de perfil"
-          hint="Sube solo imágenes tuyas o que tengas permiso de compartir."
+          label="Galería (hasta 6 fotos)"
+          hint="Las imágenes se preparan antes de subirlas. Guarda el perfil para confirmar."
         >
           <input
             type="file"
-            accept="image/png,image/jpeg,image/webp"
-            onChange={(e) => setPhoto(e.target.files?.[0] ?? null)}
-          />
-        </Field>
-        <Field label="Galería (hasta 6 fotos)">
-          <input
-            type="file"
             multiple
-            accept="image/png,image/jpeg,image/webp"
+            disabled={busy}
+            accept="image/png,image/jpeg,image/webp,image/heic,image/heif,.heic,.heif"
             onChange={(e) =>
               setGallery(Array.from(e.target.files || []).slice(0, 6))
             }

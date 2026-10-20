@@ -899,3 +899,30 @@ main {
 .fw-footer > .legal-links {
   color: var(--fw-ink, #203c2f);
 }
+
+.profile-photo-picker {
+  display: grid;
+  gap: 16px;
+  justify-items: start;
+}
+.profile-photo-preview {
+  width: 144px;
+  height: 144px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #c5d1bf;
+  background: #e6ebe0;
+}
+.profile-photo-picker .field {
+  width: 100%;
+}
+.profile-photo-picker input[type="file"] {
+  width: 100%;
+  max-width: 100%;
+}
+.profile-photo-selection {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  color: #365a45;
+  font-size: 13px;
+}
