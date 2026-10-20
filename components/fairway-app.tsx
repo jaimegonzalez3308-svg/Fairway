@@ -769,6 +769,7 @@ export default function FairwayApp() {
     <div
       className={cn(
         "app-shell",
+        hasAuth && "member-shell",
         sidebarCollapsed && "sidebar-collapsed",
         mobileOpen && "mobile-sidebar-open",
       )}
