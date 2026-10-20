@@ -6,8 +6,8 @@ import {
   initialFilters,
   summarize,
   holeColor,
-  profileSchema,
 } from "../lib/domain";
+import { profileSchema } from "../lib/profile-validation";
 import { demoMe, demoProfiles } from "../lib/demo";
 test("compatibilidad determinista, explicable y de 0 a 100", () => {
   assert.equal(compatibility(demoMe, demoProfiles[0]).score, 100);

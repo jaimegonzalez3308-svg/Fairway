@@ -1,4 +1,5 @@
 "use client";
+import { CoursePhoto } from "./course-photo";
 import { LegalLinks } from "./legal-links";
 
 import { useEffect, useRef, useState } from "react";
@@ -260,11 +261,8 @@ export function LandingPage({
             </div>
           </div>
           <div className="fw-hero-image">
-            <img
-              src="/images/fairway-aerial.webp"
-              width={2100}
-              height={1300}
-              fetchPriority="high"
+            <CoursePhoto
+              priority
               alt="Vista aérea de los fairways y lagos de un campo de golf. Fotografía ilustrativa."
             />
             <div className="fw-image-shade" />
@@ -533,13 +531,7 @@ export function LandingPage({
           </div>
           <div className="fw-local-grid">
             <div className="fw-local-photo" data-fw-reveal>
-              <img
-                src="/images/fairway-aerial.webp"
-                alt="Vista aérea de un campo de golf. Imagen ilustrativa, no representa un club de León."
-                width={2100}
-                height={1300}
-                loading="lazy"
-              />
+              <CoursePhoto alt="Vista aérea de un campo de golf. Imagen ilustrativa, no representa un club de León." />
               <div>
                 <span>LEÓN Y ALREDEDORES</span>
                 <strong>¿Dónde juegas el domingo?</strong>

@@ -64,13 +64,7 @@ import {
 } from "@/lib/domain";
 import { cn, dateFormat, timeFormat } from "@/lib/utils";
 import { Button, Modal, Field, Empty, SectionHeading, InlineLink } from "./ui";
-import { AuthForm, ProfileForm, GameForm, ReviewForm } from "./forms";
-import { GoogleOnboarding } from "./google-onboarding";
 import { LandingPage } from "./landing-page";
-import { PasswordRecovery } from "./password-recovery";
-import { Scorecard } from "./scorecard";
-import { Community } from "./community";
-import { Settings, Admin } from "./settings";
 import {
   AccountRequired,
   ClubDirectory,
@@ -78,13 +72,9 @@ import {
   LockedPreview,
   PublicPrivacy,
 } from "./guest-experience";
-import { DeleteAccountDialog } from "./delete-account";
 import { requiresAccount } from "@/lib/access";
 import { useFriends, profileWithPhoto } from "@/lib/use-friends";
 import { sharedProfileId } from "@/lib/profile-share";
-import { Friends, FriendshipActions } from "./friends";
-import { ProfileQR } from "./profile-qr";
-import { Parties } from "./parties";
 import { GameJoinActions } from "./game-join-actions";
 import { gameIsUpcoming, golfDate } from "@/lib/parties";
 import { SidebarIcon } from "./sidebar-icon";
@@ -92,9 +82,7 @@ import { useIllustratedSidebarIcons } from "@/lib/appearance";
 import { PlayerRating } from "./player-rating";
 import { RatingBeer } from "./rating-beer";
 import { CourseIcon } from "./course-icon";
-import { SwipeDeck } from "./swipe-deck";
-import { ProfilePhotoEditor } from "./profile-photo";
-import { ProfileBio, ProfileBioEditor } from "./profile-bio";
+import { ProfileBio } from "./profile-bio";
 import { CityFilter } from "./city-field";
 import {
   DEFAULT_CITY,
@@ -109,6 +97,94 @@ import {
   reviewValue,
   withRating,
 } from "@/lib/ratings";
+
+// Screens and editors download when opened, rather than on every public visit.
+function DeferredPanel() {
+  return (
+    <div className="deferred-panel" role="status">
+      Cargando…
+    </div>
+  );
+}
+const AuthForm = dynamic(
+  () => import("./forms").then((module) => module.AuthForm),
+  { loading: DeferredPanel },
+);
+const ProfileForm = dynamic(
+  () => import("./forms").then((module) => module.ProfileForm),
+  { loading: DeferredPanel },
+);
+const GameForm = dynamic(
+  () => import("./forms").then((module) => module.GameForm),
+  { loading: DeferredPanel },
+);
+const ReviewForm = dynamic(
+  () => import("./forms").then((module) => module.ReviewForm),
+  { loading: DeferredPanel },
+);
+const GoogleOnboarding = dynamic(
+  () => import("./google-onboarding").then((module) => module.GoogleOnboarding),
+  { loading: DeferredPanel },
+);
+const PasswordRecovery = dynamic(
+  () => import("./password-recovery").then((module) => module.PasswordRecovery),
+  { loading: DeferredPanel },
+);
+const Scorecard = dynamic(
+  () => import("./scorecard").then((module) => module.Scorecard),
+  { loading: DeferredPanel },
+);
+const Community = dynamic(
+  () => import("./community").then((module) => module.Community),
+  { loading: DeferredPanel },
+);
+const Settings = dynamic(
+  () => import("./settings").then((module) => module.Settings),
+  { loading: DeferredPanel },
+);
+const Admin = dynamic(
+  () => import("./settings").then((module) => module.Admin),
+  { loading: DeferredPanel },
+);
+const DeleteAccountDialog = dynamic(
+  () => import("./delete-account").then((module) => module.DeleteAccountDialog),
+  { loading: DeferredPanel },
+);
+const Friends = dynamic(
+  () => import("./friends").then((module) => module.Friends),
+  { loading: DeferredPanel },
+);
+const FriendshipActions = dynamic(
+  () => import("./friends").then((module) => module.FriendshipActions),
+  { loading: DeferredPanel },
+);
+const ProfileQR = dynamic(
+  () => import("./profile-qr").then((module) => module.ProfileQR),
+  { loading: DeferredPanel },
+);
+const Parties = dynamic(
+  () => import("./parties").then((module) => module.Parties),
+  { loading: DeferredPanel },
+);
+const ProfilePhotoEditor = dynamic(
+  () => import("./profile-photo").then((module) => module.ProfilePhotoEditor),
+  { loading: DeferredPanel },
+);
+const SwipeDeck = dynamic(
+  () => import("./swipe-deck").then((module) => module.SwipeDeck),
+  {
+    loading: () => (
+      <div className="deferred-deck" role="status">
+        Cargando golfistas…
+      </div>
+    ),
+  },
+);
+const ProfileBioEditor = dynamic(
+  () =>
+    import("./profile-bio-editor").then((module) => module.ProfileBioEditor),
+  { loading: DeferredPanel },
+);
 
 // Recharts is only needed when a member opens their statistics.
 const Stats = dynamic(() => import("./stats").then((module) => module.Stats), {

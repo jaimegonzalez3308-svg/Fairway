@@ -270,7 +270,7 @@
   isolation: isolate;
   animation: fw-enter 1s 0.2s both;
 }
-.fw-hero-image > img {
+.fw-hero-image > picture > img {
   width: 100%;
   height: 100%;
   position: absolute;
@@ -799,14 +799,14 @@
   border-radius: 20px;
   overflow: hidden;
 }
-.fw-local-photo > img {
+.fw-local-photo > picture > img {
   width: 100%;
   height: 100%;
   display: block;
   object-position: 61% center;
   transition: transform 0.7s;
 }
-.fw-local-photo:hover > img {
+.fw-local-photo:hover > picture > img {
   transform: scale(1.035);
 }
 .fw-local-photo::after {
@@ -1253,7 +1253,7 @@
     aspect-ratio: 1.55;
     min-height: 340px;
   }
-  .fw-hero-image > img {
+  .fw-hero-image > picture > img {
     object-position: 54% center;
   }
   .fw-hero-ticket {
@@ -1576,7 +1576,7 @@
   .fw-local-photo {
     aspect-ratio: 1.13;
   }
-  .fw-local-photo > img {
+  .fw-local-photo > picture > img {
     object-position: center 44%;
   }
   .fw-local-photo strong {
@@ -1754,4 +1754,16 @@
   .course-guide-options {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
+
+.fw-hero-image > picture {
+  position: absolute;
+  inset: 0;
+  display: block;
+  border-radius: inherit;
+}
+.fw-local-photo > picture {
+  display: block;
+  width: 100%;
+  height: 100%;
 }

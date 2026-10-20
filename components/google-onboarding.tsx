@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabase";
 import type { FairwayData } from "@/lib/use-fairway";
 import { authErrorMessage } from "@/lib/auth";
 import { DEFAULT_CITY } from "@/lib/cities";
-import { profileSchema } from "@/lib/domain";
+import { profileSchema } from "@/lib/profile-validation";
 import { saveInitialSignupCity } from "@/lib/signup-city";
 import { CityField } from "./city-field";
 

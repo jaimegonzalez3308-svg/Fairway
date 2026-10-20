@@ -1235,3 +1235,17 @@ main {
 .swipe-card .golfer-tags {
   min-height: 24px;
 }
+
+.deferred-panel {
+  min-height: 180px;
+  display: grid;
+  place-items: center;
+  color: #365a45;
+  font-size: 14px;
+}
+.deferred-deck {
+  min-height: 620px;
+  display: grid;
+  place-items: center;
+  color: #365a45;
+}

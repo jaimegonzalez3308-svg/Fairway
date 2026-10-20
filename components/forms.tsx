@@ -21,7 +21,8 @@ import {
 } from "@/lib/profile-images";
 import { RegistrationConsent } from "./legal-links";
 import { supabase, signInWithGoogle } from "@/lib/supabase";
-import { days, profileSchema, type Profile, type Game } from "@/lib/domain";
+import { days, type Profile, type Game } from "@/lib/domain";
+import { profileSchema } from "@/lib/profile-validation";
 import type { FairwayData } from "@/lib/use-fairway";
 import { authErrorMessage, authRedirectUrl } from "@/lib/auth";
 import { golfDate, golfDateAfter } from "@/lib/parties";

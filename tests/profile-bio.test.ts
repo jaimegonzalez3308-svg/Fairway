@@ -2,8 +2,9 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { ProfileBio, ProfileBioEditor } from "../components/profile-bio";
-import { profileSchema } from "../lib/domain";
+import { ProfileBio } from "../components/profile-bio";
+import { ProfileBioEditor } from "../components/profile-bio-editor";
+import { profileSchema } from "../lib/profile-validation";
 
 test("la biografía vacía tiene una acción clara para su propietario y no inventa texto para otros perfiles", () => {
   const own = renderToStaticMarkup(

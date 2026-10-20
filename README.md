@@ -43,6 +43,7 @@ Supabase proporciona el inicio de sesión, la base de datos, el almacenamiento p
    - `supabase/migrations/202610160009_moderation.sql`
    - `supabase/migrations/202610160010_moderation_everywhere.sql`
    - `supabase/migrations/202610170011_google_auth.sql`
+   - `supabase/migrations/202610200012_profile_image_reads.sql`
 
    Si aparece un error, detente y conserva el texto del error. No desactives RLS para solucionarlo. Las migraciones incluyen transacciones para evitar instalaciones parciales.
 
@@ -418,3 +419,20 @@ Las preferencias del sistema para reducir movimiento eliminan el giro/salida ani
 Verificación: 150 pruebas del proyecto pasaron, incluidas cinco nuevas sobre umbrales, flicks, gestos verticales/taps, una sola tarjeta interactiva y estado vacío. El verificador de contraste mantiene 49 pares del modo activado. La página local respondió HTTP 200, pero Chrome no expuso el contenido de la vista local al control de interfaz; no se pudo comprobar visualmente el arrastre y las animaciones. Quedan pendientes la revisión táctil en móvil y teclado/movimiento reducido en navegador. No se enviaron likes o pases de prueba a perfiles reales.
 
 Referencia de implementación: [MDN: Pointer Events y touch-action](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events).
+
+
+## Corrección de lectura de fotos · 20 de octubre de 2026
+
+La política original `view_images` usaba `storage.foldername(name)` dentro de una subconsulta a perfiles. PostgreSQL resolvía ese nombre como `profiles.name`, no como la ruta del archivo; por eso se podía subir y guardar la foto pero no obtener su URL de lectura.
+
+La migración `supabase/migrations/202610200012_profile_image_reads.sql` corrige la referencia a `storage.objects.name`. Conserva el bucket privado, el acceso del propietario y la visibilidad para miembros, con bloqueos y suspensiones. No borra archivos ni cambia nombres, perfiles o permisos de subida. Puede ejecutarse de nuevo sin duplicar políticas. Para una base existente, ejecutar solo esta migración después de las anteriores; no repetir el instalador inicial.
+
+**Instancia actual:** aplicada en Supabase y verificada mediante lectura de `pg_policies`. Al refrescar Fairway se comprobó visualmente que una foto ya guardada aparecía en el perfil y menú de cuenta, sin volver a subirla ni mostrar la advertencia de lectura.
+
+`tests/profile-image-policy.test.ts` reproduce el fallo anterior con PostgreSQL/PGlite: la subida pasa y la lectura del propietario falla. Después verifica la corrección, repetición de la migración, lectura propia/miembros, perfiles privados, bloqueos, suspensiones, denegación anónima y rechazo de subidas a carpetas ajenas. La suite completa pasó con 151 pruebas.
+
+Referencia: [Supabase: control de acceso de Storage con RLS](https://supabase.com/docs/guides/storage/security/access-control).
+
+## Rendimiento · 20 de octubre de 2026
+
+Se redujeron los archivos iniciales con pantallas diferidas, imágenes adaptadas en AVIF/WebP y fuentes WOFF2 con un conjunto de caracteres más pequeño. El JavaScript inicial pasó de 343,0 a 272,1 KB gzip y las fuentes de 740,2 a 225,6 KB. Ver [mediciones, reproducción y pendientes](docs/performance.md). `node scripts/measure-performance.mjs out --check` comprueba los presupuestos de tamaño tras construir. Lighthouse y la prueba interactiva con red lenta siguen pendientes; no se declara una puntuación ni una mejora de LCP sin medirla.

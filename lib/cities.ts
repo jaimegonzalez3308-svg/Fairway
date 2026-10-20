@@ -36,6 +36,13 @@ export function normalizeCity(value: string): string {
   return suggestedCities.find((name) => folded(name) === key) || city;
 }
 
+// Small session-metadata validation; full profile validation loads with the editor.
+export function parseCity(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const city = value.trim();
+  return city.length >= 2 && city.length <= 80 ? normalizeCity(city) : null;
+}
+
 // Nearby clubs share León's category; uncertain club locations stay unclassified.
 export function cityKey(value?: string | null): string {
   if (!value) return "";

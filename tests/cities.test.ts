@@ -11,8 +11,10 @@ import {
   locationError,
   matchesCity,
   normalizeCity,
+  parseCity,
 } from "../lib/cities";
-import { profileSchema, type Club, type Game } from "../lib/domain";
+import type { Club, Game } from "../lib/domain";
+import { profileSchema } from "../lib/profile-validation";
 import { CityField } from "../components/city-field";
 import { PartyMonthCalendar } from "../components/party-month-calendar";
 import type { FairwayData } from "../lib/use-fairway";
@@ -51,6 +53,26 @@ test("la ciudad del perfil se valida antes de guardar, incluida la entrada manua
     profileSchema.shape.city.safeParse("x".repeat(81)).success,
     false,
   );
+});
+
+test("la ciudad del alta conserva la validación y normalización del editor sin cargar su esquema", () => {
+  for (const input of [
+    null,
+    undefined,
+    12,
+    {},
+    "",
+    " ",
+    "x",
+    "ab",
+    "  leon ",
+    "CDMX",
+    "Á".repeat(80),
+    "Á".repeat(81),
+  ]) {
+    const result = profileSchema.shape.city.safeParse(input);
+    assert.equal(parseCity(input), result.success ? result.data : null);
+  }
 });
 
 test("las partidas pertenecen a la ciudad de su campo, sin inventar una ciudad para campos desconocidos", () => {

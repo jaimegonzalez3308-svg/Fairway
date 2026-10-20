@@ -31,3 +31,9 @@ Revisión del código y la exportación estática frente a la lista compartida p
 - [Licencia Unsplash](https://unsplash.com/license) y [fotografía de Keith Tanner](https://unsplash.com/photos/aerial-view-of-a-beautiful-golf-course-4WSLeNydrlo).
 - [Funcionamiento del servicio de BigDataCloud](https://www.bigdatacloud.com/docs/article/why-is-reverse-geocoding-api-free).
 - [WCAG: contraste mínimo](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html).
+
+## Actualización · 20 de octubre de 2026
+
+- Fotos: corregida y aplicada la política `view_images` de Storage; se verificó en Chrome que una foto guardada aparece en el perfil y menú de cuenta. El bucket sigue privado. La prueba PostgreSQL reproduce el fallo anterior y verifica visibilidad, bloqueos y suspensiones tras la corrección.
+- Rendimiento: reducción medida de JavaScript inicial, fuentes e imágenes, con carga diferida de pantallas y fotos secundarias. Suite completa: 152 pruebas aprobadas. Ver [informe de rendimiento](performance.md) para cifras, método, caché y limitaciones. No hay todavía una puntuación Lighthouse ni medición de LCP/CLS/INP.
+- El control de Chrome funcionó para la verificación de la foto, pero falló durante el intento de Lighthouse. Esto no completa la revisión visual, de teclado o de lectores de pantalla pendiente en la revisión original.

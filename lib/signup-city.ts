@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { profileSchema, type Profile } from "./domain";
-import { DEFAULT_CITY } from "./cities";
+import type { Profile } from "./domain";
+import { DEFAULT_CITY, parseCity } from "./cities";
 
 export function initialSignupCity(
   profile: Pick<Profile, "city" | "availability">,
@@ -8,8 +8,8 @@ export function initialSignupCity(
 ): string | null {
   // Only seed a new, untouched profile. Later edits always take precedence.
   if (profile.city !== DEFAULT_CITY || profile.availability.length) return null;
-  const parsed = profileSchema.shape.city.safeParse(metadata.signup_city);
-  return parsed.success && parsed.data !== DEFAULT_CITY ? parsed.data : null;
+  const city = parseCity(metadata.signup_city);
+  return city && city !== DEFAULT_CITY ? city : null;
 }
 
 export async function saveInitialSignupCity(
@@ -17,7 +17,8 @@ export async function saveInitialSignupCity(
   userId: string,
   city: string,
 ) {
-  const value = profileSchema.shape.city.parse(city);
+  const value = parseCity(city);
+  if (!value) throw new Error("Escribe una ciudad de entre 2 y 80 caracteres.");
   const { error } = await client
     .from("profiles")
     .update({ city: value })
