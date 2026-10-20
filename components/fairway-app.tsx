@@ -92,6 +92,7 @@ import { useIllustratedSidebarIcons } from "@/lib/appearance";
 import { PlayerRating } from "./player-rating";
 import { RatingBeer } from "./rating-beer";
 import { CourseIcon } from "./course-icon";
+import { SwipeDeck } from "./swipe-deck";
 import { ProfilePhotoEditor } from "./profile-photo";
 import { ProfileBio, ProfileBioEditor } from "./profile-bio";
 import { CityFilter } from "./city-field";
@@ -1123,36 +1124,6 @@ export default function FairwayApp() {
                       </Button>
                     }
                   />
-                  <section className="golf-hero">
-                    <div className="hero-image" />
-                    <div className="hero-content">
-                      <span className="hero-eyebrow">
-                        <span className="live-dot" />
-                        PARTIDAS ENTRE GOLFISTAS
-                        {cityScope !== "any" ? ` · ${exploringCity}` : ""}
-                      </span>
-                      <h2>
-                        ¿Te falta alguien
-                        <br />
-                        para completar el grupo?
-                      </h2>
-                      <p>
-                        Consulta las partidas y acuerda el horario en el chat.
-                      </p>
-                      <button onClick={() => go("partidas")}>
-                        Explorar partidas
-                        <ArrowUpRight size={16} />
-                      </button>
-                    </div>
-                    <div className="hero-stamp">
-                      <CourseIcon part="fairway" size={26} />
-                      <span>
-                        GOOD GOLF.
-                        <br />
-                        GREAT COMPANY.
-                      </span>
-                    </div>
-                  </section>
                   <div className="city-explore-filter">
                     <CityFilter
                       scope={cityScope}
@@ -1215,42 +1186,64 @@ export default function FairwayApp() {
                       <ChevronDown size={13} />
                     </span>
                   </div>
-                  <div className="profile-grid">
-                    {visible.slice(0, 6).map((p) => (
-                      <ProfileCard
-                        key={p.id}
-                        profile={p}
-                        me={data.me}
-                        club={clubName(p.club_id)}
-                        favorite={data.favorites.includes(p.id)}
-                        onOpen={() => openProfile(p)}
-                        onLike={() => void data.decide(p.id, "like")}
-                        onPass={() => void data.decide(p.id, "pass")}
-                        onFavorite={() => void data.favorite(p.id)}
-                      />
-                    ))}
-                  </div>
-                  {visible.length === 0 && (
+                  {tab === "Para ti" ? (
+                    <SwipeDeck
+                      key={`${data.user?.id || "demo"}:${cityScope}:${search}:${JSON.stringify(filters)}`}
+                      profiles={visible}
+                      onDecide={data.decide}
+                      renderCard={(p, actions) => (
+                        <ProfileCard
+                          profile={p}
+                          me={data.me}
+                          club={clubName(p.club_id)}
+                          favorite={data.favorites.includes(p.id)}
+                          onOpen={() => openProfile(p)}
+                          onLike={actions.onLike}
+                          onPass={actions.onPass}
+                          onFavorite={() => void data.favorite(p.id)}
+                          disabled={actions.busy}
+                        />
+                      )}
+                      empty={
+                        <Empty
+                          title="Llegaste al final del fairway"
+                          description="Prueba con otros filtros o vuelve más tarde para descubrir nuevos golfistas."
+                          action={
+                            <Button
+                              variant="outline"
+                              onClick={() => {
+                                setFilters(initialFilters);
+                                setSearch("");
+                                setCityScope("any");
+                              }}
+                            >
+                              Ver todas las ciudades
+                            </Button>
+                          }
+                        />
+                      }
+                    />
+                  ) : (
+                    <div className="profile-grid">
+                      {visible.slice(0, 6).map((p) => (
+                        <ProfileCard
+                          key={p.id}
+                          profile={p}
+                          me={data.me}
+                          club={clubName(p.club_id)}
+                          favorite={data.favorites.includes(p.id)}
+                          onOpen={() => openProfile(p)}
+                          onLike={() => void data.decide(p.id, "like")}
+                          onPass={() => void data.decide(p.id, "pass")}
+                          onFavorite={() => void data.favorite(p.id)}
+                        />
+                      ))}
+                    </div>
+                  )}
+                  {tab === "Favoritos" && visible.length === 0 && (
                     <Empty
-                      title={
-                        tab === "Favoritos"
-                          ? "Tu próximo compañero favorito está por llegar"
-                          : "Llegaste al final del fairway"
-                      }
-                      description="Prueba con otros filtros o vuelve más tarde para descubrir nuevos golfistas."
-                      action={
-                        <Button
-                          variant="outline"
-                          onClick={() => {
-                            setFilters(initialFilters);
-                            setSearch("");
-                            setTab("Para ti");
-                            setCityScope("any");
-                          }}
-                        >
-                          Ver todas las ciudades
-                        </Button>
-                      }
+                      title="Tu próximo compañero favorito está por llegar"
+                      description="Guarda perfiles para encontrarlos aquí."
                     />
                   )}
                   <div className="discovery-footnote">
@@ -1263,6 +1256,36 @@ export default function FairwayApp() {
                       ¿Cómo funciona?
                     </button>
                   </div>
+                  <section className="golf-hero discovery-party-promo">
+                    <div className="hero-image" />
+                    <div className="hero-content">
+                      <span className="hero-eyebrow">
+                        <span className="live-dot" />
+                        PARTIDAS ENTRE GOLFISTAS
+                        {cityScope !== "any" ? ` · ${exploringCity}` : ""}
+                      </span>
+                      <h2>
+                        ¿Te falta alguien
+                        <br />
+                        para completar el grupo?
+                      </h2>
+                      <p>
+                        Consulta las partidas y acuerda el horario en el chat.
+                      </p>
+                      <button onClick={() => go("partidas")}>
+                        Explorar partidas
+                        <ArrowUpRight size={16} />
+                      </button>
+                    </div>
+                    <div className="hero-stamp">
+                      <CourseIcon part="fairway" size={26} />
+                      <span>
+                        GOOD GOLF.
+                        <br />
+                        GREAT COMPANY.
+                      </span>
+                    </div>
+                  </section>
                   <div className="next-section-heading">
                     <div>
                       <span className="eyebrow">HAZ ESPACIO EN TU AGENDA</span>
@@ -2545,6 +2568,7 @@ function ProfileCard({
   onLike,
   onPass,
   onFavorite,
+  disabled = false,
 }: {
   profile: Profile;
   me: Profile;
@@ -2554,23 +2578,14 @@ function ProfileCard({
   onLike: () => void;
   onPass: () => void;
   onFavorite: () => void;
+  disabled?: boolean;
 }) {
   const match = compatibility(me, p);
-  const start = useRef(0);
   return (
-    <article
-      className="golfer-card"
-      onTouchStart={(e) => {
-        start.current = e.touches[0].clientX;
-      }}
-      onTouchEnd={(e) => {
-        const delta = e.changedTouches[0].clientX - start.current;
-        if (delta > 90) onLike();
-        else if (delta < -90) onPass();
-      }}
-    >
+    <article className="golfer-card">
       <div className="golfer-photo">
         <button
+          disabled={disabled}
           onClick={onOpen}
           aria-label={`Ver perfil de ${p.name}`}
           className="photo-open"
@@ -2586,6 +2601,7 @@ function ProfileCard({
           {match.score}% compatible
         </span>
         <button
+          disabled={disabled}
           className={cn("save-profile", favorite && "saved")}
           aria-label={favorite ? "Quitar de favoritos" : "Guardar perfil"}
           aria-pressed={favorite}
@@ -2595,7 +2611,7 @@ function ProfileCard({
         </button>
         <div className="photo-gradient" />
         <div className="golfer-name">
-          <button onClick={onOpen}>
+          <button disabled={disabled} onClick={onOpen}>
             {p.name}
             <span>, {p.age}</span>
             {p.verified && (
@@ -2643,17 +2659,23 @@ function ProfileCard({
         </div>
         <div className="golfer-actions">
           <button
+            disabled={disabled}
             className="pass-button"
             onClick={onPass}
             aria-label={`Pasar a ${p.name}`}
           >
             <X size={21} />
           </button>
-          <button className="profile-info-button" onClick={onOpen}>
+          <button
+            disabled={disabled}
+            className="profile-info-button"
+            onClick={onOpen}
+          >
             Ver perfil
             <ArrowUpRight size={13} />
           </button>
           <button
+            disabled={disabled}
             className="like-button"
             onClick={onLike}
             aria-label={`Dar like a ${p.name}`}

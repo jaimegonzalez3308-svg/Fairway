@@ -495,30 +495,42 @@ export function useFairway() {
       return false;
     }
   }
-  async function decide(id: string, choice: string) {
+  async function decide(id: string, choice: string): Promise<boolean> {
     if (demo) {
-      setDecided((x) => [...x, id]);
+      setDecided((x) => [...new Set([...x, id])]);
       notify("Demostración: decisión temporal. No se generó un match real.");
-      return;
+      return true;
     }
-    if (!supabase || !user) return;
-    const { data, error } = await supabase.rpc("decide", {
-      target: id,
-      choice,
-    });
-    if (error) {
-      notify(error.message);
-      return;
+    if (!supabase || !user) return false;
+    const actorId = user.id;
+    try {
+      const { data, error } = await supabase.rpc("decide", {
+        target: id,
+        choice,
+      });
+      if (currentUserId.current !== actorId) return false;
+      if (error) {
+        notify(error.message);
+        return false;
+      }
+      setDecided((x) => [...new Set([...x, id])]);
+      notify(
+        data
+          ? "¡Es un match! Ya pueden conversar."
+          : choice === "like"
+            ? "Like enviado. Habrá match si el interés es mutuo."
+            : "Perfil omitido.",
+      );
+      // Keep the deck mounted; refreshing data must not replace it with a skeleton.
+      void load(user, true);
+      return true;
+    } catch {
+      if (currentUserId.current === actorId)
+        notify(
+          "No se pudo guardar la decisión. Revisa tu conexión e inténtalo de nuevo.",
+        );
+      return false;
     }
-    setDecided((x) => [...x, id]);
-    notify(
-      data
-        ? "¡Es un match! Ya pueden conversar."
-        : choice === "like"
-          ? "Like enviado. Habrá match si el interés es mutuo."
-          : "Perfil omitido.",
-    );
-    await load(user);
   }
   async function favorite(id: string) {
     if (demo) {
