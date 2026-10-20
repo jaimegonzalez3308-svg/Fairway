@@ -918,6 +918,41 @@ main {
   gap: 16px;
   justify-items: start;
 }
+.profile-photo-action {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  margin-top: -30px;
+  padding: 0;
+  border-radius: 50%;
+  z-index: 1;
+}
+.profile-photo-action .avatar {
+  margin-top: 0;
+}
+.profile-photo-action:focus-visible {
+  outline: 3px solid var(--accent-blue);
+  outline-offset: 4px;
+}
+.profile-photo-camera {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 2px solid white;
+  border-radius: 50%;
+  color: white;
+  background: var(--forest);
+}
+@media (hover: hover) and (pointer: fine) {
+  .profile-photo-action:hover {
+    box-shadow: 0 0 0 3px var(--accent-blue-line);
+  }
+}
 .profile-photo-preview {
   width: 144px;
   height: 144px;

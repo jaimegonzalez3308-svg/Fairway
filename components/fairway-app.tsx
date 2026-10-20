@@ -42,6 +42,7 @@ import {
   Trash2,
   LockKeyhole,
   QrCode,
+  Camera,
 } from "lucide-react";
 import { useFairway } from "@/lib/use-fairway";
 import { supabase } from "@/lib/supabase";
@@ -1647,7 +1648,22 @@ export default function FairwayApp() {
                   <div className="profile-cover">
                     <div className="profile-cover-photo" />
                     <div className="profile-cover-content">
-                      <Avatar profile={data.me} large />
+                      <button
+                        type="button"
+                        className="profile-photo-action"
+                        aria-label="Cambiar mi foto de perfil"
+                        title="Cambiar foto"
+                        aria-haspopup="dialog"
+                        onClick={() => setModal("edit-photo")}
+                      >
+                        <Avatar profile={data.me} large />
+                        <span
+                          className="profile-photo-camera"
+                          aria-hidden="true"
+                        >
+                          <Camera size={14} />
+                        </span>
+                      </button>
                       <div>
                         <h2>
                           {data.me.name}

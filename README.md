@@ -398,7 +398,7 @@ Ver [revisión del sitio](docs/site-audit.md) para el estado de cada punto, las 
 
 ## Foto de perfil
 
-En **Mi perfil → Cambiar foto** se elige una imagen, se revisa la vista previa y se pulsa **Guardar foto**. El cambio actualiza solo `profiles.photo` y no exige modificar el resto del perfil. El editor conserva el archivo y muestra un error si falla la preparación, subida o actualización; comprueba que la base haya devuelto la fila actualizada antes de dar éxito. La foto también tiene vista previa dentro de **Editar perfil**, donde se guarda junto con ese formulario.
+En **Mi perfil**, pulsa tu foto (con el icono de cámara) o el botón **Cambiar foto** para abrir el mismo editor. La foto se puede activar también con Tab y Enter/Espacio. Se elige una imagen, se revisa la vista previa y se pulsa **Guardar foto**. El cambio actualiza solo `profiles.photo` y no exige modificar el resto del perfil. El editor conserva el archivo y muestra un error si falla la preparación, subida o actualización; comprueba que la base haya devuelto la fila actualizada antes de dar éxito. La foto también tiene vista previa dentro de **Editar perfil**, donde se guarda junto con ese formulario.
 
 JPG/PNG/WebP de hasta 30 MB se decodifican localmente y se exportan a JPEG de hasta 1024 px por lado mayor (1600 para galería), sin ampliar imágenes pequeñas. La exportación dibuja los píxeles sin conservar metadatos de cámara. HEIC se intenta únicamente cuando el navegador puede decodificarlo; si no puede, se pide un JPG. El bucket privado conserva el límite de 5 MB por archivo preparado; no se cambiaron permisos ni se hizo público. Los archivos usan nombres únicos en la carpeta de su propietario para evitar sobrescrituras y caché de una foto anterior.
 
