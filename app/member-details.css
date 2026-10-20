@@ -1,73 +1,130 @@
-/* Small course details inside the member app. Keep working surfaces quiet. */
+/* Member pages borrow their details from course maps and paper scorecards. */
 .member-shell {
-  --accent-blue: #174bcc;
-  --accent-blue-wash: #edf2ff;
-  --accent-blue-line: #657cc6;
+  /* Shared action tokens retain their names; member accents are green. */
+  --accent-blue: #254d3b;
+  --accent-blue-wash: #edf0e3;
+  --accent-blue-line: #6c7b61;
 }
 .member-shell .section-heading {
   position: relative;
+  padding: 22px 24px 28px;
+  border: 1px solid #cfc7b1;
+  border-bottom: 3px solid #b29a64;
+  border-radius: 9px 9px 3px 3px;
+  background: var(--paper) url("/images/paper-grain.svg") repeat;
+}
+.member-shell .section-heading::before {
+  content: "";
+  position: absolute;
+  left: 24px;
+  bottom: 0;
+  width: min(40%, 180px);
+  height: 7px;
+  border-top: 1px solid #cfc7b1;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0 23px,
+    #cfc7b1 23px 24px
+  );
+  pointer-events: none;
+}
+.member-shell .section-heading > :first-child {
+  min-width: 0;
 }
 .member-shell .section-heading::after {
   content: "";
   position: absolute;
-  right: 0;
-  bottom: -9px;
-  width: 78px;
-  height: 29px;
-  background: var(--bg) url("/images/member-green.svg") center / contain
-    no-repeat;
+  right: 22px;
+  bottom: -12px;
+  width: 108px;
+  height: 40px;
+  background: url("/images/member-green.svg") center / contain no-repeat;
   pointer-events: none;
 }
 .member-shell .section-heading .eyebrow {
-  color: var(--accent-blue);
+  color: #526348;
+}
+.member-shell .section-heading .eyebrow::before {
+  background: #a17c42;
 }
 .member-shell .section-heading .button.primary:not(.danger-button) {
-  background: var(--accent-blue);
-  border-color: var(--accent-blue);
+  background: var(--forest);
+  border-color: var(--forest);
   color: #ffffff;
 }
 .member-shell .section-heading .button.primary:not(.danger-button):hover {
-  background: #12399c;
-  border-color: #12399c;
+  background: #28523e;
+  border-color: #28523e;
 }
 .member-shell .tabs button.active {
-  color: var(--accent-blue);
-  border-bottom-color: var(--accent-blue);
+  color: var(--forest);
+  border-bottom-color: #a17c42;
+  background: #e8ecde;
+  border-radius: 5px 5px 0 0;
 }
 .member-shell .sidebar .nav-item.active {
-  box-shadow: inset 3px 0 var(--accent-blue);
+  box-shadow: inset 3px 0 #c5ab70;
 }
 .member-shell .sidebar .nav-item.active .count {
-  background: var(--accent-blue);
+  background: var(--forest);
   color: #ffffff;
 }
 .member-shell .brand-mark,
 .member-shell .profile-hcp strong {
-  color: var(--accent-blue);
+  color: var(--forest);
 }
 .member-shell button:focus-visible,
-.member-shell a:focus-visible {
-  outline-color: var(--accent-blue);
+.member-shell a:focus-visible,
+.member-shell .swipe-discovery:focus-visible {
+  outline-color: var(--forest);
 }
 .member-shell .discovery-party-promo .hero-stamp {
-  background: #174bcce8;
-  border-color: #b8ceff;
+  background: #183c30ed;
+  border-color: #d2bb82;
   color: #ffffff;
+}
+.member-shell .swipe-card .pass-button {
+  color: var(--forest);
+}
+.member-shell .swipe-heading {
+  padding: 11px 14px;
+  border: 1px solid #c9c8b0;
+  border-top: 3px solid #a17c42;
+  border-radius: 5px;
+  background: var(--paper) url("/images/paper-grain.svg") repeat;
+}
+.member-shell .sidebar-promo {
+  border-top: 3px solid #a17c42;
+  background: #e8ecdd url("/images/paper-grain.svg") repeat;
 }
 @media (min-width: 1100px) {
   .member-shell main[data-page="descubrir"] .swipe-discovery {
-    background: url("/images/member-course-lines.svg") right center / 150px
-      191px no-repeat;
+    background:
+      url("/images/member-golf-kit.svg") left 8px top 210px / 90px 165px
+        no-repeat,
+      url("/images/member-course-lines.svg") right center / 155px 197px
+        no-repeat;
   }
 }
 @media (max-width: 740px) {
+  .member-shell .section-heading {
+    padding: 18px 16px 25px;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+  .member-shell .section-heading::before {
+    left: 16px;
+    width: 108px;
+  }
   .member-shell .section-heading::after {
-    width: 58px;
-    height: 23px;
-    bottom: -7px;
+    right: 14px;
+    width: 76px;
+    height: 28px;
+    bottom: -9px;
   }
 }
 @media (forced-colors: active) {
+  .member-shell .section-heading::before,
   .member-shell .section-heading::after {
     display: none;
   }
