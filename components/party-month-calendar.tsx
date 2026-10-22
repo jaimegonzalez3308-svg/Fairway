@@ -154,7 +154,7 @@ export function PartyMonthCalendar({
           <div className="party-scorecard-heading">
             <span className="party-scorecard-brand">FAIRWAY GOLF</span>
             <span className="eyebrow party-scorecard-label">
-              TARJETA DE PARTIDAS
+              SCORECARD
             </span>
             <h2 aria-live="polite">{monthTitle}</h2>
             <p>
