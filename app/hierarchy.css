@@ -1285,145 +1285,224 @@ main {
   color: #365a45;
 }
 
-/* The month is laid out like a club scorecard, with real dates and events. */
+/* Vintage printed scorecard: warm stock, serif type and fine green rules. */
 .party-month-panel {
-  border: 1px solid #78866d;
-  border-top: 6px double var(--forest);
-  border-bottom: 3px solid #a17c42;
-  border-radius: 3px;
-  background: var(--paper) url("/images/paper-grain.svg") repeat;
-  box-shadow: 0 5px 0 #d9cfbb55;
+  border: 1px solid #6b7953;
+  border-top: 6px double #455b38;
+  border-bottom: 6px double #455b38;
+  border-radius: 0;
+  background:
+    url("/images/paper-grain.svg") repeat,
+    radial-gradient(ellipse at center, #ffffec 25%, #f2edcd 100%);
+  box-shadow:
+    0 3px 0 #d6ceb755,
+    inset 0 0 28px #c4bd8026;
 }
 .party-month-toolbar {
-  padding: 24px 24px 20px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  padding: 22px 24px 15px;
+  text-align: center;
+}
+.party-scorecard-brand {
+  display: block;
+  margin-bottom: 8px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  color: #34492d;
 }
 .party-month-toolbar .party-scorecard-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--forest);
+  display: block;
+  margin-bottom: 12px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(20px, 2.7vw, 34px);
+  font-weight: 700;
   letter-spacing: 0.12em;
+  line-height: 1.2;
+  color: #243c26;
 }
 .party-month-toolbar h2 {
-  font-family: var(--font-score);
-  font-size: clamp(24px, 2.8vw, 36px);
-  font-weight: 600;
-  letter-spacing: -0.06em;
+  margin-top: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 15px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #243c26;
 }
 .party-month-toolbar p {
   color: #526348;
+  font-size: 11px;
+}
+.party-month-navigation {
+  justify-content: center;
+  margin: 0;
 }
 .party-month-navigation button {
-  border-radius: 2px;
-  border-color: #78866d;
-  color: var(--forest);
+  border-radius: 0;
+  border-color: #788366;
+  color: #34492d;
 }
 .party-month-navigation .party-month-today {
-  border-color: #78866d;
-  background: #edf0e3;
-  font-family: var(--font-score);
+  border-color: #788366;
+  background: transparent;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
 }
 .party-month-legend {
-  padding: 12px 24px;
-  border-top: 1px solid #c1c4b0;
-  background: #f0eadb;
+  margin: 0 20px;
+  padding: 10px 0;
+  border-top: 1px solid #788366;
+  background: transparent;
   color: #526348;
 }
 .party-month-grid {
-  border-top: 2px solid var(--forest);
+  border-top: 3px double #526348;
 }
 .party-month-grid th {
-  background: var(--forest);
-  color: #fffbf2;
+  background: #f7f5dc;
+  color: #243c26;
   border-top: 0;
-  border-bottom: 2px solid #a17c42;
-  border-right: 1px solid #6f8975;
-  padding: 12px 8px;
+  border-bottom: 3px double #6b7953;
+  border-right: 1px solid #8a9471;
+  padding: 11px 8px;
   text-align: center;
   text-transform: uppercase;
-  letter-spacing: 0.13em;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
 }
 .party-month-grid th:last-child {
   border-right: 0;
 }
 .party-month-grid td {
-  border-color: #b9bfa9;
+  border-color: #8a9471;
   background:
-    repeating-linear-gradient(0deg, transparent 0 31px, #c7cbb633 31px 32px),
-    #fffbf2;
+    repeating-linear-gradient(0deg, transparent 0 31px, #aab18b33 31px 32px),
+    #fbf9e2;
 }
 .party-month-grid td:nth-child(n + 6) {
-  background-color: #f7f1e4;
+  background-color: #f6f2d8;
 }
 .party-month-grid td.outside-month {
-  background: #ede7d9;
+  background: #e9e7cd;
 }
 .party-month-grid td.selected-day {
-  background: #e8eddd;
-  box-shadow: inset 0 0 0 2px #42613d;
+  background: #edf0d8;
+  box-shadow: inset 0 0 0 1px #526348;
 }
 .party-day-number {
-  border: 1px solid #a8b198;
-  border-radius: 2px;
-  background: #fffbf2;
-  color: var(--forest);
-  font-weight: 600;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #243c26;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 14px;
+  font-weight: 700;
 }
 .outside-month .party-day-number {
   color: #626d56;
-  border-color: #c3c5b1;
   background: transparent;
 }
 .selected-day .party-day-number {
-  border-color: var(--forest);
+  border: 1px solid #526348;
+  border-radius: 45% 52% 46% 53%;
+  font-family: "Bradley Hand", "Segoe Print", Georgia, serif;
+  font-style: italic;
+  transform: rotate(-6deg);
 }
 .party-month-grid .today .party-day-number {
-  border-radius: 50%;
-  border-color: var(--forest);
-  background: var(--forest);
-  color: #ffffff;
+  border: 3px double #34492d;
+  border-radius: 48% 44% 51% 47%;
+  background: transparent;
+  color: #243c26;
 }
 .party-day-total {
   color: #526348;
   font-family: var(--font-score);
   font-variant-numeric: tabular-nums;
 }
+.party-month-event {
+  background: #e9edce;
+  border-radius: 0;
+}
+.party-scorecard-footer {
+  padding: 0 20px 18px;
+  border-top: 3px double #6b7953;
+}
 .party-month-instructions {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
-  padding: 15px 24px;
-  border-top: 1px dashed #b3b79f;
-  background: #f0eadb;
+  gap: 8px;
+  padding: 12px 0;
+  border: 0;
+  background: transparent;
   color: #526348;
   font-size: 11px;
 }
 .party-month-instructions > svg {
   flex-shrink: 0;
   margin-top: 2px;
-  color: #806028;
+  color: #526348;
+}
+.party-scorecard-selection {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  color: #34492d;
+}
+.party-scorecard-selection > span {
+  flex-shrink: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 11px;
+  font-weight: 700;
+}
+.party-scorecard-selection > strong {
+  flex: 1;
+  border-bottom: 1px solid #788366;
+  padding: 0 4px 3px;
+  font-family: "Bradley Hand", "Segoe Print", Georgia, serif;
+  font-size: 19px;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.4;
 }
 @media (max-width: 760px) {
   .party-month-toolbar {
-    padding: 20px 14px 16px;
-    align-items: flex-start;
-    flex-wrap: wrap;
+    padding: 18px 12px 12px;
+  }
+  .party-month-toolbar .party-scorecard-label {
+    font-size: clamp(18px, 4.8vw, 27px);
+    letter-spacing: 0.07em;
   }
   .party-month-toolbar h2 {
-    font-size: 24px;
+    font-size: 13px;
   }
   .party-month-navigation {
-    margin-left: auto;
+    margin: 0;
+    align-self: center;
   }
   .party-month-legend {
-    padding: 11px 14px;
+    margin: 0 12px;
+    padding: 10px 0;
   }
   .party-month-grid th {
     padding: 10px 2px;
     font-size: 10px;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.02em;
   }
-  .party-month-instructions {
-    padding: 14px;
+  .party-scorecard-footer {
+    padding: 0 12px 14px;
+  }
+  .party-scorecard-selection {
+    flex-wrap: wrap;
+    gap: 4px 10px;
+  }
+  .party-scorecard-selection > strong {
+    font-size: 16px;
   }
 }
