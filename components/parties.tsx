@@ -234,100 +234,102 @@ export function Parties({
           </button>
         </div>
       </div>
-      {tab === "explore" && onCityScopeChange && (
-        <div className="city-explore-filter">
-          <CityFilter
-            scope={cityScope}
-            ownCity={data.me.city}
-            cities={data.clubs.map((club) => club.city)}
-            onChange={(scope) => {
-              setClub("");
-              onCityScopeChange(scope);
-            }}
-          />
-        </div>
-      )}
-      <div className={`party-filters panel ${calendar ? "is-month" : ""}`}>
-        {!calendar && (
-          <div className="party-date-filters" aria-label="Filtrar por fecha">
-            {(
-              [
-                ["all", "Cualquier fecha"],
-                ["today", "Hoy"],
-                ["week", "Próximos 7 días"],
-                ["next-week", "En 7–14 días"],
-                ["date", "Elegir día"],
-              ] as [PartyPeriod, string][]
-            ).map(([value, label]) => (
-              <button
-                key={value}
-                className={period === value ? "active" : ""}
-                aria-pressed={period === value}
-                onClick={() => setPeriod(value)}
-              >
-                {label}
-              </button>
-            ))}
+      <div className={`party-filter-sheet ${calendar ? "is-month" : ""}`}>
+        {tab === "explore" && onCityScopeChange && (
+          <div className="city-explore-filter">
+            <CityFilter
+              scope={cityScope}
+              ownCity={data.me.city}
+              cities={data.clubs.map((club) => club.city)}
+              onChange={(scope) => {
+                setClub("");
+                onCityScopeChange(scope);
+              }}
+            />
           </div>
         )}
-        <div className="party-filter-fields">
-          {!calendar && period === "date" && (
-            <label>
-              <span>Fecha de la ronda</span>
-              <input
-                aria-label="Fecha de la ronda"
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-              />
-            </label>
-          )}
-          <label>
-            <span>Campo</span>
-            <select
-              aria-label="Filtrar partidas por campo"
-              value={club}
-              onChange={(e) => setClub(e.target.value)}
-            >
-              <option value="">Todos los campos</option>
-              {data.clubs.map((c) => (
-                <option value={c.id} key={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          {tab === "explore" && (
-            <label className="party-open-filter">
-              <input
-                type="checkbox"
-                checked={openOnly}
-                onChange={(e) => setOpenOnly(e.target.checked)}
-              />
-              Solo con lugares
-            </label>
-          )}
+        <div className={`party-filters panel ${calendar ? "is-month" : ""}`}>
           {!calendar && (
-            <button
-              className="party-refresh"
-              disabled={refreshing || data.demo}
-              aria-label="Actualizar partidas"
-              onClick={async () => {
-                setRefreshing(true);
-                try {
-                  if (!(await refreshGames()))
-                    data.notify(
-                      "No pudimos actualizar las partidas. Revisa tu conexión.",
-                    );
-                } finally {
-                  setRefreshing(false);
-                }
-              }}
-            >
-              <RefreshCw size={15} />
-              {refreshing ? "Actualizando…" : "Actualizar"}
-            </button>
+            <div className="party-date-filters" aria-label="Filtrar por fecha">
+              {(
+                [
+                  ["all", "Cualquier fecha"],
+                  ["today", "Hoy"],
+                  ["week", "Próximos 7 días"],
+                  ["next-week", "En 7–14 días"],
+                  ["date", "Elegir día"],
+                ] as [PartyPeriod, string][]
+              ).map(([value, label]) => (
+                <button
+                  key={value}
+                  className={period === value ? "active" : ""}
+                  aria-pressed={period === value}
+                  onClick={() => setPeriod(value)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           )}
+          <div className="party-filter-fields">
+            {!calendar && period === "date" && (
+              <label>
+                <span>Fecha de la ronda</span>
+                <input
+                  aria-label="Fecha de la ronda"
+                  type="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                />
+              </label>
+            )}
+            <label>
+              <span>Campo</span>
+              <select
+                aria-label="Filtrar partidas por campo"
+                value={club}
+                onChange={(e) => setClub(e.target.value)}
+              >
+                <option value="">Todos los campos</option>
+                {data.clubs.map((c) => (
+                  <option value={c.id} key={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            {tab === "explore" && (
+              <label className="party-open-filter">
+                <input
+                  type="checkbox"
+                  checked={openOnly}
+                  onChange={(e) => setOpenOnly(e.target.checked)}
+                />
+                Solo con lugares
+              </label>
+            )}
+            {!calendar && (
+              <button
+                className="party-refresh"
+                disabled={refreshing || data.demo}
+                aria-label="Actualizar partidas"
+                onClick={async () => {
+                  setRefreshing(true);
+                  try {
+                    if (!(await refreshGames()))
+                      data.notify(
+                        "No pudimos actualizar las partidas. Revisa tu conexión.",
+                      );
+                  } finally {
+                    setRefreshing(false);
+                  }
+                }}
+              >
+                <RefreshCw size={15} />
+                {refreshing ? "Actualizando…" : "Actualizar"}
+              </button>
+            )}
+          </div>
         </div>
       </div>
       {calendar ? (
