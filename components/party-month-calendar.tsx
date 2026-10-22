@@ -9,6 +9,8 @@ import {
   LoaderCircle,
   Plus,
   RefreshCw,
+  Flag,
+  Pencil,
 } from "lucide-react";
 import { Button } from "./ui";
 import type { Game } from "@/lib/domain";
@@ -151,7 +153,10 @@ export function PartyMonthCalendar({
       <div className="party-month-panel panel">
         <div className="party-month-toolbar">
           <div>
-            <span className="eyebrow">TU GOLF, MES A MES</span>
+            <span className="eyebrow party-scorecard-label">
+              <Flag size={14} aria-hidden="true" />
+              FAIRWAY · TARJETA DEL MES
+            </span>
             <h2 aria-live="polite">{monthTitle}</h2>
             <p>
               {visible.length} {visible.length === 1 ? "party" : "parties"}
@@ -316,8 +321,11 @@ export function PartyMonthCalendar({
           </tbody>
         </table>
         <p className="party-month-instructions">
-          Selecciona un día para ver todas sus parties. Toca una party para ver
-          sus detalles y unirte.
+          <Pencil size={15} aria-hidden="true" />
+          <span>
+            Selecciona un día para ver todas sus parties. Toca una party para
+            ver sus detalles y unirte.
+          </span>
         </p>
       </div>
       <section
