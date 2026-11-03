@@ -1249,8 +1249,8 @@ export default function FairwayApp() {
             </strong>
             {nativeApp && (
               <span className="native-header-brand">
-                <Flag size={16} />
-                fairway.
+                <Flag size={18} strokeWidth={1.5} aria-hidden="true" />
+                fairway<span>.</span>
               </span>
             )}
           </div>

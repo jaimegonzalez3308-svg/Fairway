@@ -146,7 +146,9 @@ export function Discovery({
       )}
       {compact ? (
         <div className="native-discover-head">
-          <h1 className="sr-only">Golfistas para ti</h1>
+          <h1 className="native-discover-title">
+            Golfistas <em>para ti</em>
+          </h1>
           <div className="tabs native-discover-tabs">
             <button
               onClick={() => setTab("Para ti")}

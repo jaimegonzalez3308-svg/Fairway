@@ -3,36 +3,64 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   ArrowRight,
   CheckCheck,
-  Compass,
+  ChevronDown,
   Flag,
   MoreHorizontal,
   RefreshCw,
-  Target,
   WifiOff,
 } from "lucide-react";
 import { AccessibilityToggle } from "./accessibility-mode";
 import { LegalLinks } from "./legal-links";
+import { SidebarIcon } from "./sidebar-icon";
 import { nativeHaptic } from "@/lib/native-device";
 import { NATIVE_NETWORK_CHANGED, nativeOnline } from "@/lib/native-network";
 
 const onboardingKey = "fairway.native-onboarding.v1";
 const steps = [
   {
-    icon: Compass,
+    icon: "descubrir",
     title: "Encuentra tu próxima ronda",
     text: "Descubre jugadores y clubes de tu ciudad. Filtra por horarios, nivel y el golf que te gusta.",
   },
   {
-    icon: Flag,
+    icon: "partidas",
     title: "Un grupo, una partida",
     text: "Crea o únete a una partida y coordina el encuentro en su chat privado. Partidas y Mensajes están abajo.",
   },
   {
-    icon: Target,
+    icon: "scores",
     title: "Tu tarjeta va contigo",
     text: "Anota tus scores en el campo, guarda borradores sin conexión y compártelos cuando estés listo. Los avisos son opcionales.",
   },
 ];
+
+function NativeEntryPhoto({ icon }: { icon: string }) {
+  return (
+    <div className="native-entry-photo" aria-hidden="true">
+      <img
+        src="/images/fairway-aerial-640.webp"
+        alt=""
+        width={640}
+        height={320}
+        fetchPriority="high"
+      />
+      <span className="native-entry-photo-mark">
+        <SidebarIcon name={icon} />
+      </span>
+    </div>
+  );
+}
+
+function NativeEntryLegal() {
+  return (
+    <details className="native-entry-legal">
+      <summary>
+        Privacidad y términos <ChevronDown size={15} aria-hidden="true" />
+      </summary>
+      <LegalLinks />
+    </details>
+  );
+}
 export function NativeEntry({
   onLogin,
   onSignup,
@@ -64,7 +92,6 @@ export function NativeEntry({
     next();
   };
   const item = steps[step];
-  const Icon = item.icon;
   if (returning)
     return (
       <main
@@ -78,8 +105,11 @@ export function NativeEntry({
           </span>
           <AccessibilityToggle compact />
         </header>
+        <NativeEntryPhoto icon="partidas" />
         <section className="native-onboarding-content">
-          <h1>Entra a Fairway</h1>
+          <h1>
+            Entra <em>a Fairway</em>
+          </h1>
           <p>Abre tus partidas, scores y conversaciones.</p>
         </section>
         <div className="native-onboarding-actions">
@@ -95,7 +125,7 @@ export function NativeEntry({
         </div>
         <footer>
           <small>Para mayores de 18 años</small>
-          <LegalLinks />
+          <NativeEntryLegal />
         </footer>
       </main>
     );
@@ -108,9 +138,7 @@ export function NativeEntry({
         <AccessibilityToggle compact />
       </header>
       <div className="native-onboarding-content">
-        <span className="native-onboarding-art" aria-hidden="true">
-          <Icon size={72} strokeWidth={1.2} />
-        </span>
+        <NativeEntryPhoto icon={item.icon} />
         <p className="native-kicker">{step + 1} DE 3 · TU GOLF, A MANO</p>
         <h1 ref={heading} tabIndex={-1}>
           {item.title}
@@ -167,7 +195,7 @@ export function NativeEntry({
       </div>
       <footer>
         <small>Para mayores de 18 años</small>
-        <LegalLinks />
+        <NativeEntryLegal />
       </footer>
     </main>
   );

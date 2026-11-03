@@ -2,17 +2,16 @@
 import {
   Compass,
   Flag,
-  Target,
   MessageCircle,
   UserRound,
   ArrowRight,
   MapPin,
-  Plus,
   Users,
   Camera,
 } from "lucide-react";
 import { AccessibilityToggle } from "./accessibility-mode";
 import { LegalLinks } from "./legal-links";
+import { SidebarIcon } from "./sidebar-icon";
 
 export function NativeWelcome({
   onLogin,
@@ -114,7 +113,7 @@ export function NativeTabBar({
       aria-label="Navegación de la app"
       inert={inert}
     >
-      {nativeTabs.map(({ id, label, icon: Icon }) => (
+      {nativeTabs.map(({ id, label }) => (
         <button
           key={id}
           type="button"
@@ -122,7 +121,7 @@ export function NativeTabBar({
           onClick={() => onNavigate(id)}
         >
           <span className="native-tab-icon">
-            <Icon size={22} strokeWidth={page === id ? 2.2 : 1.7} />
+            <SidebarIcon name={id} />
             {id === "mensajes" && unreadMessages > 0 && (
               <span
                 className="native-tab-badge"
@@ -161,19 +160,25 @@ export function NativeQuickActions({
   return (
     <nav className="native-quick-actions" aria-label="Acciones rápidas">
       <button onClick={onCreate}>
-        <Plus size={19} />
+        <span className="native-action-icon">
+          <SidebarIcon name="partidas" />
+        </span>
         <span>Crear partida</span>
       </button>
       <button onClick={onScore}>
-        <Target size={19} />
+        <span className="native-action-icon">
+          <SidebarIcon name="scores" />
+        </span>
         <span>Anotar score</span>
       </button>
       <button onClick={onStory || onFriends}>
-        {onStory ? (
-          <Camera size={19} aria-hidden="true" />
-        ) : (
-          <Users size={19} aria-hidden="true" />
-        )}
+        <span className="native-action-icon">
+          {onStory ? (
+            <Camera size={23} strokeWidth={1.6} aria-hidden="true" />
+          ) : (
+            <SidebarIcon name="amigos" />
+          )}
+        </span>
         <span>{onStory ? "Crear historia" : "Mis amigos"}</span>
       </button>
     </nav>

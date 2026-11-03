@@ -1332,3 +1332,449 @@ html.native-ios .native-app .friends-tabs button.active .friend-count {
   background: #fffbf2;
   color: #193d2f;
 }
+
+/* Clubhouse personality, borrowed from the website: paper grain, small
+   kickers with a coloured dot, pencil highlights, Georgia accents and a
+   few honest hints of blue, lime and pencil yellow. App only. */
+html.native-ios {
+  --nx-green: #193d2f;
+  --nx-ink: #203c2f;
+  --nx-paper: #f5f3ea;
+  --nx-card: #fffbf2;
+  --nx-line: #d8ddcf;
+  --nx-blue: #174bcc;
+  --nx-blue-wash: #e6ecfb;
+  --nx-pencil: #ead06f;
+  --nx-pencil-wash: #f8eec4;
+  --nx-lime: #d9e9a4;
+  --nx-lime-wash: #edf3d6;
+}
+html.native-ios body,
+html.native-ios .native-app .topbar,
+html.native-ios .native-tab-bar {
+  background: var(--nx-paper) url("/images/paper-grain.svg") repeat;
+}
+
+/* Screen title with the website's pencil highlight. */
+html.native-ios .native-app .breadcrumb > strong {
+  justify-self: start;
+  max-width: 100%;
+  padding: 0;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1.4;
+  color: #52604f;
+  background: none;
+}
+
+/* Section kickers return: tiny caps with a blue dot, as on the website. */
+html.native-ios .native-app .section-heading .eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 8px;
+  color: var(--nx-blue);
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.13em;
+}
+html.native-ios .native-app .section-heading .eyebrow::before {
+  content: "";
+  display: block;
+  margin: 0 0 0 4px;
+  width: 6px;
+  height: 6px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--nx-blue);
+  box-shadow: 0 0 0 4px #174bcc1f;
+}
+html.native-ios .native-app .section-heading h1 {
+  font-size: 30px;
+  letter-spacing: -0.035em;
+}
+
+/* The website's illustrated marks carry the actions, on the same paper. */
+html.native-ios .native-quick-actions button {
+  flex-direction: column;
+  min-height: 76px;
+  gap: 5px;
+  padding: 9px 4px;
+  border: 1px solid var(--nx-line);
+  border-radius: 12px;
+  background: var(--nx-card);
+  color: var(--nx-green);
+}
+html.native-ios .native-action-icon {
+  display: grid;
+  place-items: center;
+  height: 30px;
+  color: var(--nx-green);
+}
+html.native-ios .native-action-icon > svg {
+  width: 27px;
+  height: 27px;
+}
+
+/* Discover tabs: the active one gets a pencil underline, counts go blue. */
+html.native-ios .native-app .native-discover-tabs button.active {
+  box-shadow:
+    inset 0 -3px 0 var(--nx-pencil),
+    0 1px 3px #193d2f24;
+}
+html.native-ios .native-app .native-discover-tabs button > span,
+html.native-ios .native-filters-button .filter-count {
+  background: var(--nx-blue);
+  color: #fff;
+}
+
+/* The golfer card reads like a club photo with a paper scorecard below. */
+html.native-ios .native-app .swipe-card .golfer-card {
+  border: 1px solid #cdd2bf;
+  box-shadow:
+    0 1px 0 #fff inset,
+    0 14px 30px #193d2f1c;
+}
+html.native-ios .native-app .swipe-card .photo-gradient {
+  inset: 30% 0 0;
+  background: linear-gradient(180deg, transparent, #0b2d1d4d 35%, #10291eeb);
+}
+/* An ink plate keeps names readable, as on the website's course photos. */
+html.native-ios .native-app .swipe-card .golfer-name {
+  left: 12px;
+  right: auto;
+  bottom: 12px;
+  max-width: calc(100% - 24px);
+  padding: 8px 14px 9px;
+  border-radius: 8px;
+  background: #193d2f;
+}
+html.native-ios .native-app .swipe-card .golfer-name button {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+}
+html.native-ios .native-app .swipe-card .golfer-name button > span {
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  color: var(--nx-pencil);
+}
+html.native-ios .native-app .swipe-card .golfer-name > span {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #eef3df;
+}
+html.native-ios .native-app .swipe-card .match-pill {
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: #fffbf2f2;
+  color: var(--nx-blue);
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+html.native-ios .native-app .swipe-card .match-pill .live-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--nx-blue);
+  box-shadow: 0 0 0 3px #174bcc26;
+}
+html.native-ios .native-app .swipe-card .golfer-details {
+  background: #fcfaf1 url("/images/paper-grain.svg") repeat;
+  border-top: 4px solid var(--nx-pencil);
+}
+html.native-ios .native-app .swipe-card .handicap-chip {
+  border-color: #d9bf5c;
+  background: var(--nx-pencil-wash);
+  color: #6b5110;
+}
+html.native-ios .native-app .swipe-card .handicap-chip strong {
+  color: var(--nx-green);
+}
+html.native-ios .native-app .swipe-card .golfer-tags span:nth-child(odd) {
+  background: var(--nx-lime-wash);
+  color: #3b5228;
+}
+html.native-ios .native-app .swipe-card .golfer-tags span:nth-child(even) {
+  background: var(--nx-blue-wash);
+  color: #1d3f94;
+}
+html.native-ios .native-app .swipe-card .profile-info-button {
+  color: var(--nx-blue);
+}
+html.native-ios .native-app .swipe-card .like-button {
+  border-color: var(--nx-green);
+  background: var(--nx-green);
+  color: var(--nx-lime);
+  box-shadow: 0 6px 16px #193d2f40;
+}
+html.native-ios .native-app .swipe-card .pass-button {
+  background: var(--nx-card);
+}
+
+/* Profile sheet: kicker headings, a scorecard of facts, lime reasons. */
+html.native-ios .modal:has(.full-profile-photo) .full-profile-photo {
+  border-radius: 18px;
+  box-shadow: 0 12px 28px #193d2f24;
+}
+html.native-ios .modal .full-profile-heading {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+html.native-ios .modal .full-profile-heading > .compatibility-badge {
+  order: -1;
+}
+html.native-ios .modal .full-profile-heading h2 {
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.05em;
+}
+html.native-ios .modal .compatibility-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 11px;
+  border: 1px solid #b5c5ee;
+  border-radius: 999px;
+  background: var(--nx-blue-wash);
+  color: var(--nx-blue);
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+html.native-ios .modal .compatibility-badge::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+html.native-ios .modal:has(.full-profile-photo) h3 {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--nx-blue);
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+html.native-ios .modal:has(.full-profile-photo) h3::before {
+  content: "";
+  width: 19px;
+  height: 5px;
+  flex-shrink: 0;
+  background: var(--nx-pencil);
+}
+html.native-ios .modal .info-grid {
+  gap: 0;
+  border: 1px solid #cdd2bf;
+  border-top: 4px solid var(--nx-blue);
+  background: #fcfaf1 url("/images/paper-grain.svg") repeat;
+}
+html.native-ios .modal .info-grid > * {
+  padding: 12px 14px;
+  border-bottom: 1px dashed #cdd2bf;
+}
+html.native-ios .modal .info-grid > :nth-child(odd) {
+  border-right: 1px dashed #cdd2bf;
+}
+html.native-ios .modal .info-grid > :nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+html.native-ios .modal .compatibility-reasons span {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--nx-lime-wash);
+  color: #3b5228;
+}
+html.native-ios .native-profile-dock {
+  border-top: 3px solid var(--nx-pencil);
+  background: var(--nx-card) url("/images/paper-grain.svg") repeat;
+}
+html.native-ios
+  .modal
+  .native-profile-dock
+  > .button-row:first-child
+  > .button:not(.outline)
+  svg {
+  color: var(--nx-lime);
+}
+
+/* Friends: the search panel keeps its green, with a pencil edge. */
+html.native-ios .native-app .friends-search {
+  border-top: 4px solid var(--nx-pencil);
+}
+html.native-ios .native-app .friends-search > label {
+  color: var(--nx-lime);
+}
+html.native-ios .native-app .friends-tabs button.active .friend-count {
+  background: var(--nx-pencil);
+  color: var(--nx-green);
+}
+html.native-ios .native-app .empty-icon {
+  background: var(--nx-pencil-wash);
+  color: #87650f;
+}
+
+/* Familiar Fairway illustrations, with clear selection and unread states. */
+html.native-ios .native-tab-icon {
+  width: 42px;
+  height: 34px;
+  border-radius: 12px;
+}
+html.native-ios .native-tab-icon .sidebar-icon {
+  width: 27px;
+  height: 27px;
+}
+html.native-ios .native-tab-bar [aria-current="page"] .native-tab-icon {
+  background: #e5e9d8;
+  box-shadow: none;
+}
+html.native-ios .native-tab-badge {
+  background: var(--nx-blue);
+}
+@media (prefers-contrast: more) {
+  html.native-ios .native-quick-actions button:nth-child(n) {
+    border-color: #193d2f;
+  }
+}
+
+/* Bring the website's club stationery into the native shell, not its layout. */
+html.native-ios .native-app .native-header-brand {
+  gap: 5px;
+  font-size: 23px;
+  line-height: 1.05;
+  font-weight: 650;
+  letter-spacing: -1.3px;
+  color: var(--nx-green);
+}
+html.native-ios .native-header-brand > span {
+  margin-left: -5px;
+  color: #788b54;
+}
+html.native-ios .native-discover-title {
+  margin: 0 0 6px;
+  color: var(--nx-green);
+  font-size: 29px;
+  font-weight: 550;
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+}
+html.native-ios .native-discover-title em,
+html.native-ios .native-account-entry h1 em {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 400;
+}
+html.native-ios .native-onboarding {
+  max-width: 620px;
+  margin-inline: auto;
+  gap: 18px;
+  background: var(--nx-paper) url("/images/paper-grain.svg") repeat;
+}
+html.native-ios .native-onboarding-content {
+  justify-content: flex-start;
+  padding-block: 8px;
+}
+html.native-ios .native-onboarding h1 {
+  font-weight: 550;
+  letter-spacing: -0.035em;
+}
+html.native-ios .native-account-entry h1 {
+  max-width: none;
+}
+html.native-ios .native-entry-photo {
+  position: relative;
+  width: 100%;
+  height: clamp(140px, 22svh, 210px);
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--nx-green);
+}
+html.native-ios .native-onboarding-content .native-entry-photo {
+  margin-bottom: 20px;
+}
+html.native-ios .native-entry-photo > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 58%;
+}
+html.native-ios .native-entry-photo-mark {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 1px solid var(--nx-line);
+  border-radius: 12px;
+  background: var(--nx-card);
+}
+html.native-ios .native-entry-photo-mark .sidebar-icon {
+  width: 30px;
+  height: 30px;
+}
+html.native-ios .native-onboarding .native-primary {
+  justify-content: space-between;
+  border-radius: var(--radius-action);
+  border-color: var(--nx-blue);
+  background: var(--nx-blue);
+}
+html.native-ios .native-onboarding .native-secondary {
+  border-radius: var(--radius-action);
+  background: var(--nx-card);
+}
+html.native-ios .native-entry-legal {
+  width: 100%;
+  text-align: center;
+  font-size: 12px;
+}
+html.native-ios .native-entry-legal > summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  cursor: pointer;
+  list-style: none;
+}
+html.native-ios .native-entry-legal > summary::-webkit-details-marker {
+  display: none;
+}
+html.native-ios .native-entry-legal[open] > summary svg {
+  transform: rotate(180deg);
+}
+html.native-ios .native-entry-legal .legal-links {
+  justify-content: center;
+  gap: 0 12px;
+  padding-top: 4px;
+  border-top: 1px solid var(--nx-line);
+}
+html.native-ios .native-entry-legal .legal-links a {
+  font-size: 12px;
+}
+@media (orientation: landscape) and (max-height: 500px) {
+  html.native-ios .native-entry-photo {
+    height: 140px;
+  }
+}
+/* The website's feed heading stays out of the app's compact community. */
+html.native-ios .community-feed-heading {
+  display: none;
+}
+html.native-ios .community-rail {
+  display: none;
+}
