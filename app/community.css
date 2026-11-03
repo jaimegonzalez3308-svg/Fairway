@@ -1,0 +1,705 @@
+/* Comunidad on the website: stories get their own green band, the feed
+   below reads as a separate section. The iOS app keeps its own styles. */
+
+/* ---------- Stories: a clubhouse-green band ---------- */
+html:not(.native-ios) main[data-page="comunidad"] .stories-panel {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  margin: 8px 0 64px;
+  padding: 32px 34px 30px;
+  border: 0;
+  border-radius: 22px;
+  background:
+    radial-gradient(120% 140% at 100% 0%, #24503e 0%, transparent 55%),
+    var(--forest);
+  color: #f5f3ea;
+  box-shadow: 0 18px 40px #16382b26;
+}
+html:not(.native-ios) main[data-page="comunidad"] .stories-panel::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  right: -40px;
+  top: -60px;
+  width: 260px;
+  height: 330px;
+  background: url("/images/member-course-lines.svg") no-repeat center / contain;
+  opacity: 0.16;
+  transform: rotate(-12deg);
+  pointer-events: none;
+}
+html:not(.native-ios) main[data-page="comunidad"] .stories-heading {
+  margin-bottom: 26px;
+}
+html:not(.native-ios) main[data-page="comunidad"] .stories-heading .eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #dfc28b;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+}
+html:not(.native-ios)
+  main[data-page="comunidad"]
+  .stories-heading
+  .eyebrow::before {
+  content: "";
+  width: 22px;
+  height: 3px;
+  background: #dfc28b;
+}
+html:not(.native-ios) main[data-page="comunidad"] .stories-heading h2 {
+  margin-top: 10px;
+  color: #fffdf6;
+  font-size: clamp(28px, 3vw, 40px);
+  font-weight: 650;
+  letter-spacing: -0.045em;
+}
+html:not(.native-ios) main[data-page="comunidad"] .stories-heading h2 > span {
+  color: #dfc28b;
+}
+html:not(.native-ios) main[data-page="comunidad"] .stories-expiry {
+  padding: 8px 12px;
+  border: 1px solid #ffffff2e;
+  background: #ffffff14;
+  color: #e6ecdc;
+  font-size: 11px;
+}
+html:not(.native-ios) main[data-page="comunidad"] .stories-rail {
+  gap: 26px;
+  scrollbar-color: #ffffff40 transparent;
+}
+html:not(.native-ios) main[data-page="comunidad"] .story-circle {
+  color: #fffdf6;
+}
+html:not(.native-ios) main[data-page="comunidad"] .story-circle strong {
+  font-size: 12px;
+  font-weight: 600;
+  color: #fffdf6;
+}
+html:not(.native-ios) main[data-page="comunidad"] .story-circle small {
+  font-size: 10px;
+  color: #c9d6c2;
+}
+html:not(.native-ios) main[data-page="comunidad"] .story-ring {
+  border-color: #ffffff3d;
+}
+html:not(.native-ios)
+  main[data-page="comunidad"]
+  .story-circle.unseen
+  .story-ring {
+  border: 2px solid transparent;
+  background:
+    linear-gradient(var(--forest), var(--forest)) padding-box,
+    linear-gradient(135deg, #dfc28b, #d9e9a4, #c7a66a) border-box;
+  box-shadow: none;
+}
+html:not(.native-ios) main[data-page="comunidad"] .story-create .story-ring {
+  border: 1.5px dashed #dfc28b;
+}
+html:not(.native-ios) main[data-page="comunidad"] .story-create .story-avatar {
+  background: #24503e;
+  color: #fffdf6;
+}
+html:not(.native-ios) main[data-page="comunidad"] .story-plus {
+  border-color: var(--forest);
+  background: #dfc28b;
+  color: var(--forest);
+}
+html:not(.native-ios) main[data-page="comunidad"] .story-count {
+  border-color: var(--forest);
+}
+html:not(.native-ios) main[data-page="comunidad"] .stories-invitation {
+  border-left-color: #ffffff2e;
+}
+html:not(.native-ios) main[data-page="comunidad"] .stories-invitation-icon {
+  border: 1px solid #ffffff2e;
+  background: #ffffff14;
+  color: #d9e9a4;
+}
+html:not(.native-ios) main[data-page="comunidad"] .stories-invitation strong {
+  color: #fffdf6;
+  font-size: 15px;
+}
+html:not(.native-ios) main[data-page="comunidad"] .stories-invitation p {
+  color: #d3ddcc;
+}
+html:not(.native-ios)
+  main[data-page="comunidad"]
+  .stories-invitation
+  .inline-link {
+  color: #dfc28b;
+}
+
+/* ---------- The feed: its own section below the band ---------- */
+html:not(.native-ios) main[data-page="comunidad"] .community-feed {
+  max-width: none;
+}
+html:not(.native-ios) main[data-page="comunidad"] .community-feed-heading {
+  margin-bottom: 22px;
+}
+html:not(.native-ios) main[data-page="comunidad"] .community-feed-heading h2 {
+  margin-top: 10px;
+  color: var(--forest);
+  font-size: clamp(26px, 2.6vw, 34px);
+  font-weight: 650;
+  letter-spacing: -0.045em;
+}
+html:not(.native-ios)
+  main[data-page="comunidad"]
+  .community-feed-heading
+  h2
+  > span {
+  color: var(--gold);
+}
+
+/* Filters as a pill switch instead of loose underlined words. */
+html:not(.native-ios) main[data-page="comunidad"] .community-tabs {
+  display: inline-flex;
+  max-width: 100%;
+  width: auto;
+  gap: 4px;
+  margin: 0 0 16px;
+  padding: 4px;
+  border: 1px solid #d8ddcf;
+  border-radius: 999px;
+  background: #ebeee3;
+}
+html:not(.native-ios) main[data-page="comunidad"] .community-tabs button {
+  min-height: 38px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  color: #4f5f50;
+  font-size: 13px;
+  font-weight: 600;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+html:not(.native-ios) main[data-page="comunidad"] .community-tabs button:hover {
+  color: var(--forest);
+}
+html:not(.native-ios)
+  main[data-page="comunidad"]
+  .community-tabs
+  button.active {
+  background: var(--forest);
+  color: #fffdf6;
+  box-shadow: 0 2px 8px #16382b33;
+}
+
+/* Composer: a note card with the gold rule from the page header. */
+html:not(.native-ios) main[data-page="comunidad"] .composer,
+html:not(.native-ios) main[data-page="comunidad"] .post,
+html:not(.native-ios)
+  main[data-page="comunidad"]
+  .community-feed-main
+  > .empty {
+  width: 100%;
+  max-width: none;
+  margin-left: 0;
+}
+html:not(.native-ios) main[data-page="comunidad"] .composer {
+  align-items: flex-start;
+  gap: 14px;
+  margin: 0 0 28px;
+  padding: 18px;
+  border: 1px solid #d8ddcf;
+  border-radius: 18px;
+  background: #fffdf6 url("/images/paper-grain.svg") repeat;
+  box-shadow: 0 8px 24px #223d2c0d;
+}
+html:not(.native-ios) main[data-page="comunidad"] .composer > .avatar,
+html:not(.native-ios) main[data-page="comunidad"] .post-author > .avatar {
+  width: 42px;
+  height: 42px;
+  background: var(--forest);
+  color: #fffdf6;
+  font-weight: 600;
+}
+html:not(.native-ios) main[data-page="comunidad"] .composer textarea {
+  height: 84px;
+  min-height: 84px;
+  padding: 14px 16px;
+  border: 1px solid #7d8a78;
+  border-radius: 14px;
+  background: #f5f3ea;
+  color: var(--ink);
+  font-size: 14px;
+  resize: vertical;
+}
+html:not(.native-ios) main[data-page="comunidad"] .composer textarea:focus {
+  border-color: var(--forest);
+  background: #fff;
+}
+html:not(.native-ios) main[data-page="comunidad"] .composer .button {
+  align-self: flex-end;
+}
+
+/* Posts: rounder cards, readable text, pill actions. */
+html:not(.native-ios) main[data-page="comunidad"] .post {
+  margin-bottom: 16px;
+  padding: 22px 24px;
+  border: 1px solid #d8ddcf;
+  border-radius: 18px;
+  background: #fffdf6;
+}
+html:not(.native-ios) main[data-page="comunidad"] .post-author strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+html:not(.native-ios) main[data-page="comunidad"] .post-author small {
+  margin-top: 3px;
+  font-size: 11px;
+}
+html:not(.native-ios) main[data-page="comunidad"] .post > p:not(.comment) {
+  margin: 16px 0;
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.6;
+}
+html:not(.native-ios) main[data-page="comunidad"] .post-photo {
+  border-radius: 14px;
+}
+html:not(.native-ios) main[data-page="comunidad"] .post-actions {
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px dashed #d8ddcf;
+}
+html:not(.native-ios) main[data-page="comunidad"] .post-actions > button,
+html:not(.native-ios) main[data-page="comunidad"] .post-actions > span {
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: #f0f2e8;
+}
+html:not(.native-ios) main[data-page="comunidad"] .post-actions > .liked {
+  background: #f5e7c4;
+}
+
+/* Empty feed: a dashed note waiting for the first post. */
+html:not(.native-ios)
+  main[data-page="comunidad"]
+  .community-feed-main
+  > .empty {
+  padding: 44px 28px;
+  border: 1.5px dashed #c9cfbd;
+  border-radius: 18px;
+  background: #fffdf680;
+}
+html:not(.native-ios)
+  main[data-page="comunidad"]
+  .community-feed-main
+  > .empty
+  .empty-icon {
+  background: #f5e7c4;
+  color: #765522;
+}
+
+@media (max-width: 740px) {
+  html:not(.native-ios) main[data-page="comunidad"] .stories-panel {
+    margin-bottom: 44px;
+    padding: 24px 18px 22px;
+    border-radius: 18px;
+  }
+  html:not(.native-ios) main[data-page="comunidad"] .stories-heading {
+    align-items: flex-start;
+  }
+  html:not(.native-ios) main[data-page="comunidad"] .stories-invitation {
+    min-width: 200px;
+    padding-left: 18px;
+  }
+  html:not(.native-ios) main[data-page="comunidad"] .community-tabs {
+    display: flex;
+    overflow-x: auto;
+  }
+  html:not(.native-ios) main[data-page="comunidad"] .community-tabs button {
+    flex: 0 0 auto;
+    padding: 0 14px;
+  }
+  html:not(.native-ios) main[data-page="comunidad"] .composer {
+    flex-wrap: wrap;
+  }
+  html:not(.native-ios) main[data-page="comunidad"] .composer textarea {
+    flex-basis: calc(100% - 56px);
+  }
+  html:not(.native-ios) main[data-page="comunidad"] .composer .button {
+    margin-left: auto;
+  }
+  html:not(.native-ios) main[data-page="comunidad"] .post {
+    padding: 18px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html:not(.native-ios) main[data-page="comunidad"] .community-tabs button {
+    transition: none;
+  }
+}
+
+/* ---------- Stories as tall photo cards ---------- */
+html:not(.native-ios) main[data-page="comunidad"] .stories-rail {
+  gap: 14px;
+  padding: 4px 4px 10px;
+}
+html:not(.native-ios) main[data-page="comunidad"] .story-circle {
+  position: relative;
+  flex: 0 0 132px;
+  height: 190px;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 12px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #24503e;
+  text-align: left;
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+html:not(.native-ios) main[data-page="comunidad"] .story-circle::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: 38% 0 0;
+  background: linear-gradient(transparent, #0d2219eb);
+  pointer-events: none;
+}
+html:not(.native-ios) main[data-page="comunidad"] .story-circle:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 26px #0b1f1659;
+}
+html:not(.native-ios)
+  main[data-page="comunidad"]
+  .story-circle:hover
+  .story-ring {
+  transform: none;
+  box-shadow: none;
+}
+html:not(.native-ios) main[data-page="comunidad"] .story-circle .story-ring,
+html:not(.native-ios)
+  main[data-page="comunidad"]
+  .story-circle.unseen
+  .story-ring,
+html:not(.native-ios) main[data-page="comunidad"] .story-create .story-ring {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  background: none;
+  box-shadow: none;
+}
+html:not(.native-ios) main[data-page="comunidad"] .story-circle .story-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: #2b5a46;
+  color: #dfc28b;
+  font-size: 54px;
+  font-weight: 600;
+}
+html:not(.native-ios)
+  main[data-page="comunidad"]
+  .story-circle.seen
+  .story-avatar
+  img {
+  opacity: 0.72;
+}
+html:not(.native-ios) main[data-page="comunidad"] .story-circle.unseen {
+  box-shadow:
+    0 0 0 2px var(--forest),
+    0 0 0 4px #dfc28b;
+}
+html:not(.native-ios) main[data-page="comunidad"] .story-circle strong,
+html:not(.native-ios) main[data-page="comunidad"] .story-circle small {
+  position: relative;
+  z-index: 2;
+  max-width: 100%;
+}
+html:not(.native-ios) main[data-page="comunidad"] .story-circle strong {
+  font-size: 14px;
+}
+html:not(.native-ios) main[data-page="comunidad"] .story-circle small {
+  font-size: 11px;
+}
+html:not(.native-ios) main[data-page="comunidad"] .story-circle .story-plus,
+html:not(.native-ios) main[data-page="comunidad"] .story-circle .story-count {
+  z-index: 2;
+  top: 10px;
+  right: 10px;
+  bottom: auto;
+  width: 28px;
+  height: 28px;
+}
+html:not(.native-ios) main[data-page="comunidad"] .story-create {
+  border: 1.5px dashed #dfc28b;
+  background: #1f4637;
+}
+html:not(.native-ios) main[data-page="comunidad"] .story-create .story-avatar {
+  background: #1f4637;
+  color: #dfc28b80;
+}
+html:not(.native-ios) main[data-page="comunidad"] .stories-invitation {
+  align-self: center;
+}
+
+/* ---------- Board: feed on the left, the club on a sticky rail ---------- */
+html:not(.native-ios) main[data-page="comunidad"] .community-feed-heading h2 {
+  font-size: clamp(30px, 3.2vw, 44px);
+}
+html:not(.native-ios) main[data-page="comunidad"] .community-board {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 310px);
+  align-items: start;
+  gap: 40px;
+}
+html:not(.native-ios) main[data-page="comunidad"] .community-feed-main {
+  min-width: 0;
+}
+html:not(.native-ios) main[data-page="comunidad"] .community-rail {
+  position: sticky;
+  top: 100px;
+  display: grid;
+  gap: 16px;
+}
+html:not(.native-ios) main[data-page="comunidad"] .community-rail h3 {
+  color: var(--forest);
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+html:not(.native-ios) main[data-page="comunidad"] .community-rail-club {
+  position: relative;
+  overflow: hidden;
+  padding: 22px 22px 24px;
+  border: 1px solid #cdd2bf;
+  border-radius: 18px;
+  background-clip: padding-box;
+  background: #fcfaf1 url("/images/paper-grain.svg") repeat;
+}
+html:not(.native-ios) main[data-page="comunidad"] .community-rail-club::after {
+  content: "";
+  position: absolute;
+  right: -34px;
+  bottom: -48px;
+  width: 130px;
+  height: 165px;
+  background: url("/images/member-course-lines.svg") no-repeat center / contain;
+  opacity: 0.55;
+  pointer-events: none;
+}
+html:not(.native-ios) main[data-page="comunidad"] .community-rail-club strong {
+  position: relative;
+  display: block;
+  max-width: 80%;
+  margin-top: 14px;
+  color: var(--forest);
+  font-size: 24px;
+  font-weight: 650;
+  line-height: 1.15;
+  letter-spacing: -0.04em;
+}
+html:not(.native-ios) main[data-page="comunidad"] .community-rail-club p {
+  position: relative;
+  max-width: 24ch;
+  margin-top: 10px;
+  color: #4f5f50;
+  font-size: 13px;
+  line-height: 1.5;
+}
+html:not(.native-ios) main[data-page="comunidad"] .community-rail-follow {
+  padding: 22px;
+  border: 1px solid #d8ddcf;
+  border-radius: 18px;
+  background: #fffdf6;
+}
+html:not(.native-ios) main[data-page="comunidad"] .community-rail-follow ul {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+html:not(.native-ios) main[data-page="comunidad"] .community-rail-follow li {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px dashed #d8ddcf;
+}
+html:not(.native-ios)
+  main[data-page="comunidad"]
+  .community-rail-follow
+  li:first-child {
+  border-top: 0;
+}
+html:not(.native-ios)
+  main[data-page="comunidad"]
+  .community-rail-follow
+  .avatar {
+  width: 40px;
+  height: 40px;
+  background: #e1e9db;
+  color: var(--forest);
+  font-weight: 600;
+}
+html:not(.native-ios)
+  main[data-page="comunidad"]
+  .community-rail-follow
+  .avatar
+  img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+html:not(.native-ios)
+  main[data-page="comunidad"]
+  .community-rail-follow
+  li
+  > span:nth-child(2) {
+  min-width: 0;
+}
+html:not(.native-ios) main[data-page="comunidad"] .community-rail-follow strong,
+html:not(.native-ios) main[data-page="comunidad"] .community-rail-follow small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+html:not(.native-ios)
+  main[data-page="comunidad"]
+  .community-rail-follow
+  strong {
+  color: var(--forest);
+  font-size: 14px;
+  font-weight: 600;
+}
+html:not(.native-ios) main[data-page="comunidad"] .community-rail-follow small {
+  margin-top: 2px;
+  color: #5d6a5c;
+  font-size: 12px;
+}
+html:not(.native-ios)
+  main[data-page="comunidad"]
+  .community-rail-follow
+  button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--forest);
+  border-radius: 999px;
+  color: var(--forest);
+  font-size: 12px;
+  font-weight: 600;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+html:not(.native-ios)
+  main[data-page="comunidad"]
+  .community-rail-follow
+  button:hover {
+  background: var(--forest);
+  color: #fffdf6;
+}
+
+@media (max-width: 1100px) {
+  html:not(.native-ios) main[data-page="comunidad"] .community-board {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+  html:not(.native-ios) main[data-page="comunidad"] .community-rail {
+    position: static;
+    order: -1;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+}
+@media (max-width: 740px) {
+  html:not(.native-ios) main[data-page="comunidad"] .story-circle {
+    flex-basis: 112px;
+    height: 164px;
+  }
+  html:not(.native-ios)
+    main[data-page="comunidad"]
+    .community-rail-club
+    strong {
+    font-size: 21px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html:not(.native-ios) main[data-page="comunidad"] .story-circle,
+  html:not(.native-ios)
+    main[data-page="comunidad"]
+    .community-rail-follow
+    button {
+    transition: none;
+  }
+  html:not(.native-ios) main[data-page="comunidad"] .story-circle:hover {
+    transform: none;
+  }
+}
+
+/* Rail cards keep their own height; the create card reads as an empty slot. */
+html:not(.native-ios) main[data-page="comunidad"] .community-rail {
+  align-items: start;
+}
+html:not(.native-ios)
+  main[data-page="comunidad"]
+  .story-create
+  .story-avatar
+  img {
+  opacity: 0.3;
+}
+html:not(.native-ios) main[data-page="comunidad"] .story-circle strong {
+  white-space: normal;
+  line-height: 1.2;
+}
+@media (max-width: 740px) {
+  /* On phones the post box comes first; the club rail follows the feed. */
+  html:not(.native-ios) main[data-page="comunidad"] .community-rail {
+    order: 0;
+  }
+}
+@media (max-width: 740px) {
+  html:not(.native-ios) main[data-page="comunidad"] .stories-invitation {
+    flex: 1 1 150px;
+    min-width: 0;
+    gap: 12px;
+    padding-left: 14px;
+  }
+  html:not(.native-ios) main[data-page="comunidad"] .stories-invitation-icon {
+    display: none;
+  }
+}
+html:not(.native-ios) main[data-page="comunidad"] .community-rail-club h3 {
+  display: inline-block;
+  padding: 0 4px;
+  margin-left: -4px;
+  background: linear-gradient(
+    transparent 60%,
+    #ead06f99 60%,
+    #ead06f99 92%,
+    transparent 92%
+  );
+}
+html:not(.native-ios)
+  main[data-page="comunidad"]
+  .community-rail-follow
+  button.requested {
+  background: var(--forest);
+  color: #fffdf6;
+}
+/* Focus stays visible on the green stories band. */
+html:not(.native-ios)
+  main[data-page="comunidad"]
+  .stories-panel
+  button:focus-visible {
+  outline: 3px solid #dfc28b;
+  outline-offset: 3px;
+}

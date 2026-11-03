@@ -523,10 +523,10 @@ main {
     margin-left: 32px;
   }
 
-  main[data-page="comunidad"] > .tabs,
+  main[data-page="comunidad"] .community-feed-main > .tabs,
   main[data-page="comunidad"] .composer,
   main[data-page="comunidad"] .post,
-  main[data-page="comunidad"] > .empty {
+  main[data-page="comunidad"] .community-feed-main > .empty {
     width: calc(100% - 64px);
     max-width: 800px;
     margin-left: 64px;
