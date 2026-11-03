@@ -391,6 +391,27 @@ test("installed iOS opens the app shell and its friends tab preserves navigation
       assert.ok(!labels.includes(tab), `${tab} is only in the tab bar`);
     assert.equal(sidebar.querySelector(".sidebar-user"), null);
     assert.equal(sidebar.querySelector("a.brand"), null);
+    // Mensajes in the app shows the list without the website's intro copy.
+    const messagesTab = Array.from(nav.querySelectorAll("button")).find(
+      (b) => b.textContent === "Mensajes",
+    );
+    assert.ok(messagesTab);
+    await click(messagesTab);
+    assert.equal(
+      view.container.querySelector("main")?.dataset.page,
+      "mensajes",
+    );
+    assert.doesNotMatch(
+      view.container.querySelector("main")?.textContent || "",
+      /Conversa con tus matches/,
+    );
+    assert.equal(
+      view.dom.window.document.documentElement.classList.contains(
+        "native-chat-fullscreen",
+      ),
+      false,
+      "the list itself is not full screen",
+    );
   } finally {
     await view.cleanup();
   }

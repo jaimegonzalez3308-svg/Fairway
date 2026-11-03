@@ -887,6 +887,47 @@ export default function FairwayApp() {
     setActiveChat(id);
   }
   const currentChat = data.conversations.find((c) => c.id === activeChat);
+  // iOS app: an open chat takes the whole screen, like a messaging app.
+  const chatFullscreen = nativeApp && page === "mensajes" && !!currentChat;
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.toggle("native-chat-fullscreen", chatFullscreen);
+    if (!chatFullscreen) return;
+    // The web view stops at the home indicator, so measure the keyboard
+    // overlap inside it rather than using the full keyboard height.
+    const viewport = window.visualViewport;
+    const sync = () => {
+      const overlap = viewport
+        ? Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop)
+        : 0;
+      const plugin =
+        Number.parseFloat(
+          root.style.getPropertyValue("--native-keyboard-height"),
+        ) || 0;
+      // Fallback: the plugin reports the full keyboard, which includes the
+      // home-indicator strip the web view already stops above (34pt on
+      // Face ID iPhones, none on Home-button ones).
+      const homeIndicator =
+        window.screen.height - window.innerHeight > 60 ? 34 : 0;
+      const value = `${overlap > 0 ? overlap : Math.max(0, plugin - homeIndicator)}px`;
+      // Only write on change: this runs from a style observer.
+      if (root.style.getPropertyValue("--native-chat-keyboard") !== value)
+        root.style.setProperty("--native-chat-keyboard", value);
+    };
+    sync();
+    viewport?.addEventListener("resize", sync);
+    const observer = new MutationObserver(sync);
+    observer.observe(root, {
+      attributes: true,
+      attributeFilter: ["style", "class"],
+    });
+    return () => {
+      viewport?.removeEventListener("resize", sync);
+      observer.disconnect();
+      root.classList.remove("native-chat-fullscreen");
+      root.style.removeProperty("--native-chat-keyboard");
+    };
+  }, [chatFullscreen]);
   const currentChatGame = conversationGame(currentChat);
   const selectedGameId = game?.id;
   useEffect(() => {
@@ -1579,15 +1620,16 @@ export default function FairwayApp() {
               )}
               {page === "mensajes" && (
                 <>
-                  <SectionHeading
-                    eyebrow="DEL MATCH AL TEE"
-                    title={
-                      nativeApp
-                        ? "Tus conversaciones"
-                        : "Buenas conversaciones. Mejores rondas."
-                    }
-                    description="Conversa con tus matches y con los participantes de tus partidas."
-                  />
+                  {nativeApp ? (
+                    // The app header already says Mensajes; keep the list clean.
+                    <h1 className="sr-only">Tus conversaciones</h1>
+                  ) : (
+                    <SectionHeading
+                      eyebrow="DEL MATCH AL TEE"
+                      title="Buenas conversaciones. Mejores rondas."
+                      description="Conversa con tus matches y con los participantes de tus partidas."
+                    />
+                  )}
                   <div
                     className={cn(
                       "chat-layout",
@@ -1606,6 +1648,7 @@ export default function FairwayApp() {
                         const contact = (
                           <button
                             key={c.id}
+                            data-chat-id={c.id}
                             onClick={() => selectChat(c.id)}
                             className={cn(
                               "chat-contact",
@@ -1683,7 +1726,19 @@ export default function FairwayApp() {
                               <button
                                 type="button"
                                 className="native-chat-back"
-                                onClick={() => setActiveChat(null)}
+                                aria-label="Volver a conversaciones"
+                                onClick={() => {
+                                  const id = activeChat;
+                                  setActiveChat(null);
+                                  // Return VoiceOver and keyboard focus to that chat.
+                                  requestAnimationFrame(() =>
+                                    document
+                                      .querySelector<HTMLElement>(
+                                        `[data-chat-id="${id}"]`,
+                                      )
+                                      ?.focus(),
+                                  );
+                                }}
                               >
                                 <ArrowLeft size={18} />
                                 Conversaciones

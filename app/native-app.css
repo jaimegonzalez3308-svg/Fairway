@@ -2038,3 +2038,73 @@ html.native-ios .native-tab-bar [data-tour="active"] .native-tab-icon {
     animation-duration: 1ms;
   }
 }
+
+/* Messages: an open chat covers the whole screen, like a messaging app.
+   Back stays in the chat header and the edge swipe still returns. */
+html.native-ios.native-chat-fullscreen .native-app .topbar,
+html.native-ios.native-chat-fullscreen .native-tab-bar,
+html.native-ios.native-chat-fullscreen .native-refresh {
+  display: none;
+}
+html.native-ios.native-chat-fullscreen .native-app .native-chat-open .chat-main,
+html.native-ios.native-chat-fullscreen.native-keyboard-open
+  .native-app
+  .native-chat-open
+  .chat-main {
+  position: fixed;
+  z-index: 40;
+  inset: 0 0 var(--native-chat-keyboard, 0px);
+  height: auto;
+  min-height: 0;
+  flex-direction: column;
+  padding: env(safe-area-inset-top, 0px) 0
+    max(env(safe-area-inset-bottom, 0px), 0px);
+  border: 0;
+  border-radius: 0;
+  background: #fffbf2;
+}
+html.native-ios.native-chat-fullscreen.native-keyboard-open
+  .native-app
+  .native-chat-open
+  .chat-main {
+  padding-bottom: 0;
+}
+html.native-ios.native-chat-fullscreen .native-app .chat-title {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  align-items: center;
+  column-gap: 8px;
+  padding: 6px 12px 10px;
+  border-bottom: 1px solid #d8ddcf;
+  background: #f5f3ea url("/images/paper-grain.svg") repeat;
+}
+html.native-ios.native-chat-fullscreen .native-app .chat-title > * {
+  grid-column: 2;
+}
+html.native-ios.native-chat-fullscreen .native-app .native-chat-back {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  justify-content: center;
+  width: 44px;
+  font-size: 0;
+}
+html.native-ios.native-chat-fullscreen .native-app .native-chat-back svg {
+  width: 22px;
+  height: 22px;
+}
+html.native-ios.native-chat-fullscreen .native-app .chat-title > strong {
+  font-size: 17px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+html.native-ios.native-chat-fullscreen .native-app .chat-messages {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+html.native-ios.native-chat-fullscreen .native-app .chat-input {
+  border-top: 1px solid #d8ddcf;
+  background: #fffbf2;
+}
