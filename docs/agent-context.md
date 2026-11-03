@@ -12,7 +12,7 @@ Stack: Next.js 16, React 19, TypeScript, pnpm 10.28.2, Supabase, Capacitor 8, iO
 
 ## User requirements
 
-- Preserve all existing edits and untracked work. This repository already contains extensive uncommitted changes. Never reset, clean, stash, overwrite unrelated files, or commit unless requested.
+- Preserve all existing edits and untracked work. Never reset, clean, stash, overwrite unrelated files, or commit unless requested.
 - Make the installed app feel quicker and easier to use while retaining Fairway's identity and leaving the website layout intact.
 - Use bottom tabs, reachable persistent Back controls, 44-point touch targets, safe areas, accessible spacing, and no hover-only controls. Remove native marketing clutter and large website footers.
 - Support appropriate swipe-back, pull-to-refresh, and list swipe actions, with explicit accessible button equivalents. Respect VoiceOver and reduced motion.
@@ -33,6 +33,17 @@ The app includes five bottom tabs (Descubrir · Partidas · Amigos · Mensajes �
 Apple sign-in, Apple account deletion/revocation, push/APNs/outbox, badges, and universal-link routing/configuration have local implementations. The migration and Edge Functions are prepared, not deployed. The user has confirmed they do not have an Apple Developer Program membership/Team ID. Keep those services inactive; never configure an invented team or ask for an Apple password. Enabling them also requires real signing, backend configuration/secrets, and domain association. Google redirect allowlisting and real login still need verification. See `docs/ios-services.md` and `docs/ios.md` for details and activation requirements.
 
 Previous verification on 2026-11-02: 196 tests passed; TypeScript, production export, Capacitor sync, Deno function checks, and the iOS Simulator build passed. The app and embedded widget built, and the app was installed/launched in the simulator. This does not establish visual correctness or real-device behavior. Automated Mac UI access was unavailable during that work. Physical-iPhone accessibility, gestures, permissions, biometrics, auth, APNs, links, and performance remain pending; do not describe them as verified.
+
+## Entorno de terminal
+
+Revisado 2026-11-03 desde Claude Code en terminal. Detalle completo en `docs/environment-check.md`.
+
+- At review time the shell had no Node, pnpm, `gh`, Supabase CLI, or Homebrew. The only Node on disk was ChatGPT.app's bundled copy. Afterwards the user installed Homebrew (`/opt/homebrew`), Node (v26.13.0) and Codex CLI with `codex login`. pnpm 10.28.2 was installed with `npm install -g` because Node 26 ships without corepack. On 2026-11-03 `pnpm typecheck` and `pnpm test` (212/212) passed from the terminal. `gh` and the Supabase CLI are still missing. Sessions opened before the install lack `/opt/homebrew/bin` in their PATH.
+- Git: `origin` is GitHub over HTTPS with credentials in the keychain. Branch `ios-social-ui` was pushed on 2026-11-03 and tracks `origin/ios-social-ui`. GitHub reported the repository moved to `jaimegonzalez3308-svg/Fairway`; `origin` now points to `https://github.com/jaimegonzalez3308-svg/Fairway.git`.
+- Supabase: the project is not linked (`supabase/.temp` does not exist). Migrations have been applied manually through SQL Editor, so the remote migration history is likely empty. Do not run `supabase db push` before comparing the schema and using `supabase migration repair`.
+- Env: only `.env.local` and `.env.example` exist. No shell variables override them, so builds load the same values from the terminal and from VS Code.
+- Xcode 27.2 is installed with iOS 27.2 simulators. An unsigned simulator build of scheme `App` succeeded from the terminal.
+- MCP `codex` was removed from the user config on 2026-11-03: `codex mcp-server` no longer exists since Codex CLI 0.154 (installed: 0.166.0), so it could never connect. Claude consults Codex through `codex exec -s read-only`; see "Revisión con Codex" in `CLAUDE.md`.
 
 ## Impeccable design skill
 
