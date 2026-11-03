@@ -1077,19 +1077,29 @@ export default function FairwayApp() {
           >
             <X size={21} />
           </button>
-          <a
-            className="brand"
-            href="#descubrir"
-            onClick={(event) => {
-              event.preventDefault();
-              go("descubrir");
-            }}
-          >
-            <span className="brand-mark">
-              <Flag size={26} strokeWidth={1.6} />
+          {nativeApp ? (
+            // In the app, Descubrir already lives in the tab bar.
+            <span className="brand">
+              <span className="brand-mark">
+                <Flag size={26} strokeWidth={1.6} />
+              </span>
+              fairway<span className="brand-dot">.</span>
             </span>
-            fairway<span className="brand-dot">.</span>
-          </a>
+          ) : (
+            <a
+              className="brand"
+              href="#descubrir"
+              onClick={(event) => {
+                event.preventDefault();
+                go("descubrir");
+              }}
+            >
+              <span className="brand-mark">
+                <Flag size={26} strokeWidth={1.6} />
+              </span>
+              fairway<span className="brand-dot">.</span>
+            </a>
+          )}
         </div>
         <div className="sidebar-city">
           <MapPin size={14} />
@@ -1235,29 +1245,33 @@ export default function FairwayApp() {
               )}
             </button>
           )}
-          <button
-            className="sidebar-user"
-            onClick={() => (hasAuth ? go("perfil") : openAuth())}
-          >
-            <Avatar profile={data.me} />
-            <span>
-              <strong>
-                {data.demo
-                  ? "Alejandro Torres"
-                  : data.user
-                    ? data.me.name
-                    : "Bienvenido a Fairway"}
-              </strong>
-              <small>
-                {data.demo
-                  ? "Perfil de demostración"
-                  : data.user
-                    ? "Ver mi perfil"
-                    : "Inicia sesión"}
-              </small>
-            </span>
-            <ChevronRight size={15} />
-          </button>
+          {/* In the app, Mi perfil is a tab; the menu only holds what the
+              tab bar does not. */}
+          {!nativeApp && (
+            <button
+              className="sidebar-user"
+              onClick={() => (hasAuth ? go("perfil") : openAuth())}
+            >
+              <Avatar profile={data.me} />
+              <span>
+                <strong>
+                  {data.demo
+                    ? "Alejandro Torres"
+                    : data.user
+                      ? data.me.name
+                      : "Bienvenido a Fairway"}
+                </strong>
+                <small>
+                  {data.demo
+                    ? "Perfil de demostración"
+                    : data.user
+                      ? "Ver mi perfil"
+                      : "Inicia sesión"}
+                </small>
+              </span>
+              <ChevronRight size={15} />
+            </button>
+          )}
         </div>
       </aside>
       <button

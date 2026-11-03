@@ -376,6 +376,21 @@ test("installed iOS opens the app shell and its friends tab preserves navigation
       view.container.querySelector("#fairway-sidebar")?.textContent || "",
       /Mis scores/,
     );
+    // Nothing in the menu repeats the tab bar.
+    const sidebar = view.container.querySelector("#fairway-sidebar")!;
+    const labels = [...sidebar.querySelectorAll(".nav-item .nav-label")].map(
+      (n) => n.textContent,
+    );
+    for (const tab of [
+      "Descubrir",
+      "Partidas",
+      "Amigos",
+      "Mensajes",
+      "Mi perfil",
+    ])
+      assert.ok(!labels.includes(tab), `${tab} is only in the tab bar`);
+    assert.equal(sidebar.querySelector(".sidebar-user"), null);
+    assert.equal(sidebar.querySelector("a.brand"), null);
   } finally {
     await view.cleanup();
   }
