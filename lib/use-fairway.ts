@@ -116,7 +116,13 @@ export function useFairway() {
       .then(({ data, error }) => {
         if (!current) return;
         setPublicDirectoryLive(!error);
-        setClubs(error ? demoClubs : (data as Club[]));
+        // Con Supabase configurado nunca se muestran clubes demo como si fueran reales.
+        if (error) {
+          setClubs([]);
+          setToast(
+            "No pudimos cargar los clubes. Revisa tu conexión e intenta de nuevo.",
+          );
+        } else setClubs(data as Club[]);
       });
     return () => {
       current = false;

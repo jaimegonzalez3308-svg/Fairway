@@ -9,9 +9,11 @@ export const profileSchema = z.object({
     .max(80, "Usa hasta 80 caracteres para la ciudad.")
     .transform(normalizeCity),
   age: z.coerce.number().min(18).max(100),
-  handicap: z
-    .union([z.coerce.number().min(-10).max(54), z.literal("")])
-    .transform((v) => (v === "" ? null : v)),
+  // z.coerce.number() convierte "" en 0; el campo vacío significa "sin handicap".
+  handicap: z.preprocess(
+    (v) => (v === null || (typeof v === "string" && !v.trim()) ? null : v),
+    z.coerce.number().min(-10).max(54).nullable(),
+  ),
   club_id: z.string(),
   bio: z.string().max(500),
   availability: z.array(z.string()).min(1),
