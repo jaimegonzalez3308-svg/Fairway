@@ -117,3 +117,23 @@ export async function prepareStoryPhoto(file: File): Promise<Blob> {
     URL.revokeObjectURL(url);
   }
 }
+
+/** Stories made in the website editor carry their typed text in the caption,
+ * marked with an invisible separator: the server moderates it and screen
+ * readers hear it, but it is not printed twice under the photo. */
+export const OVERLAY_MARK = "⁣";
+export const STORY_TEXT_LIMIT = 179;
+
+export function overlayCaption(texts: string[]) {
+  const joined = texts
+    .map((t) => t.trim())
+    .filter(Boolean)
+    .join("\n");
+  return joined ? OVERLAY_MARK + joined : "";
+}
+
+export function storyText(caption: string) {
+  if (caption.startsWith(OVERLAY_MARK))
+    return { visible: "", spoken: caption.slice(OVERLAY_MARK.length) };
+  return { visible: caption, spoken: caption };
+}

@@ -6,11 +6,13 @@ import {
   isValidElement,
   useId,
   useRef,
+  useState,
   type ReactElement,
   type AriaAttributes,
 } from "react";
 import { X, Flag, ArrowUpRight, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useSheetDrag } from "@/lib/use-native-feel";
 export function Button({
   className,
   variant = "primary",
@@ -40,6 +42,12 @@ export function Modal({
       : null,
   );
   const titleRef = useRef<HTMLHeadingElement>(null);
+  // State, not a ref: the portal content mounts after this component's effects.
+  const [sheet, setSheet] = useState<HTMLDivElement | null>(null);
+  const nativeSheet =
+    typeof document !== "undefined" &&
+    document.documentElement.classList.contains("native-ios");
+  useSheetDrag(nativeSheet, sheet, onClose);
   return (
     <Dialog.Root
       open
@@ -50,6 +58,7 @@ export function Modal({
       <Dialog.Portal>
         <Dialog.Overlay className={cn("modal-overlay", soft && "soft")} />
         <Dialog.Content
+          ref={setSheet}
           className={cn("modal", wide && "wide")}
           onOpenAutoFocus={(event) => {
             if (document.documentElement.classList.contains("native-ios")) {
@@ -82,6 +91,9 @@ export function Modal({
                 ?.focus({ preventScroll: true });
           }}
         >
+          {nativeSheet && (
+            <span className="native-sheet-handle" aria-hidden="true" />
+          )}
           <div className="modal-heading">
             {typeof document !== "undefined" &&
               document.documentElement.classList.contains("native-ios") && (

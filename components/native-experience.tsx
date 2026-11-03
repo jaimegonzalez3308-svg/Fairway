@@ -9,6 +9,8 @@ import {
   Users,
   Camera,
 } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { nativeTourSteps } from "@/lib/native-tour";
 import { AccessibilityToggle } from "./accessibility-mode";
 import { LegalLinks } from "./legal-links";
 import { SidebarIcon } from "./sidebar-icon";
@@ -100,12 +102,15 @@ export function NativeTabBar({
   unreadMessages = 0,
   friendRequests = 0,
   inert = false,
+  highlight,
 }: {
   page: string;
   onNavigate: (page: string) => void;
   unreadMessages?: number;
   friendRequests?: number;
   inert?: boolean;
+  /** Tab pointed at by the first-run tour. */
+  highlight?: string;
 }) {
   return (
     <nav
@@ -118,6 +123,7 @@ export function NativeTabBar({
           key={id}
           type="button"
           aria-current={page === id ? "page" : undefined}
+          data-tour={highlight === id ? "active" : undefined}
           onClick={() => onNavigate(id)}
         >
           <span className="native-tab-icon">
@@ -182,5 +188,57 @@ export function NativeQuickActions({
         <span>{onStory ? "Crear historia" : "Mis amigos"}</span>
       </button>
     </nav>
+  );
+}
+
+/** A short first-run tour shown once after signing in. It sits above the
+ * tab bar and points at each tab; it never blocks the screen behind it. */
+export function NativeTour({
+  step,
+  onNext,
+  onSkip,
+}: {
+  step: number;
+  onNext: () => void;
+  onSkip: () => void;
+}) {
+  const item = nativeTourSteps[step];
+  const last = step === nativeTourSteps.length - 1;
+  const heading = useRef<HTMLHeadingElement>(null);
+  const firstStep = useRef(step);
+  useEffect(() => {
+    // Focus follows the golfer's own "Siguiente", never the first appearance.
+    if (step !== firstStep.current)
+      heading.current?.focus({ preventScroll: true });
+  }, [step]);
+  if (!item) return null;
+  return (
+    <section
+      className="native-tour"
+      aria-labelledby="native-tour-title"
+      aria-live="polite"
+    >
+      <p className="native-tour-count">
+        {step + 1} de {nativeTourSteps.length}
+      </p>
+      <h2 id="native-tour-title" ref={heading} tabIndex={-1}>
+        {item.title}
+      </h2>
+      <p id="native-tour-text">{item.text}</p>
+      <div className="native-tour-actions">
+        <button type="button" className="native-tour-skip" onClick={onSkip}>
+          Saltar
+        </button>
+        <div className="native-tour-dots" aria-hidden="true">
+          {nativeTourSteps.map((s, i) => (
+            <span key={s.tab} data-active={i === step} />
+          ))}
+        </div>
+        <button type="button" className="native-tour-next" onClick={onNext}>
+          {last ? "Empezar" : "Siguiente"}
+          <ArrowRight size={17} aria-hidden="true" />
+        </button>
+      </div>
+    </section>
   );
 }

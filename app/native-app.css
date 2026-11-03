@@ -1778,3 +1778,263 @@ html.native-ios .community-feed-heading {
 html.native-ios .community-rail {
   display: none;
 }
+
+/* Social-app feel (iOS app only): a header that steps aside while scrolling,
+   sheets that slide up and pull down, a double-tap like and a short tour. */
+html.native-ios .native-app .topbar {
+  transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+html.native-ios.native-header-hidden .native-app .topbar {
+  transform: translateY(calc(-100% - 4px));
+}
+
+/* Bottom sheets: a grab handle, a quick slide up and a soft overlay fade. */
+html.native-ios .modal[data-state="open"] {
+  animation: native-sheet-in 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+html.native-ios .modal-overlay[data-state="open"] {
+  animation: native-fade-in 200ms ease-out;
+}
+@keyframes native-sheet-in {
+  from {
+    transform: translate(-50%, 100%);
+  }
+  to {
+    transform: translate(-50%, 0);
+  }
+}
+@keyframes native-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+html.native-ios .native-sheet-handle {
+  display: block;
+  width: 40px;
+  height: 5px;
+  margin: -8px auto 4px;
+  border-radius: 3px;
+  background: #c2c9b5;
+}
+
+/* Profile: stats row and one clear action, like a social profile. */
+html.native-ios .native-app main[data-page="perfil"] > .section-heading {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+html.native-ios .native-profile-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 14px 0 12px;
+  padding: 12px 0;
+  border-block: 1px solid #d8ddcf;
+}
+html.native-ios .native-profile-stats > div {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 2px;
+}
+html.native-ios .native-profile-stats > div + div {
+  border-left: 1px solid #e1e3d4;
+}
+html.native-ios .native-profile-stats dd {
+  margin: 0;
+  color: #193d2f;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+html.native-ios .native-profile-stats dt {
+  color: #52604f;
+  font-size: 12px;
+}
+html.native-ios .native-profile-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 48px;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+html.native-ios .native-app .native-profile-actions .button {
+  min-height: 46px;
+  justify-content: center;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 600;
+}
+html.native-ios .native-app .native-profile-actions .button.outline {
+  padding: 0;
+}
+
+/* Community feed: posts run edge to edge, separated by thin rules. */
+html.native-ios .native-app main[data-page="comunidad"] .post {
+  position: relative;
+  margin: 0 -16px;
+  padding: 16px;
+  border: 0;
+  border-top: 1px solid #d8ddcf;
+  border-radius: 0;
+  background: #fffbf2;
+  box-shadow: none;
+}
+html.native-ios .native-app main[data-page="comunidad"] .post > p:not(.comment),
+html.native-ios .native-app main[data-page="comunidad"] .post-photo {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+html.native-ios .native-app main[data-page="comunidad"] .post-photo {
+  width: calc(100% + 32px);
+  max-height: none;
+  margin: 0 -16px;
+  border-radius: 0;
+}
+html.native-ios .native-app main[data-page="comunidad"] .post-actions button,
+html.native-ios .native-app main[data-page="comunidad"] .post-actions > span {
+  min-height: 44px;
+}
+html.native-ios .native-app .post-actions .liked {
+  color: #b5452f;
+}
+html.native-ios .post-like-burst {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #fffbf2;
+  filter: drop-shadow(0 6px 16px #193d2f80);
+  pointer-events: none;
+  animation: native-like-burst 700ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes native-like-burst {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  25% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+/* First-run tour: a green card above the tab bar pointing at one tab. */
+html.native-ios .native-tour {
+  position: fixed;
+  z-index: 36;
+  left: 12px;
+  right: 12px;
+  bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+  padding: 18px 18px 14px;
+  border-radius: 20px;
+  background: #193d2f url("/images/paper-grain.svg") repeat;
+  background-blend-mode: soft-light;
+  color: #fffbf2;
+  box-shadow: 0 16px 36px #0b1f1659;
+  animation: native-tour-in 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes native-tour-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+html.native-ios .native-tour-count {
+  margin: 0 0 6px;
+  color: #dfc28b;
+  font-size: 12px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+html.native-ios .native-tour h2 {
+  margin: 0;
+  color: #fffbf2;
+  font-size: 21px;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  outline: none;
+}
+html.native-ios .native-tour p#native-tour-text {
+  margin: 6px 0 12px;
+  color: #dbe4d3;
+  font-size: 15px;
+  line-height: 1.45;
+}
+html.native-ios .native-tour-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+html.native-ios .native-tour-skip {
+  min-height: 44px;
+  padding: 0 8px;
+  color: #dbe4d3;
+  font-size: 15px;
+}
+html.native-ios .native-tour-next {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 18px;
+  border-radius: 999px;
+  background: #ead06f;
+  color: #193d2f;
+  font-size: 15px;
+  font-weight: 650;
+}
+html.native-ios .native-tour-dots {
+  display: flex;
+  gap: 5px;
+}
+html.native-ios .native-tour-dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background: #ffffff40;
+}
+html.native-ios .native-tour-dots span[data-active="true"] {
+  width: 18px;
+  background: #ead06f;
+}
+html.native-ios .native-tab-bar [data-tour="active"] .native-tab-icon {
+  box-shadow:
+    0 0 0 2px #f5f3ea,
+    0 0 0 4px #ead06f;
+  animation: native-tour-pulse 1.6s ease-in-out infinite;
+}
+@keyframes native-tour-pulse {
+  50% {
+    box-shadow:
+      0 0 0 2px #f5f3ea,
+      0 0 0 7px #ead06f66;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html.native-ios .native-app .topbar {
+    transition: none;
+  }
+  html.native-ios .modal[data-state="open"],
+  html.native-ios .modal-overlay[data-state="open"],
+  html.native-ios .native-tour,
+  html.native-ios .native-tab-bar [data-tour="active"] .native-tab-icon {
+    animation: none;
+  }
+  html.native-ios .post-like-burst {
+    animation-duration: 1ms;
+  }
+}

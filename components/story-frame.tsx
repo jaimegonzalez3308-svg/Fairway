@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import {
   ChevronRight,
   Eye,
@@ -13,7 +13,11 @@ import {
   X,
   Trash2,
   Users,
+  Download,
+  Flag,
+  VolumeX,
 } from "lucide-react";
+import { storyText } from "@/lib/stories";
 
 export function StoryFrame({
   src,
@@ -37,6 +41,7 @@ export function StoryFrame({
   onNext,
   onOptions,
   onClose,
+  onSwipeUp,
   footer,
   children,
 }: {
@@ -61,12 +66,17 @@ export function StoryFrame({
   onNext: () => void;
   onOptions: () => void;
   onClose: () => void;
+  /** Website: swiping up on the photo opens the story menu. */
+  onSwipeUp?: () => void;
   footer: ReactNode;
   children?: ReactNode;
 }) {
+  const text = storyText(caption);
   const pressStarted = useRef(0);
+  const pressY = useRef(0);
+  const swiped = useRef(false);
   return (
-    <div className="story-stage">
+    <div className={`story-stage ${onSwipeUp ? "swipe-menu" : ""}`}>
       {src && (
         <>
           <img
@@ -78,7 +88,11 @@ export function StoryFrame({
           <img
             className="story-media"
             src={src}
-            alt={caption || `Momento de golf de ${authorName}`}
+            alt={
+              text.spoken
+                ? `Momento de golf de ${authorName}: ${text.spoken}`
+                : `Momento de golf de ${authorName}`
+            }
             onLoad={onLoad}
             onError={onError}
           />
@@ -158,16 +172,29 @@ export function StoryFrame({
             onPointerDown={(event) => {
               if (event.button !== 0) return;
               pressStarted.current = performance.now();
+              pressY.current = event.clientY;
+              swiped.current = false;
               event.currentTarget.setPointerCapture(event.pointerId);
               onHold(true);
             }}
-            onPointerUp={() => onHold(false)}
+            onPointerUp={(event) => {
+              onHold(false);
+              if (onSwipeUp && pressY.current - event.clientY > 60) {
+                swiped.current = true;
+                onSwipeUp();
+              }
+            }}
             onPointerCancel={() => {
               pressStarted.current = 0;
               onHold(false);
             }}
             onLostPointerCapture={() => onHold(false)}
             onClick={(event) => {
+              if (swiped.current) {
+                swiped.current = false;
+                pressStarted.current = 0;
+                return;
+              }
               const held =
                 event.detail > 0 &&
                 pressStarted.current > 0 &&
@@ -188,7 +215,7 @@ export function StoryFrame({
         </div>
       )}
       <div className="story-viewer-bottom">
-        {caption && <p className="story-caption">{caption}</p>}
+        {text.visible && <p className="story-caption">{text.visible}</p>}
         {footer}
       </div>
       {children}
@@ -202,13 +229,138 @@ export function StoryOptions({
   busy,
   onClose,
   onDelete,
+  web = false,
+  authorName = "",
+  onActivity,
+  onSave,
+  onMute,
+  onReport,
 }: {
   audience: "members" | "friends";
   own: boolean;
   busy: boolean;
   onClose: () => void;
   onDelete: () => void;
+  /** Website menu: viewers, save, delete for your own; report, mute otherwise. */
+  web?: boolean;
+  authorName?: string;
+  onActivity?: () => void;
+  onSave?: () => void;
+  onMute?: () => void;
+  onReport?: (reason: string) => Promise<boolean>;
 }) {
+  const [reporting, setReporting] = useState(false);
+  const [reason, setReason] = useState("");
+  const [sending, setSending] = useState(false);
+  if (web)
+    return (
+      <div
+        className="story-options-sheet story-menu-sheet"
+        id="story-options"
+        role="region"
+        aria-label="Opciones de la historia"
+      >
+        <span className="story-menu-handle" aria-hidden="true" />
+        <div className="story-sheet-heading">
+          <h3>{own ? "Tu historia" : `Historia de ${authorName}`}</h3>
+          <button
+            className="icon-btn"
+            aria-label="Cerrar opciones"
+            onClick={onClose}
+          >
+            <X size={20} />
+          </button>
+        </div>
+        {reporting ? (
+          <form
+            className="story-report-form"
+            onSubmit={async (event) => {
+              event.preventDefault();
+              if (reason.trim().length < 5 || !onReport) return;
+              setSending(true);
+              const ok = await onReport(reason.trim());
+              setSending(false);
+              if (ok) onClose();
+            }}
+          >
+            <label htmlFor="story-report-reason">
+              ¿Qué está mal con esta historia?
+            </label>
+            <textarea
+              id="story-report-reason"
+              value={reason}
+              minLength={5}
+              maxLength={500}
+              required
+              autoFocus
+              onChange={(e) => setReason(e.target.value)}
+              placeholder="Describe el motivo (mínimo 5 caracteres)"
+            />
+            <div className="story-report-actions">
+              <button type="button" onClick={() => setReporting(false)}>
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="story-menu-danger-fill"
+                disabled={sending || reason.trim().length < 5}
+              >
+                {sending ? "Enviando…" : "Enviar reporte"}
+              </button>
+            </div>
+          </form>
+        ) : (
+          <div className="story-menu-list">
+            {own ? (
+              <>
+                <button disabled={busy} onClick={onActivity}>
+                  <Eye size={19} />
+                  Ver quién la vio
+                  <ChevronRight size={16} />
+                </button>
+                <button disabled={busy} onClick={onSave}>
+                  <Download size={19} />
+                  Guardar imagen
+                  <ChevronRight size={16} />
+                </button>
+                <button
+                  className="story-menu-danger"
+                  disabled={busy}
+                  onClick={onDelete}
+                >
+                  <Trash2 size={19} />
+                  Eliminar historia
+                  <ChevronRight size={16} />
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  className="story-menu-danger"
+                  disabled={busy}
+                  onClick={() => setReporting(true)}
+                >
+                  <Flag size={19} />
+                  Reportar
+                  <ChevronRight size={16} />
+                </button>
+                <button disabled={busy} onClick={onMute}>
+                  <VolumeX size={19} />
+                  Silenciar a {authorName.split(" ")[0] || "esta persona"}
+                  <ChevronRight size={16} />
+                </button>
+              </>
+            )}
+          </div>
+        )}
+        <p className="story-menu-note">
+          <Clock3 size={14} />
+          {audience === "friends"
+            ? "Compartida con amigos · dura 24 horas"
+            : "Compartida con la comunidad · dura 24 horas"}
+        </p>
+      </div>
+    );
   return (
     <div
       className="story-options-sheet"

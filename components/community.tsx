@@ -1,6 +1,6 @@
 "use client";
 import { NATIVE_RESUME } from "@/lib/native-support";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Heart,
   MessageCircle,
@@ -32,7 +32,11 @@ export function Community({ data }: { data: FairwayData }) {
     [body, setBody] = useState(""),
     [comment, setComment] = useState<Record<string, string>>({}),
     [following, setFollowing] = useState<string[]>([]),
-    [followedHere, setFollowedHere] = useState<string[]>([]);
+    [followedHere, setFollowedHere] = useState<string[]>([]),
+    [burst, setBurst] = useState<string | null>(null);
+  const lastTap = useRef<{ id: string; at: number } | null>(null);
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const liking = useRef<Set<string>>(new Set());
   async function load() {
     if (!supabase || !data.user) return;
     const [{ data: rows, error }, { data: f }] = await Promise.all([
@@ -63,6 +67,30 @@ export function Community({ data }: { data: FairwayData }) {
     };
   }, [data.user]);
   const all = [data.me, ...data.profiles];
+  async function toggleLike(p: Post) {
+    if (liking.current.has(p.id)) return;
+    liking.current.add(p.id);
+    try {
+      await likeRequest(p);
+    } finally {
+      liking.current.delete(p.id);
+    }
+  }
+  async function likeRequest(p: Post) {
+    await data.run(() =>
+      p.reactions.some((r) => r.user_id === data.user?.id)
+        ? supabase!
+            .from("reactions")
+            .delete()
+            .eq("post_id", p.id)
+            .eq("user_id", data.user!.id)
+        : supabase!.from("reactions").insert({
+            post_id: p.id,
+            user_id: data.user!.id,
+          }),
+    );
+    void load();
+  }
   async function toggleFollow(targetId: string) {
     const isFollowing = following.includes(targetId);
     await data.run(
@@ -171,7 +199,56 @@ export function Community({ data }: { data: FairwayData }) {
               .map((p) => {
                 const profile = all.find((u) => u.id === p.user_id);
                 return (
-                  <article className="panel post" key={p.id}>
+                  <article
+                    className="panel post"
+                    key={p.id}
+                    onTouchStart={(event) => {
+                      const t = event.touches[0];
+                      touchStart.current = t
+                        ? { x: t.clientX, y: t.clientY }
+                        : null;
+                    }}
+                    onTouchEnd={(event) => {
+                      // iOS app: double-tap a post to like it, as in social apps.
+                      const root = document.documentElement;
+                      const start = touchStart.current;
+                      const end = event.changedTouches[0];
+                      if (
+                        !root.classList.contains("native-ios") ||
+                        root.dataset.nativeScreenReader === "true" ||
+                        !start ||
+                        !end ||
+                        Math.hypot(
+                          end.clientX - start.x,
+                          end.clientY - start.y,
+                        ) > 10 ||
+                        (event.target as Element).closest(
+                          "button,a,input,textarea,form",
+                        )
+                      ) {
+                        lastTap.current = null;
+                        return;
+                      }
+                      const now = Date.now();
+                      const last = lastTap.current;
+                      lastTap.current = { id: p.id, at: now };
+                      if (last?.id !== p.id || now - last.at > 320) return;
+                      lastTap.current = null;
+                      event.preventDefault();
+                      setBurst(p.id);
+                      window.setTimeout(
+                        () => setBurst((id) => (id === p.id ? null : id)),
+                        700,
+                      );
+                      if (!p.reactions.some((r) => r.user_id === data.user?.id))
+                        void toggleLike(p);
+                    }}
+                  >
+                    {burst === p.id && (
+                      <span className="post-like-burst" aria-hidden="true">
+                        <Heart size={84} fill="currentColor" />
+                      </span>
+                    )}
                     <div className="post-author">
                       <div className="avatar">{profile?.name[0] || "G"}</div>
                       <div>
@@ -221,21 +298,7 @@ export function Community({ data }: { data: FairwayData }) {
                             ? "liked"
                             : ""
                         }
-                        onClick={async () => {
-                          await data.run(() =>
-                            p.reactions.some((r) => r.user_id === data.user?.id)
-                              ? supabase!
-                                  .from("reactions")
-                                  .delete()
-                                  .eq("post_id", p.id)
-                                  .eq("user_id", data.user!.id)
-                              : supabase!.from("reactions").insert({
-                                  post_id: p.id,
-                                  user_id: data.user!.id,
-                                }),
-                          );
-                          void load();
-                        }}
+                        onClick={() => void toggleLike(p)}
                       >
                         <Heart size={18} />
                         {p.reactions.length}

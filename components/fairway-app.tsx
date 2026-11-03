@@ -58,6 +58,15 @@ import {
 import { cn, dateFormat, timeFormat } from "@/lib/utils";
 import { Button, Modal, Empty, SectionHeading } from "./ui";
 import { useNativeShell } from "@/lib/use-native-shell";
+import {
+  useHideHeaderOnScroll,
+  usePageTransition,
+} from "@/lib/use-native-feel";
+import {
+  nativeTourKey,
+  nativeTourSteps,
+  shouldStartTour,
+} from "@/lib/native-tour";
 import { nativeHaptic, NativeDevice } from "@/lib/native-device";
 import {
   AccountRequired,
@@ -125,6 +134,9 @@ const NativeOfflinePanel = dynamic(() =>
 );
 const NativeTabBar = dynamic(() =>
   import("./native-experience").then((m) => m.NativeTabBar),
+);
+const NativeTour = dynamic(() =>
+  import("./native-experience").then((m) => m.NativeTour),
 );
 const NativeQuickActions = dynamic(() =>
   import("./native-experience").then((m) => m.NativeQuickActions),
@@ -295,6 +307,70 @@ export default function FairwayApp() {
     if (nativeApp && nativePrimaryPages.includes(page))
       nativeParentPage.current = page;
   }, [page, nativeApp]);
+  // Inner screens keep their Back control visible while scrolling.
+  useHideHeaderOnScroll(nativeApp && nativePrimaryPages.includes(page), page);
+  usePageTransition(nativeApp, page, nativePrimaryPages, mainContentRef);
+  // A short tour, once per account, the first time the app opens signed in.
+  const [tourStep, setTourStep] = useState<number | null>(null);
+  const tourOwner = data.user?.id || "";
+  // A different account never inherits someone else's tour step.
+  const tourFor = useRef(tourOwner);
+  useEffect(() => {
+    if (tourFor.current === tourOwner) return;
+    tourFor.current = tourOwner;
+    setTourStep(null);
+  }, [tourOwner]);
+  useEffect(() => {
+    if (tourStep !== null) return;
+    let seen = true;
+    try {
+      seen =
+        !tourOwner || localStorage.getItem(nativeTourKey(tourOwner)) === "done";
+    } catch {
+      /* Without storage the tour stays off rather than repeating. */
+    }
+    if (
+      shouldStartTour({
+        native: nativeApp,
+        loading: data.loading,
+        userId: tourOwner,
+        page,
+        busy: !!modal || mobileOpen || data.needsGoogleProfile,
+        seen,
+      })
+    )
+      setTourStep(0);
+    // Checked once the account and first screen are ready.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    nativeApp,
+    data.loading,
+    data.needsGoogleProfile,
+    tourOwner,
+    page,
+    modal,
+    mobileOpen,
+    tourStep,
+  ]);
+  const endTour = (finished: boolean) => {
+    try {
+      localStorage.setItem(nativeTourKey(tourOwner), "done");
+    } catch {
+      /* The tour may show again; no account data is stored. */
+    }
+    setTourStep(null);
+    if (finished) go("descubrir");
+  };
+  const nextTourStep = () => {
+    if (tourStep === null) return;
+    nativeHaptic();
+    const next = tourStep + 1;
+    if (next >= nativeTourSteps.length) return endTour(true);
+    setTourStep(next);
+    go(nativeTourSteps[next].tab);
+    // Keep focus on the tour card rather than the new screen.
+    focusNextPage.current = false;
+  };
 
   useEffect(() => {
     const content =
@@ -1742,28 +1818,30 @@ export default function FairwayApp() {
                     eyebrow="ESTE ES TU JUEGO"
                     title="Mi perfil de golfista"
                     action={
-                      <div className="button-row profile-header-actions">
-                        <Button
-                          variant="outline"
-                          onClick={() => setModal("edit-photo")}
-                        >
-                          Cambiar foto
-                        </Button>
-                        <Button
-                          variant="outline"
-                          onClick={() => setModal("profile-qr")}
-                        >
-                          <QrCode size={17} />
-                          Mi código QR
-                        </Button>
-                        <Button
-                          variant="outline"
-                          onClick={() => setModal("edit-profile")}
-                        >
-                          Editar perfil
-                          <ArrowUpRight size={16} />
-                        </Button>
-                      </div>
+                      nativeApp ? undefined : (
+                        <div className="button-row profile-header-actions">
+                          <Button
+                            variant="outline"
+                            onClick={() => setModal("edit-photo")}
+                          >
+                            Cambiar foto
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => setModal("profile-qr")}
+                          >
+                            <QrCode size={17} />
+                            Mi código QR
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => setModal("edit-profile")}
+                          >
+                            Editar perfil
+                            <ArrowUpRight size={16} />
+                          </Button>
+                        </div>
+                      )
                     }
                   />
                   <div className="profile-cover">
@@ -1802,6 +1880,42 @@ export default function FairwayApp() {
                       </div>
                     </div>
                   </div>
+                  {nativeApp && (
+                    <>
+                      <dl className="native-profile-stats">
+                        <div>
+                          <dt>Rondas</dt>
+                          <dd>{data.rounds.length}</dd>
+                        </div>
+                        <div>
+                          <dt>Amigos</dt>
+                          <dd>
+                            {
+                              friends.relations.filter(
+                                (r) => r.status === "accepted",
+                              ).length
+                            }
+                          </dd>
+                        </div>
+                        <div>
+                          <dt>Handicap</dt>
+                          <dd>{data.me.handicap ?? "—"}</dd>
+                        </div>
+                      </dl>
+                      <div className="native-profile-actions">
+                        <Button onClick={() => setModal("edit-profile")}>
+                          Editar perfil
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => setModal("profile-qr")}
+                          aria-label="Mi código QR"
+                        >
+                          <QrCode size={19} />
+                        </Button>
+                      </div>
+                    </>
+                  )}
                   <ProfileBio
                     bio={data.me.bio}
                     onEdit={() => setModal("edit-bio")}
@@ -2049,6 +2163,16 @@ export default function FairwayApp() {
           </footer>
         </main>
       </div>
+      {nativeApp &&
+        tourStep !== null &&
+        !modal &&
+        page === nativeTourSteps[tourStep]?.tab && (
+          <NativeTour
+            step={tourStep}
+            onNext={nextTourStep}
+            onSkip={() => endTour(false)}
+          />
+        )}
       {nativeApp ? (
         <NativeTabBar
           page={page}
@@ -2060,6 +2184,9 @@ export default function FairwayApp() {
             ).length
           }
           inert={isMobile && mobileOpen}
+          highlight={
+            tourStep === null ? undefined : nativeTourSteps[tourStep]?.tab
+          }
         />
       ) : (
         <nav

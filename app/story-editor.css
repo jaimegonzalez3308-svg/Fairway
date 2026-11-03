@@ -1,0 +1,577 @@
+/* Website story editor and story menu. A full-screen night-green studio
+   with Fairway's cream, gold and pencil yellow; the photo stays the hero. */
+
+.story-editor-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  background: #0b1a13;
+}
+.story-editor {
+  position: fixed;
+  inset: 0;
+  z-index: 121;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  padding: calc(12px + env(safe-area-inset-top, 0px)) 16px
+    calc(14px + env(safe-area-inset-bottom, 0px));
+  background:
+    radial-gradient(90% 60% at 50% 0%, #1d4433 0%, transparent 70%), #0b1a13;
+  color: #fffbf2;
+  outline: none;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.story-editor button {
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.story-editor button:focus-visible,
+.story-editor select:focus-visible,
+.story-editor input:focus-visible,
+.story-editor-item:focus-visible {
+  outline: 3px solid #ead06f;
+  outline-offset: 3px;
+}
+.story-editor-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  max-width: 760px;
+  width: 100%;
+  margin: 0 auto 12px;
+}
+.story-editor-tools {
+  display: flex;
+  gap: 8px;
+}
+.story-editor-round {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 1px solid #ffffff2e;
+  border-radius: 50%;
+  background: #ffffff14;
+  transition:
+    background 0.15s,
+    transform 0.15s;
+}
+.story-editor-round:hover {
+  background: #ffffff26;
+}
+.story-editor-round:active {
+  transform: scale(0.94);
+}
+.story-editor-round[aria-pressed="true"] {
+  border-color: #ead06f;
+  background: #ead06f;
+  color: #193d2f;
+}
+.story-editor-round:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.story-editor-round.small {
+  width: 44px;
+  height: 44px;
+}
+.story-editor-aa {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.story-editor-area {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 0;
+}
+.story-editor-stage {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #16382b;
+  box-shadow: 0 24px 60px #0008;
+  isolation: isolate;
+}
+.story-editor-stage > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+}
+.story-editor-pen,
+.story-editor-pen-capture {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.story-editor-pen {
+  pointer-events: none;
+}
+.story-editor-pen-capture {
+  z-index: 3;
+  cursor: crosshair;
+}
+.story-editor-loading {
+  position: absolute;
+}
+.story-editor-item {
+  position: absolute;
+  z-index: 2;
+  border-radius: 0.25em;
+  white-space: pre;
+  cursor: grab;
+  touch-action: none;
+  text-shadow: 0 0 0.18em #00000059;
+}
+.story-editor-item.sticker {
+  text-shadow: none;
+  line-height: 1;
+}
+.story-editor-item.boxed {
+  text-shadow: none;
+}
+.story-editor-item.selected {
+  outline: 1.5px dashed #fffbf2cc;
+  outline-offset: 6px;
+}
+.story-editor-item:active {
+  cursor: grabbing;
+}
+.story-editor-handle {
+  position: absolute;
+  right: -18px;
+  bottom: -18px;
+  width: 22px;
+  height: 22px;
+  border: 2px solid #193d2f;
+  border-radius: 50%;
+  background: #ead06f;
+  box-shadow: 0 2px 8px #0006;
+  cursor: nwse-resize;
+  touch-action: none;
+}
+/* The handle sits outside small items; give it a 44px hit area. */
+.story-editor-handle::after {
+  content: "";
+  position: absolute;
+  inset: -11px;
+}
+
+/* Text mode: the photo dims, the text is typed large in the middle. */
+.story-editor-textmode {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 16px;
+  background: #0b1a13c7;
+  backdrop-filter: blur(3px);
+}
+.story-editor-textbar {
+  display: grid;
+  gap: 10px;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+}
+.story-editor-fonts {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.story-editor-fonts button {
+  flex: 0 0 auto;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid #ffffff33;
+  border-radius: 999px;
+  background: #ffffff12;
+  font-size: 15px;
+}
+.story-editor-fonts button[aria-pressed="true"] {
+  border-color: #fffbf2;
+  background: #fffbf2;
+  color: #193d2f;
+}
+.story-editor-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.story-editor-size {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+}
+.story-editor-size input {
+  width: 100%;
+  accent-color: #ead06f;
+}
+.story-editor-done {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: #ead06f;
+  color: #193d2f !important;
+  font-weight: 650;
+}
+.story-editor-bg-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  font-weight: 800;
+}
+.story-editor-bg-icon.solid {
+  background: #fffbf2;
+  color: #193d2f;
+}
+.story-editor-bg-icon.soft {
+  background: #00000073;
+  outline: 1px solid #ffffff40;
+}
+.story-editor-colors {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 2px;
+  scrollbar-width: none;
+}
+.story-editor-colors button {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  border: 2px solid #ffffff66;
+  border-radius: 50%;
+}
+.story-editor-colors button[aria-checked="true"] {
+  border-color: #fffbf2;
+  box-shadow:
+    0 0 0 2px #0b1a13,
+    0 0 0 4px #fffbf2;
+}
+.story-editor-input {
+  align-self: center;
+  justify-self: center;
+  width: min(100%, 560px);
+  max-height: 50vh;
+  padding: 0.3em;
+  border: 0;
+  border-radius: 0.25em;
+  line-height: 1.2;
+  resize: none;
+  overflow: hidden;
+  outline: none;
+  field-sizing: content;
+  text-shadow: 0 0 0.18em #00000059;
+}
+.story-editor-input::placeholder {
+  color: #fffbf299;
+}
+
+/* Bottom bar: share, tool panels, or the bin while dragging. */
+.story-editor-bottom {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  max-width: 640px;
+  margin: 14px auto 0;
+}
+.story-editor-share {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+}
+.story-editor-audience select {
+  width: 100%;
+  min-height: 50px;
+  padding: 0 14px;
+  border: 1px solid #ffffff33;
+  border-radius: 999px;
+  background: #ffffff14;
+  color: #fffbf2;
+  font: inherit;
+  font-size: 15px;
+}
+.story-editor-audience option {
+  color: #193d2f;
+}
+.story-editor-publish {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 50px;
+  padding: 0 24px;
+  border-radius: 999px;
+  background: #ead06f;
+  color: #193d2f !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 8px 24px #ead06f40;
+}
+.story-editor-publish:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.story-editor-panel {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #ffffff1f;
+  border-radius: 20px;
+  background: #ffffff0d;
+}
+.story-editor-stickers {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+  gap: 4px;
+}
+.story-editor-stickers button {
+  min-height: 48px;
+  border-radius: 12px;
+  font-size: 28px;
+  line-height: 1;
+}
+.story-editor-stickers button:hover {
+  background: #ffffff1a;
+}
+.story-editor-filters {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.story-editor-filters button {
+  flex: 0 0 auto;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.story-editor-filters img {
+  width: 64px;
+  height: 64px;
+  border: 2px solid transparent;
+  border-radius: 14px;
+  object-fit: cover;
+}
+.story-editor-filters button[aria-pressed="true"] img {
+  border-color: #ead06f;
+}
+.story-editor-filters button[aria-pressed="true"] span {
+  color: #ead06f;
+}
+.story-editor-trash {
+  justify-self: center;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border: 1.5px solid #ffffff66;
+  border-radius: 50%;
+  background: #ffffff14;
+  transition:
+    transform 0.15s,
+    background 0.15s;
+}
+.story-editor-trash.active {
+  transform: scale(1.18);
+  border-color: #d6453d;
+  background: #d6453d;
+}
+.story-editor-error {
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #d6453d26;
+  color: #ffd9d4;
+  font-size: 14px;
+}
+
+/* Discard confirmation. */
+.story-editor-confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 130;
+  background: #0b1a13b3;
+}
+.story-editor-confirm {
+  position: fixed;
+  z-index: 131;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  gap: 10px;
+  width: min(calc(100% - 32px), 340px);
+  padding: 24px 20px 14px;
+  border-radius: 22px;
+  background: #fffbf2;
+  color: #193d2f;
+  text-align: center;
+  box-shadow: 0 24px 60px #0009;
+}
+.story-editor-confirm h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+.story-editor-confirm p {
+  margin: 0 0 6px;
+  color: #52604f;
+  font-size: 14px;
+}
+.story-editor-confirm button {
+  min-height: 46px;
+  border-radius: 999px;
+  color: #193d2f;
+  font-weight: 600;
+}
+.story-editor-confirm .story-editor-discard {
+  background: #b5452f;
+  color: #fffbf2;
+}
+
+/* Story menu (website): a bottom sheet with clear actions. */
+.story-menu-sheet {
+  padding-top: 10px;
+}
+.story-menu-handle {
+  display: block;
+  width: 40px;
+  height: 5px;
+  margin: 0 auto 12px;
+  border-radius: 3px;
+  background: #c2c9b5;
+}
+.story-menu-sheet .story-sheet-heading h3 {
+  margin: 0;
+  font-size: 19px;
+}
+.story-menu-list {
+  display: grid;
+  margin-top: 12px;
+}
+.story-menu-list button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  padding: 0 4px;
+  border-top: 1px solid #e1e3d4;
+  color: #193d2f;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: left;
+}
+.story-menu-list button:first-child {
+  border-top: 0;
+}
+.story-menu-list button > svg:last-child {
+  margin-left: auto;
+  color: #8e9d7b;
+}
+.story-menu-list .story-menu-danger {
+  color: #b5452f;
+}
+.story-menu-note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 12px 0 0;
+  color: #66735f;
+  font-size: 12px;
+}
+.story-report-form {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+.story-report-form label {
+  font-weight: 600;
+}
+.story-report-form textarea {
+  min-height: 90px;
+  padding: 12px;
+  border: 1px solid #7d8a78;
+  border-radius: 12px;
+  background: #fffdf6;
+  font: inherit;
+}
+.story-report-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.story-report-actions button {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+.story-menu-danger-fill {
+  background: #b5452f;
+  color: #fffbf2;
+}
+.story-menu-danger-fill:disabled {
+  opacity: 0.5;
+}
+
+/* Muted authors can be shown again from the stories heading. */
+.stories-heading-side {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.stories-muted {
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: #ffffff14;
+  color: inherit;
+  font-size: 12px;
+}
+
+@media (max-width: 560px) {
+  .story-editor-tools {
+    gap: 6px;
+  }
+  .story-editor-round {
+    width: 44px;
+    height: 44px;
+  }
+  .story-editor-share {
+    grid-template-columns: 1fr;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .story-editor-round,
+  .story-editor-trash {
+    transition: none;
+  }
+}
+
+/* Website viewer: vertical swipes open the menu instead of scrolling. */
+.story-stage.swipe-menu .story-tap-navigation {
+  touch-action: none;
+}

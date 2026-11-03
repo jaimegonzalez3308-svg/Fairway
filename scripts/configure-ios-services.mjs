@@ -1,4 +1,10 @@
-import { readFileSync, existsSync, mkdirSync, writeFileSync, realpathSync } from "node:fs";
+import {
+  readFileSync,
+  existsSync,
+  mkdirSync,
+  writeFileSync,
+  realpathSync,
+} from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
@@ -78,7 +84,7 @@ function main() {
   };
   const teamId = argument("--team", process.env.APPLE_TEAM_ID);
   const appId = argument("--app-id", "com.fairway.app");
-  const host = argument("--host", "fairway-leon-golf.honeyring4.chatgpt.site");
+  const host = argument("--host", "fairway-leon-golf.jjrtecl.chatgpt.site");
   const push = args.includes("--push");
   const apple = !args.includes("--no-apple");
   const links = !args.includes("--no-links");
@@ -197,7 +203,8 @@ function main() {
   );
 }
 if (
-  process.argv[1] && existsSync(process.argv[1]) &&
+  process.argv[1] &&
+  existsSync(process.argv[1]) &&
   realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url))
 )
   main();

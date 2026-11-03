@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
+import dynamic from "next/dynamic";
 import {
   Camera,
   Check,
@@ -35,6 +36,12 @@ import {
   type StoryPhotoSource,
 } from "@/lib/native-story-photo";
 import { NATIVE_PAUSE, NATIVE_RESUME } from "@/lib/native-support";
+import { readMuted, writeMuted } from "@/lib/story-mute";
+
+// The website editor downloads only when someone creates a story.
+const StoryEditor = dynamic(() =>
+  import("./story-editor").then((m) => m.StoryEditor),
+);
 
 function PersonAvatar({ photo, name }: { photo?: string; name: string }) {
   return (
@@ -47,10 +54,51 @@ function PersonAvatar({ photo, name }: { photo?: string; name: string }) {
 export function Stories({ data }: { data: FairwayData }) {
   const feed = useStories(data);
   const [composing, setComposing] = useState(false);
+  const [editorPhoto, setEditorPhoto] = useState<Blob | null>(null);
+  const [picking, setPicking] = useState(false);
+  const [native, setNative] = useState(false);
+  const [muted, setMuted] = useState<string[]>([]);
+  const fileRef = useRef<HTMLInputElement>(null);
   const [playlist, setPlaylist] = useState<string[]>([]);
   const [index, setIndex] = useState(0);
   const userId = data.user?.id || "";
-  const groups = groupStories(feed.stories, userId);
+  useEffect(() => {
+    setNative(isIOSApp(nativeBridge()));
+  }, []);
+  useEffect(() => {
+    setMuted(readMuted(userId));
+  }, [userId]);
+  const groups = groupStories(
+    feed.stories.filter(
+      (s) => s.user_id === userId || !muted.includes(s.user_id),
+    ),
+    userId,
+  );
+  function mute(authorId: string) {
+    if (!userId || authorId === userId) return;
+    const next = [...muted, authorId];
+    setMuted(next);
+    writeMuted(userId, next);
+    setPlaylist([]);
+    data.notify(
+      "Ya no verás sus historias. Puedes volver a mostrarlas cuando quieras.",
+    );
+  }
+  // Website: the picker opens first (gallery, files or camera, depending on
+  // the device), then the full-screen editor. The iOS app keeps its composer.
+  async function pick(file?: File) {
+    if (!file) return;
+    setPicking(true);
+    try {
+      setEditorPhoto(await prepareStoryPhoto(file));
+    } catch (e) {
+      data.notify(
+        e instanceof Error ? e.message : "No pudimos leer esta foto.",
+      );
+    } finally {
+      setPicking(false);
+    }
+  }
   const active = feed.stories.find((s) => s.id === playlist[index]);
   const people = [data.me, ...data.profiles];
   function move(direction: number) {
@@ -78,16 +126,35 @@ export function Stories({ data }: { data: FairwayData }) {
               Un momento en el green<span>.</span>
             </h2>
           </div>
-          <span className="stories-expiry">
-            <Clock3 size={14} />
-            24 horas
-          </span>
+          <div className="stories-heading-side">
+            {!!muted.length && (
+              <button
+                type="button"
+                className="stories-muted"
+                onClick={() => {
+                  setMuted([]);
+                  writeMuted(userId, []);
+                }}
+              >
+                {muted.length} silenciado{muted.length === 1 ? "" : "s"} ·
+                Mostrar
+              </button>
+            )}
+            <span className="stories-expiry">
+              <Clock3 size={14} />
+              24 horas
+            </span>
+          </div>
         </div>
         <div className="stories-rail">
           <button
             className="story-circle story-create"
-            onClick={() => setComposing(true)}
+            onClick={() =>
+              native ? setComposing(true) : fileRef.current?.click()
+            }
             aria-label="Subir una historia"
+            aria-busy={picking}
+            disabled={picking}
           >
             <span className="story-ring">
               <PersonAvatar photo={data.me.photo} name={data.me.name} />
@@ -168,7 +235,32 @@ export function Stories({ data }: { data: FairwayData }) {
             </div>
           )}
         </div>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          hidden
+          onChange={(e) => {
+            void pick(e.target.files?.[0]);
+            e.target.value = "";
+          }}
+        />
       </section>
+      {editorPhoto && (
+        <StoryEditor
+          photo={editorPhoto}
+          data={data}
+          available={feed.available}
+          statusMessage={
+            feed.loading ? "Cargando historias…" : feed.error || ""
+          }
+          onClose={() => setEditorPhoto(null)}
+          onPublished={async () => {
+            setEditorPhoto(null);
+            await feed.refresh();
+          }}
+        />
+      )}
       {composing && (
         <StoryComposer
           data={data}
@@ -194,6 +286,8 @@ export function Stories({ data }: { data: FairwayData }) {
           onSeen={feed.markSeen}
           onLiked={feed.setLiked}
           onRefresh={feed.refresh}
+          web={!native}
+          onMute={mute}
         />
       )}
     </>
@@ -557,7 +651,11 @@ export function StoryViewer({
   onSeen,
   onLiked,
   onRefresh,
+  web = false,
+  onMute,
 }: {
+  web?: boolean;
+  onMute?: (authorId: string) => void;
   story?: Story;
   siblings: Story[];
   data: FairwayData;
@@ -731,6 +829,34 @@ export function StoryViewer({
       setBusy(false);
     }
   }
+  async function saveImage() {
+    if (!src) return;
+    try {
+      const response = await fetch(src);
+      if (!response.ok) throw new Error();
+      const url = URL.createObjectURL(await response.blob());
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "fairway-historia.jpg";
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      setOptions(false);
+    } catch {
+      data.notify("No pudimos guardar la imagen. Inténtalo de nuevo.");
+    }
+  }
+  async function report(reason: string) {
+    if (!story || !data.user) return false;
+    return data.run(
+      () =>
+        supabase!.from("reports").insert({
+          user_id: data.user!.id,
+          target_id: story.user_id,
+          reason: `Historia ${story.id}: ${reason}`,
+        }),
+      "Reporte enviado. Gracias por cuidar la comunidad.",
+    );
+  }
   async function remove() {
     if (!story || !supabase || busy) return;
     setBusy(true);
@@ -873,6 +999,9 @@ export function StoryViewer({
             onNext={onNext}
             onOptions={() => setOptions((value) => !value)}
             onClose={onClose}
+            onSwipeUp={
+              web && story && !busy ? () => setOptions(true) : undefined
+            }
             footer={
               story ? (
                 <StoryEngagement
@@ -925,6 +1054,15 @@ export function StoryViewer({
                 audience={story?.audience || "members"}
                 own={own}
                 busy={busy}
+                web={web}
+                authorName={author?.name || "Golfista"}
+                onActivity={() => {
+                  setOptions(false);
+                  setActivity(true);
+                }}
+                onSave={() => void saveImage()}
+                onMute={() => story && onMute?.(story.user_id)}
+                onReport={report}
                 onClose={() => setOptions(false)}
                 onDelete={() => {
                   setOptions(false);
