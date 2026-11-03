@@ -1,11 +1,13 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Save, Send, Flag, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button, Field } from "./ui";
 import { type Round, type Hole, summarize, holeColor } from "@/lib/domain";
 import { supabase } from "@/lib/supabase";
 import type { FairwayData } from "@/lib/use-fairway";
 import { CourseIcon } from "./course-icon";
+import { isIOSApp, nativeBridge } from "@/lib/native-app";
+import { nativeOnline } from "@/lib/native-network";
 export function Scorecard({
   data,
   round,
@@ -15,6 +17,8 @@ export function Scorecard({
   round?: Round;
   onDone: () => void;
 }) {
+  const localId = useRef<string | null>(null);
+  const saving = useRef(false);
   const [count, setCount] = useState(round?.holes || 18),
     [scores, setScores] = useState<Hole[]>(
       round?.scores ||
@@ -54,6 +58,7 @@ export function Scorecard({
     setScores((s) => s.map((h, j) => (j === i ? { ...h, [key]: value } : h)));
   }
   async function save(form: HTMLFormElement, status: string) {
+    if (saving.current) return;
     const f = new FormData(form);
     if (!form.reportValidity()) return;
     if (status !== "draft" && !summary.complete) {
@@ -73,7 +78,6 @@ export function Scorecard({
       data.notify("Revisa los golpes, pars y putts.");
       return;
     }
-    setBusy(true);
     const payload = {
       user_id: data.user?.id,
       club_id: clubId || null,
@@ -88,6 +92,52 @@ export function Scorecard({
       notes: f.get("notes"),
       scores,
     };
+    if (
+      isIOSApp(nativeBridge()) &&
+      (!nativeOnline() || (!round && status === "draft"))
+    ) {
+      if (!data.user || round || status !== "draft") {
+        data.notify(
+          "Sin conexión puedes guardar una tarjeta nueva como borrador privado. Editar o compartir una ronda existente requiere internet.",
+        );
+        return;
+      }
+      saving.current = true;
+      setBusy(true);
+      try {
+        localId.current ||= crypto.randomUUID();
+        const { queueScoreDraft } = await import("@/lib/native-offline");
+        await queueScoreDraft(
+          {
+            ...payload,
+            id: localId.current,
+            status: "draft",
+            privacy: "private",
+          },
+          data.user.id,
+        );
+        data.notify(
+          nativeOnline()
+            ? "Borrador privado guardado en este iPhone. Sincronizando con tu cuenta…"
+            : "Borrador privado guardado en este iPhone. Se sincronizará al volver la conexión.",
+        );
+        if (nativeOnline())
+          window.dispatchEvent(new Event("fairway:sync-scores"));
+        onDone();
+      } catch (error) {
+        data.notify(
+          error instanceof Error
+            ? error.message
+            : "No se pudo guardar el borrador en este iPhone.",
+        );
+      } finally {
+        saving.current = false;
+        setBusy(false);
+      }
+      return;
+    }
+    saving.current = true;
+    setBusy(true);
     const ok = await data.run(
       () =>
         round
@@ -96,16 +146,29 @@ export function Scorecard({
       "Ronda guardada. Tus estadísticas se actualizaron.",
     );
     setBusy(false);
+    saving.current = false;
     if (ok) onDone();
   }
   return (
-    <form id="score-form" className="form" onSubmit={(e) => e.preventDefault()}>
+    <form
+      id="score-form"
+      data-no-gestures
+      className="form"
+      onSubmit={(e) => e.preventDefault()}
+    >
       <div className="notice">
         <Flag size={17} />
         Selecciona un tee configurado o captura los datos de tu tarjeta real. La
         captura manual siempre queda marcada como no verificada.
       </div>
       <div className="form-grid">
+        {isIOSApp(nativeBridge()) && !round && (
+          <p className="notice">
+            Los borradores nuevos de este iPhone se guardan privados y se
+            sincronizan al conectar. Finalizar o compartir una tarjeta requiere
+            conexión.
+          </p>
+        )}
         <Field label="Club / campo">
           <select
             name="club"

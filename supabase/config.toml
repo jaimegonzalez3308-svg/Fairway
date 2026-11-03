@@ -1,0 +1,7 @@
+[functions.push-dispatch]
+verify_jwt = false
+
+[functions.delete-apple-account]
+# The handler verifies the bearer with Auth.getUser, including projects using
+# asymmetric JWT signing keys that the legacy gateway check cannot validate.
+verify_jwt = false

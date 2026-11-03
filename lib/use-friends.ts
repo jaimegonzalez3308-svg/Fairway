@@ -1,4 +1,5 @@
 "use client";
+import { NATIVE_RESUME } from "./native-support";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "./supabase";
 import type { FairwayData } from "./use-fairway";
@@ -106,8 +107,12 @@ export function useFriends(data: FairwayData) {
       .subscribe();
     const onFocus = () => void refresh();
     window.addEventListener("focus", onFocus);
+    window.addEventListener(NATIVE_RESUME, onFocus);
+    window.addEventListener("fairway:manual-refresh", onFocus);
     return () => {
       window.removeEventListener("focus", onFocus);
+      window.removeEventListener(NATIVE_RESUME, onFocus);
+      window.removeEventListener("fairway:manual-refresh", onFocus);
       void supabase!.removeChannel(channel);
     };
   }, [userId, refresh]);

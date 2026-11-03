@@ -73,8 +73,8 @@ export function AccessibilitySetting() {
     <section aria-label="Accesibilidad">
       <h3>Accesibilidad</h3>
       <p id={hint}>
-        Activa mayor contraste, texto más legible e indicadores de foco
-        destacados. Se guarda en este navegador.
+        El contraste legible está incluido para todos. Activa texto más grande
+        e indicadores de foco destacados. Se guarda en este navegador.
       </p>
       <label className="switch-row">
         <span>Modo de accesibilidad</span>

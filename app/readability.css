@@ -1,0 +1,475 @@
+/* Shared readable palette. Loaded after decorative themes, in both modes. */
+html:root .sidebar-city,
+html:root .nav-caption,
+html:root .nav-item {
+  color: #52604f;
+}
+html:root .mini-sun {
+  color: #765522;
+}
+html:root .sidebar-promo p,
+html:root .breadcrumb,
+html:root .location,
+html:root .icon-btn,
+html:root .demo-pill,
+html:root .demo-notice,
+html:root .demo-notice button,
+html:root .eyebrow,
+html:root .section-heading p,
+html:root .tabs button,
+html:root .search-input,
+html:root .search-input input::placeholder,
+html:root .discovery-subline,
+html:root .handicap-chip {
+  color: #52604f;
+}
+html:root .rating {
+  color: #765522;
+}
+html:root .rating small,
+html:root .golfer-club,
+html:root .golfer-bio,
+html:root .golfer-tags span,
+html:root .pass-button,
+html:root .like-button,
+html:root .profile-info-button,
+html:root .discovery-footnote,
+html:root .inline-link,
+html:root .game-icon {
+  color: #52604f;
+}
+html:root .game-card-top .eyebrow {
+  color: #765522;
+}
+html:root .game-type,
+html:root .game-card p,
+html:root .participant-preview,
+html:root .participant-preview > span,
+html:root .game-card-bottom button,
+html:root .app-footer,
+html:root .app-footer a,
+html:root .modal p,
+html:root .field > span,
+html:root .field > label,
+html:root .checkbox,
+html:root .text-button,
+html:root .secure-note,
+html:root .auth-divider,
+html:root .notice {
+  color: #52604f;
+}
+html:root .error-text {
+  color: #913e32 !important;
+}
+html:root .error-banner {
+  color: #913e32;
+}
+html:root .empty-icon,
+html:root .empty p,
+html:root .badge {
+  color: #52604f;
+}
+html:root .badge.gold {
+  color: #765522;
+}
+html:root .compatibility-badge,
+html:root .info-item strong,
+html:root .compatibility-reasons span {
+  color: #52604f;
+}
+html:root .safety-actions button {
+  color: #765522;
+}
+html:root .calendar-date,
+html:root .profile-cover-content h2 > span,
+html:root .profile-cover-content p,
+html:root .profile-hcp span,
+html:root .profile-hcp strong,
+html:root .profile-info > p,
+html:root .stat-card svg,
+html:root .stat-card span,
+html:root .score-summary span,
+html:root .score-summary strong,
+html:root .score-table th,
+html:root .score-table td.birdie {
+  color: #52604f;
+}
+html:root .score-table td.bogey {
+  color: #765522;
+}
+html:root .score-table td.double {
+  color: #913e32;
+}
+html:root .score-table td.eagle {
+  color: #765522;
+}
+html:root .score-legend,
+html:root .rounds-table th,
+html:root .rounds-table td,
+html:root .rounds-table td strong,
+html:root .rounds-table .total-score,
+html:root .chat-sidebar h3 > span,
+html:root .chat-title span,
+html:root .chat-bubble small {
+  color: #52604f;
+}
+html:root .club-photo .badge {
+  color: #765522;
+}
+html:root .club-content p,
+html:root .club-content details,
+html:root .post > p,
+html:root .post-actions button,
+html:root .post-actions span {
+  color: #52604f;
+}
+html:root .post-actions .liked {
+  color: #765522;
+}
+html:root .settings-grid .panel p,
+html:root .switch-row {
+  color: #52604f;
+}
+html:root .danger-zone h3,
+html:root .danger-zone .button {
+  color: #765522;
+}
+html:root .notification-row > svg,
+html:root .availability-card p,
+html:root .admin-row pre,
+html:root .setup-steps,
+html:root .welcome > p {
+  color: #52604f;
+}
+html:root .welcome .eyebrow {
+  color: #765522;
+}
+html:root .welcome-features svg,
+html:root .welcome-features p {
+  color: #52604f;
+}
+@media (max-width: 740px) {
+  html:root .mobile-nav button {
+    color: #52604f;
+  }
+}
+html:root .section-heading p,
+html:root .golfer-bio,
+html:root .club-content p,
+html:root .settings-grid .panel p,
+html:root .gate-benefits span,
+html:root .gate-benefits svg,
+html:root .guest-feature-grid svg,
+html:root .guest-feature-grid p,
+html:root .guest-join p,
+html:root .guest-directory-note,
+html:root .public-privacy-grid svg,
+html:root .public-privacy-grid p,
+html:root .locked-page-cta > svg,
+html:root .locked-page-cta p,
+html:root .account-menu summary {
+  color: #52604f;
+}
+html:root .account-menu-items .account-menu-delete {
+  color: #913e32;
+}
+html:root .deletion-intro > span,
+html:root .deletion-steps li,
+html:root .deletion-steps .done {
+  color: #52604f;
+}
+html:root .deletion-warning > svg {
+  color: #765522;
+}
+html:root .deletion-warning p {
+  color: #913e32;
+}
+html:root .email-check-illustration,
+html:root .modal > small,
+html:root .friends-search svg,
+html:root .friend-identity > svg,
+html:root .friend-status,
+html:root .profile-friends-link > svg,
+html:root .stories-expiry,
+html:root .stories-invitation-icon,
+html:root .stories-invitation p,
+html:root .story-upload > span,
+html:root .story-privacy-note {
+  color: #52604f;
+}
+html:root .modal .story-error,
+html:root .story-error {
+  color: #913e32;
+}
+html:root .modal .story-form-notice {
+  color: #765522;
+}
+html:root .story-option-detail > svg,
+html:root .story-option-detail p {
+  color: #52604f;
+}
+html:root .story-option-delete {
+  color: #913e32;
+}
+html:root .story-metric-tabs > button {
+  color: #52604f;
+}
+html:root .story-viewer-row .liked {
+  color: #913e32;
+}
+html:root .story-activity-empty,
+html:root .story-activity-footer,
+html:root .story-delete-confirm p,
+html:root .party-calendar-leaf small,
+html:root .party-view-switch > button,
+html:root .party-date-filters button,
+html:root .party-quick-dates button,
+html:root .party-filter-fields > label > span,
+html:root .party-refresh,
+html:root .party-results-heading > span,
+html:root .party-kind-badge {
+  color: #52604f;
+}
+html:root .party-day-label {
+  color: #765522;
+}
+html:root .party-card-when,
+html:root .party-card .party-card-description,
+html:root .party-small-avatar,
+html:root .party-card-host > span:not(.party-small-avatar),
+html:root .party-seat-icons > span,
+html:root .party-seat-icons > span.filled,
+html:root .party-card-seats > span,
+html:root .party-my-status,
+html:root .party-calendar-hour,
+html:root .party-form-intro > span,
+html:root .party-mode-picker > label svg {
+  color: #52604f;
+}
+html:root .modal .party-activation-note {
+  color: #765522;
+}
+html:root .party-access-check,
+html:root .party-confirmed-notice,
+html:root .party-confirmed-notice span {
+  color: #52604f;
+}
+html:root .party-leave-button {
+  color: #765522;
+}
+html:root .party-month-toolbar p,
+html:root .party-month-navigation button,
+html:root .party-month-legend {
+  color: #52604f;
+}
+html:root .party-month-grid th {
+  color: #243c26;
+}
+html:root .outside-month .party-day-number,
+html:root .party-day-total,
+html:root .party-month-event {
+  color: #52604f;
+}
+html:root .party-month-event.full {
+  color: #765522;
+}
+html:root .party-month-event.past,
+html:root .party-month-event.closed,
+html:root .party-day-more,
+html:root .party-month-instructions {
+  color: #52604f;
+}
+html:root .party-month-error {
+  color: #765522;
+}
+html:root .party-day-agenda-heading p,
+html:root .party-day-empty > span,
+html:root .party-day-empty p,
+html:root .party-agenda-time,
+html:root .party-agenda-tags,
+html:root .party-agenda-status {
+  color: #52604f;
+}
+html:root .party-agenda-status.full {
+  color: #765522;
+}
+html:root .party-agenda-status.past,
+html:root .party-agenda-status.closed,
+html:root .party-agenda-info p,
+html:root .party-agenda-action,
+html:root .party-group-chat-icon,
+html:root .modal .party-group-chat p,
+html:root .party-chat-avatar {
+  color: #52604f;
+}
+html:root .chat-contact-group-meta {
+  color: #765522;
+}
+html:root .chat-title .party-chat-date,
+html:root .chat-title .party-chat-roster > span,
+html:root .party-chat-empty > span,
+html:root .party-chat-empty > p,
+html:root .chat-bubble .chat-sender-name,
+html:root .sidebar-promo p,
+html:root input::placeholder,
+html:root textarea::placeholder,
+html:root .guest-feature-grid svg,
+html:root .welcome-features svg,
+html:root .public-privacy-grid svg,
+html:root .stat-card svg {
+  color: #52604f;
+}
+html:root .welcome .eyebrow {
+  color: #765522;
+}
+html:root .tabs button,
+html:root .search-input,
+html:root .search-input input::placeholder,
+html:root .discovery-subline,
+html:root .guest-directory-note,
+html:root .golfer-club,
+html:root .party-day-label,
+html:root .stat-card span,
+html:root .score-summary span,
+html:root .party-month-instructions,
+html:root .mobile-nav button,
+html:root .fw-wordmark > span,
+html:root .fw-hero-note,
+html:root .fw-hero-ticket > div > span,
+html:root .fw-photo-credit,
+html:root .fw-scorecard td,
+html:root .fw-preview-top > span,
+html:root .fw-preview-label,
+html:root .fw-plan-result > p:last-child,
+html:root .fw-preview-disclaimer,
+html:root .fw-club-list small,
+html:root .fw-directory-note > span,
+html:root .fw-directory-note > p,
+html:root .fw-footer-top > p > strong,
+html:root .fw-footer-wordmark > span,
+html:root .fw-footer-bottom {
+  color: #52604f;
+}
+
+html:root {
+  --muted: #52604f;
+  --a11y-control-border: #6c7b61;
+  --a11y-focus-dark: #183c30;
+  --a11y-focus-light: #fffbf2;
+}
+html:root .fw-landing {
+  --fw-muted: #52604f;
+}
+html:root .nav-caption {
+  color: #52604f;
+}
+html:root .nav-item {
+  color: #42563f;
+}
+html:root .nav-item.active {
+  color: #f8f9f6;
+}
+html:root input:not([type="checkbox"]):not([type="radio"]),
+html:root select,
+html:root textarea,
+html:root .friends-search > div,
+html:root .search-input:focus-within,
+html:root .button.outline,
+html:root .fw-plain-button {
+  border-color: var(--a11y-control-border);
+}
+html:root input::placeholder,
+html:root textarea::placeholder,
+html:root .search-input input::placeholder {
+  color: #52604f;
+  opacity: 1;
+}
+html:root .score-table td input,
+html:root .score-table td select {
+  border-color: var(--a11y-control-border);
+}
+html:root .error-text {
+  color: #913e32 !important;
+}
+html:root .count,
+html:root .story-count {
+  background: #806028;
+  color: #ffffff;
+}
+html:root .rating,
+html:root .post-actions .liked {
+  color: #765522;
+}
+html:root .chat-bubble small {
+  color: #52604f;
+}
+html:root .chat-bubble.own small,
+html:root .chat-bubble.own .chat-sender-name {
+  color: #e0e6d6;
+}
+html:root .score-table td.birdie {
+  color: #3e6332;
+}
+html:root .score-table td.bogey,
+html:root .score-table td.eagle {
+  color: #765522;
+}
+html:root .score-table td.double {
+  color: #913e32;
+}
+html:root .score-table td input {
+  color: inherit;
+}
+html:root .pass-button,
+html:root .like-button {
+  border-color: var(--a11y-control-border);
+}
+html:root .party-month-grid td.selected-day {
+  box-shadow: inset 0 0 0 2px #42613d;
+}
+html:root .hero-image {
+  background-image:
+    linear-gradient(90deg, #10271ce6, #10271ccc),
+    url("/images/fairway-landscape.webp");
+}
+html:root .hero-stamp {
+  background: #183c30;
+}
+html:root .golfer-name {
+  background: #183c30;
+  border-radius: 4px;
+  padding: 8px;
+}
+html:root .save-profile {
+  background: #183c30;
+  border-color: #fffbf2;
+  backdrop-filter: none;
+}
+html:root .save-profile.saved {
+  background: #806028;
+  border-color: #fffbf2;
+}
+html:root .club-photo .badge {
+  background: #fffbf2;
+  color: #765522;
+}
+html:root .story-viewer-top,
+html:root .story-viewer-bottom {
+  background: #0f1c16eb;
+}
+html:root .story-author small,
+html:root .story-viewer-signature small,
+html:root .story-keyboard-hint {
+  color: #e0e6d6;
+}
+html:root .fw-image-caption,
+html:root .fw-hero-image-copy,
+html:root .fw-local-photo > div {
+  background: #183c30;
+  border-radius: 4px;
+  padding: 8px;
+}
+html:root .fw-explore-orb,
+html:root .fw-explore-orb:hover {
+  background: #183c30;
+}

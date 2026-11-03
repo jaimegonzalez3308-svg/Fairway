@@ -1,4 +1,5 @@
 "use client";
+import { NATIVE_RESUME } from "@/lib/native-support";
 import { useEffect, useState } from "react";
 import {
   Heart,
@@ -48,6 +49,15 @@ export function Community({ data }: { data: FairwayData }) {
   }
   useEffect(() => {
     void load();
+    const resume = () => {
+      void load();
+    };
+    window.addEventListener(NATIVE_RESUME, resume);
+    window.addEventListener("fairway:manual-refresh", resume);
+    return () => {
+      window.removeEventListener(NATIVE_RESUME, resume);
+      window.removeEventListener("fairway:manual-refresh", resume);
+    };
   }, [data.user]);
   const all = [data.me, ...data.profiles];
   return (

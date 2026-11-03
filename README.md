@@ -2,6 +2,8 @@
 
 Para clonar el proyecto y trabajar en equipo, consulta [la guía de colaboración](CONTRIBUTING.md).
 
+Para compilar y abrir la app de iOS en Xcode, consulta [la guía de iOS](docs/ios.md).
+
 Aplicación de golf para encontrar compañeros, organizar partidas y registrar scores. Comienza en León, Guanajuato; los clubes y perfiles guardan ciudad para ampliar el catálogo.
 
 **Estado honesto:** el proyecto compila y las reglas críticas tienen pruebas de PostgreSQL. Se configuró el proyecto de Supabase proporcionado por el propietario y se comprobó que Auth responde y las tablas protegidas rechazan el acceso anónimo. Sin variables de entorno aparece una demostración identificada; sus perfiles, reputaciones, partidas y rondas son ficticios. Los likes demo solo cambian la vista durante la sesión. No se simulan conversaciones, registros, mensajes, solicitudes ni guardados reales. Con Supabase configurado desaparecen los datos demo y se usan exclusivamente datos de tu proyecto.

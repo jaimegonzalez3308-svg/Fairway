@@ -5,10 +5,11 @@ import {
   cloneElement,
   isValidElement,
   useId,
+  useRef,
   type ReactElement,
   type AriaAttributes,
 } from "react";
-import { X, Flag, ArrowUpRight } from "lucide-react";
+import { X, Flag, ArrowUpRight, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 export function Button({
   className,
@@ -32,6 +33,13 @@ export function Modal({
   wide?: boolean;
   soft?: boolean;
 }) {
+  const returnFocus = useRef(
+    typeof document !== "undefined" &&
+      document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null,
+  );
+  const titleRef = useRef<HTMLHeadingElement>(null);
   return (
     <Dialog.Root
       open
@@ -41,9 +49,55 @@ export function Modal({
     >
       <Dialog.Portal>
         <Dialog.Overlay className={cn("modal-overlay", soft && "soft")} />
-        <Dialog.Content className={cn("modal", wide && "wide")}>
+        <Dialog.Content
+          className={cn("modal", wide && "wide")}
+          onOpenAutoFocus={(event) => {
+            if (document.documentElement.classList.contains("native-ios")) {
+              event.preventDefault();
+              titleRef.current?.focus({ preventScroll: true });
+            }
+          }}
+          onCloseAutoFocus={(event) => {
+            event.preventDefault();
+            // Another dialog may have replaced this one while its chunk loaded.
+            if (
+              Array.from(document.querySelectorAll('[role="dialog"]')).some(
+                (dialog) =>
+                  dialog !== event.target &&
+                  dialog.getAttribute("data-state") !== "closed",
+              )
+            )
+              return;
+            const target = returnFocus.current;
+            if (
+              target?.isConnected &&
+              target !== document.body &&
+              !target.closest("[inert]") &&
+              target.getClientRects().length
+            )
+              target.focus();
+            else
+              document
+                .querySelector<HTMLElement>("#main-content, #fw-main")
+                ?.focus({ preventScroll: true });
+          }}
+        >
           <div className="modal-heading">
-            <Dialog.Title>{title}</Dialog.Title>
+            {typeof document !== "undefined" &&
+              document.documentElement.classList.contains("native-ios") && (
+                <button
+                  type="button"
+                  data-native-back
+                  className="native-modal-back"
+                  onClick={onClose}
+                  aria-label="Volver"
+                >
+                  <ArrowLeft size={20} />
+                </button>
+              )}
+            <Dialog.Title ref={titleRef} tabIndex={-1}>
+              {title}
+            </Dialog.Title>
             <Dialog.Close aria-label="Cerrar" className="icon-btn">
               <X size={20} />
             </Dialog.Close>

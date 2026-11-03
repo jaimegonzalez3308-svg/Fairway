@@ -101,6 +101,7 @@
   color: #4b5b4b;
   padding: 14px 0;
   position: relative;
+  white-space: nowrap;
 }
 .fw-desktop-nav button::after {
   content: "";
@@ -119,6 +120,10 @@
 }
 .fw-header-actions {
   gap: 25px;
+}
+.fw-header .accessibility-choice {
+  min-width: 44px;
+  min-height: 44px;
 }
 .fw-login {
   display: flex;
@@ -195,10 +200,11 @@
   background: #f4df92;
 }
 .fw-nav-cta {
-  min-height: 43px;
+  min-height: 44px;
   padding: 12px 17px;
   font-size: 12px;
   gap: 23px;
+  white-space: nowrap;
 }
 .fw-menu-toggle,
 .fw-mobile-nav {
@@ -277,6 +283,7 @@
 }
 .fw-hero-image {
   position: relative;
+  width: 100%;
   aspect-ratio: 2.5;
   min-height: 400px;
   max-height: 570px;
@@ -397,6 +404,7 @@
 .fw-hero-ticket > button {
   width: 44px;
   height: 44px;
+  flex-shrink: 0;
   margin-left: auto;
   display: grid;
   place-items: center;
@@ -630,7 +638,7 @@
   min-width: 0;
 }
 .fw-choice-group legend {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 500;
   margin-bottom: 11px;
   letter-spacing: 0.01em;
@@ -648,9 +656,9 @@
   border-radius: 5px;
   display: inline-flex;
   align-items: center;
-  gap: 18px;
+  gap: 8px;
   min-height: 44px;
-  font-size: 11px;
+  font-size: 12px;
   transition:
     background 0.2s,
     color 0.2s,
@@ -664,6 +672,12 @@
   background: var(--fw-pencil);
   color: #234131;
   border-color: var(--fw-pencil);
+}
+.fw-choice-group button > svg {
+  flex-shrink: 0;
+}
+.fw-choice-group button:not(.fw-choice-active) > svg {
+  visibility: hidden;
 }
 .fw-plan-preview {
   max-width: 460px;
@@ -1191,13 +1205,13 @@
 @media (max-width: 1100px) {
   .fw-header {
     height: 92px;
-    gap: 20px;
+    gap: 10px;
   }
   .fw-desktop-nav {
-    gap: 18px;
+    gap: 12px;
   }
   .fw-header-actions {
-    gap: 18px;
+    gap: 12px;
   }
   .fw-hero-intro {
     grid-template-columns: 1.5fr 1fr;
@@ -1224,12 +1238,14 @@
   .fw-hero-image {
     min-height: 350px;
   }
+  .fw-hero-image-copy {
+    bottom: 75px;
+  }
   .fw-planner-inner {
     gap: 6%;
     padding: 75px 6%;
   }
   .fw-choice-group button {
-    font-size: 10px;
     padding: 10px 12px;
   }
   .fw-local-grid {
@@ -1510,7 +1526,7 @@
     gap: 12px;
   }
   .fw-login {
-    font-size: 10px;
+    font-size: 12px;
   }
   .fw-login > svg {
     display: none;
@@ -1565,7 +1581,8 @@
     width: calc(100% - 30px);
     right: 15px;
     bottom: -24px;
-    padding: 15px;
+    gap: 8px;
+    padding: 12px;
   }
   .fw-hero-ticket p {
     font-size: 14px;
@@ -1621,7 +1638,6 @@
   }
   .fw-choice-group button {
     padding: 11px 12px;
-    font-size: 10px;
   }
   .fw-plan-preview {
     padding: 18px;

@@ -1,12 +1,18 @@
 import { sharedProfileId } from "./profile-share";
+import { sharedGameId } from "./game-share";
+import { publicOrigin } from "./public-origin";
 export function authRedirectUrl(
   origin: string,
   recovery = false,
   search = "",
 ): string {
-  const url = new URL(recovery ? "/?recovery=1" : "/", origin);
+  const url = new URL(recovery ? "/?recovery=1" : "/", publicOrigin(origin));
   const profile = sharedProfileId(search);
-  if (!recovery && profile) {
+  const game = sharedGameId(search);
+  if (!recovery && game) {
+    url.searchParams.set("partida", game);
+    url.hash = "partidas";
+  } else if (!recovery && profile) {
     url.searchParams.set("golfista", profile);
     url.hash = "amigos";
   }

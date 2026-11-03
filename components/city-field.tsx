@@ -3,6 +3,7 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { LocateFixed } from "lucide-react";
 import { Button, Field } from "./ui";
 import { claimAutomaticLocation } from "@/lib/automatic-location";
+import { isIOSApp, nativeBridge } from "@/lib/native-app";
 import {
   cityOptions,
   detectCity,
@@ -80,7 +81,7 @@ export function CityField({
     }
   }, []);
   useEffect(() => {
-    if (!automaticAccountId || disabled) return;
+    if (!automaticAccountId || disabled || isIOSApp(nativeBridge())) return;
     // Delay until the form is visible; Strict Mode cleanup cancels its first setup.
     const timer = window.setTimeout(() => {
       if (manual.current) return;
@@ -143,7 +144,7 @@ export function CityField({
         </datalist>
       </Field>
       <p className="city-location-note" id={`${id}-privacy`}>
-        {automaticAccountId &&
+        {automaticAccountId && !isIOSApp(nativeBridge()) &&
           "Al completar tu perfil solicitaremos permiso para rellenar tu ciudad. Puedes rechazarlo y elegirla manualmente. "}
         Opcional: para sugerir tu ciudad, enviaremos tu ubicación aproximada a
         BigDataCloud. Fairway solo guardará la ciudad que elijas al enviar el

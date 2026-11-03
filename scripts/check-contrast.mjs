@@ -10,8 +10,12 @@ const files = [
   "app/hierarchy.css",
   "app/landing.css",
   "app/interactions.css",
+  "app/member-details.css",
+  "app/member-flows.css",
+  "app/readability.css",
   "app/accessibility.css",
 ];
+const standard = process.argv.includes("--standard");
 const load = (revision) =>
   files.flatMap((file) => {
     let css;
@@ -25,21 +29,33 @@ const load = (revision) =>
     } catch {
       if (
         revision &&
-        ["app/accessibility.css", "app/interactions.css"].includes(file)
+        [
+          "app/accessibility.css",
+          "app/interactions.css",
+          "app/member-details.css",
+          "app/member-flows.css",
+          "app/readability.css",
+        ].includes(file)
       )
         return [];
       throw new Error(`Cannot read ${file}`);
     }
     const rules = [];
     postcss.parse(css).walkRules((rule) => {
-      // Evaluate the enabled theme; the browser still receives the scoped CSS.
+      // Optional enhancements are excluded when checking the standard palette.
+      if (standard && rule.selector.includes('html[data-accessibility="true"]'))
+        return;
       const normalized = rule.clone();
       normalized.selector = postcss.list
         .comma(rule.selector)
         .map((selector) =>
-          selector === 'html[data-accessibility="true"]'
+          selector === 'html[data-accessibility="true"]' ||
+          selector === "html:root"
             ? ":root"
-            : selector.replace(/^html\[data-accessibility="true"\]\s+/, ""),
+            : selector.replace(
+                /^(html\[data-accessibility="true"\]|html:root)\s+/,
+                "",
+              ),
         )
         .join(", ");
       rules.push(normalized);
@@ -217,6 +233,13 @@ const cases = [
     "background",
   ],
   [
+    "Own chat sender",
+    ".chat-bubble.own .chat-sender-name",
+    "color",
+    ".chat-bubble.own",
+    "background",
+  ],
+  [
     "Calendar full",
     ".party-month-event.full",
     "color",
@@ -309,9 +332,11 @@ const cases = [
   ["Focus on green", ":root", "--a11y-focus-light", ":root", "--forest", 3],
 ];
 const current = load();
-const beforeRef = process.argv[2];
+const beforeRef = process.argv.slice(2).find((arg) => !arg.startsWith("--"));
 const before = beforeRef ? load(beforeRef) : null;
-console.log("Accessibility mode enabled — declared-color checks\n");
+console.log(
+  `${standard ? "Standard palette" : "Accessibility mode enabled"} — declared-color checks\n`,
+);
 console.log("| Component / state | Before | Current | Minimum |");
 console.log("| --- | ---: | ---: | ---: |");
 let failed = 0;

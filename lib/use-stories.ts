@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "./supabase";
+import { NATIVE_RESUME } from "./native-support";
 import type { FairwayData } from "./use-fairway";
 import {
   STORY_FEED_SELECT,
@@ -70,11 +71,15 @@ export function useStories(data: FairwayData) {
     };
     document.addEventListener("visibilitychange", focus);
     window.addEventListener("online", focus);
+    window.addEventListener(NATIVE_RESUME, focus);
+    window.addEventListener("fairway:manual-refresh", focus);
     return () => {
       generation.current++;
       clearInterval(interval);
       document.removeEventListener("visibilitychange", focus);
       window.removeEventListener("online", focus);
+      window.removeEventListener(NATIVE_RESUME, focus);
+      window.removeEventListener("fairway:manual-refresh", focus);
     };
   }, [refresh]);
   useEffect(() => {

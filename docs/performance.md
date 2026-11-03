@@ -53,3 +53,10 @@ PageSpeed Insights respondió HTTP 429 por cuota del servicio. Chrome permitió 
 Los encabezados públicos observados incluyen ETag y `cache-control: public, max-age=0, must-revalidate`; Cloudflare informa `cf-cache-status: HIT`. Esto confirma caché de CDN y revalidación, no almacenamiento largo en el navegador. Los chunks de Next usan nombres con hash. No se añadió un service worker que pudiera retener datos de sesión. Configurar un TTL de navegador más largo requiere soporte del alojamiento y sigue pendiente.
 
 Referencias: [Next: carga diferida](https://nextjs.org/docs/app/guides/lazy-loading), [Next: fuentes locales](https://nextjs.org/docs/app/api-reference/components/font), [Chrome: Lighthouse](https://developer.chrome.com/docs/devtools/lighthouse).
+
+
+## Actualización · 25 de octubre de 2026
+
+Tras extraer Descubrir y el detalle de partida a pantallas diferidas e incorporar preparación inicial y enlaces de partidas, la exportación de producción mide **270,6 KB de JavaScript inicial moderno gzip** (926,7 KB sin comprimir). Las fuentes y variantes de imagen conservan los tamaños del informe anterior. Pasan los presupuestos existentes de `measure-performance.mjs --check` y la validación de la exportación. No se modificaron los umbrales para acomodar el cambio.
+
+La revisión interactiva de Chrome con datos ficticios, viewports móviles y latencia/fallos de API simulados se documenta en [la revisión de experiencia](member-experience.md). No equivale a Lighthouse, a medición de ancho de banda limitado ni a métricas de usuarios reales. Las limitaciones sobre LCP/CLS/INP y caché siguen vigentes.

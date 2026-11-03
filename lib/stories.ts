@@ -74,6 +74,7 @@ export function storyTime(created: string, now = Date.now()) {
 export async function prepareStoryPhoto(file: File): Promise<Blob> {
   if (!["image/jpeg", "image/png", "image/webp"].includes(file.type))
     throw new Error("Elige una foto JPG, PNG o WebP.");
+  if (!file.size) throw new Error("La foto está vacía. Elige otra fotografía.");
   if (file.size > 10 * 1024 * 1024)
     throw new Error("La foto debe pesar menos de 10 MB.");
   const url = URL.createObjectURL(file);
@@ -81,6 +82,8 @@ export async function prepareStoryPhoto(file: File): Promise<Blob> {
     const image = new Image();
     image.src = url;
     await image.decode();
+    if (!image.naturalWidth || !image.naturalHeight)
+      throw new Error("No pudimos leer las dimensiones de la foto.");
     if (image.naturalWidth * image.naturalHeight > 60_000_000)
       throw new Error(
         "Esta foto es demasiado grande. Elige una versión más pequeña.",

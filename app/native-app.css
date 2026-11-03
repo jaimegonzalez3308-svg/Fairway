@@ -1,0 +1,1025 @@
+/* Installed iOS app only. Browser layouts, including mobile Safari, stay unchanged. */
+html.native-ios {
+  background: #f5f3ea;
+  overscroll-behavior-y: none;
+}
+html.native-ios body {
+  background: #f5f3ea;
+}
+html.native-ios .native-welcome {
+  max-width: 540px;
+  min-height: 100svh;
+  padding: 8px 22px 18px;
+  display: flex;
+  flex-direction: column;
+  color: #193d2f;
+}
+html.native-ios .native-welcome-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 56px;
+  margin-bottom: 12px;
+}
+html.native-ios .native-wordmark {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 30px;
+  font-weight: 650;
+  letter-spacing: -1.8px;
+}
+html.native-ios .native-wordmark > span {
+  color: #788b54;
+  margin-left: -5px;
+}
+html.native-ios .native-welcome-art {
+  position: relative;
+  height: clamp(150px, 25svh, 240px);
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 24px 24px 70px 24px;
+  background: #284d37;
+}
+html.native-ios .native-welcome-art > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+html.native-ios .native-course-tag {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 11px;
+  background: #193d2f;
+  color: #fffdf3;
+  border-radius: 20px;
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+html.native-ios .native-hole-marker {
+  position: absolute;
+  left: 18px;
+  bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fffdf3;
+  text-shadow: 0 1px 8px #193d2f;
+  font-family: Georgia, serif;
+  font-size: 48px;
+}
+html.native-ios .native-hole-marker > span {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 10px;
+  letter-spacing: 1px;
+  line-height: 1.6;
+}
+html.native-ios .native-welcome-copy {
+  padding: 24px 0 20px;
+}
+html.native-ios .native-kicker {
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 1.4px;
+  color: #59654d;
+}
+html.native-ios .native-welcome-copy h1 {
+  margin: 10px 0 12px;
+  font-size: clamp(32px, 9vw, 44px);
+  font-weight: 550;
+  line-height: 1.08;
+  letter-spacing: -1.7px;
+}
+html.native-ios .native-welcome-copy em {
+  font-family: Georgia, serif;
+  font-weight: 400;
+}
+html.native-ios .native-welcome-copy > p:last-child {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #52604f;
+  max-width: 34ch;
+}
+html.native-ios .native-welcome-actions {
+  display: grid;
+  gap: 10px;
+  margin-top: auto;
+}
+html.native-ios .native-primary,
+html.native-ios .native-secondary {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  padding: 14px 20px;
+  border: 1px solid #193d2f;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 600;
+}
+html.native-ios .native-primary {
+  background: #193d2f;
+  color: #fffdf3;
+}
+html.native-ios .native-secondary {
+  background: #e8ecdf;
+  color: #193d2f;
+  border-color: #c2c9b5;
+}
+html.native-ios .native-text-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 44px;
+  font-size: 13px;
+}
+html.native-ios .native-welcome-footer {
+  margin-top: 16px;
+  text-align: center;
+  color: #52604f;
+  font-size: 10px;
+}
+html.native-ios .native-welcome-footer .legal-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 12px;
+  margin-top: 4px;
+}
+html.native-ios .native-welcome-footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  text-decoration: underline;
+}
+
+html.native-ios .native-app {
+  --sidebar-width: 290px;
+  --sidebar-duration: 160ms;
+  min-height: 100dvh;
+}
+html.native-ios .native-app .workspace {
+  margin-left: 0;
+}
+html.native-ios .native-app main {
+  max-width: 850px;
+  padding: 18px 16px 100px;
+}
+html.native-ios .native-app .topbar {
+  position: sticky;
+  top: 0;
+  height: 64px;
+  padding: 0 14px;
+  z-index: 20;
+  background: #f5f3ea;
+  border-bottom: 1px solid #d8ddcf;
+  backdrop-filter: none;
+}
+html.native-ios .native-app .breadcrumb {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  flex: 1;
+  gap: 0 8px;
+  min-width: 0;
+}
+html.native-ios
+  .native-app
+  .breadcrumb:has(.native-screen-back)
+  .sidebar-toggle {
+  display: none;
+}
+html.native-ios .native-app .native-screen-back {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  width: 44px;
+  height: 44px;
+}
+html.native-ios .native-app .breadcrumb > span:not(.native-header-brand),
+html.native-ios .native-app .breadcrumb > svg {
+  display: none;
+}
+html.native-ios .native-app .sidebar-toggle {
+  grid-row: 1 / 3;
+  grid-column: 1;
+  width: 44px;
+  height: 44px;
+}
+html.native-ios .native-app .breadcrumb > strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  grid-column: 2;
+  grid-row: 2;
+  color: #193d2f;
+  font-size: 17px;
+  font-weight: 650;
+}
+html.native-ios .native-app .native-header-brand {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #52604f;
+}
+html.native-ios .native-app .topbar-actions {
+  gap: 4px;
+}
+html.native-ios .native-app .topbar .location,
+html.native-ios .native-app .topbar-divider,
+html.native-ios .native-app .account-menu summary > span,
+html.native-ios .native-app .account-menu summary > svg {
+  display: none;
+}
+html.native-ios .native-app .topbar .icon-btn,
+html.native-ios .native-app .account-menu summary {
+  min-height: 44px;
+  min-width: 44px;
+  justify-content: center;
+}
+html.native-ios .native-app .topbar .button {
+  min-height: 44px;
+  padding: 8px 12px;
+  font-size: 13px;
+}
+html.native-ios .native-app .sidebar {
+  width: min(290px, 86vw);
+  padding-top: 20px;
+  transform: translateX(-100%);
+  opacity: 0;
+  visibility: hidden;
+  z-index: 50;
+}
+html.native-ios .native-app .sidebar.open {
+  transform: translateX(0);
+  opacity: 1;
+  visibility: visible;
+}
+html.native-ios .native-app .sidebar-close {
+  display: inline-flex;
+  width: 44px;
+  height: 44px;
+}
+html.native-ios .native-app .sidebar-scrim {
+  display: block;
+  position: fixed;
+  inset: 0;
+  background: #16382b70;
+  z-index: 45;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+html.native-ios .native-app .sidebar-scrim.visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+html.native-ios .native-app .sidebar-promo {
+  display: none;
+}
+html.native-ios .native-app .nav-item {
+  min-height: 48px;
+  font-size: 14px;
+}
+html.native-ios .native-app .section-heading {
+  padding: 0;
+  margin: 8px 0 20px;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  gap: 12px;
+}
+html.native-ios .native-app .section-heading::before,
+html.native-ios .native-app .section-heading::after,
+html.native-ios .native-app .section-heading .eyebrow {
+  display: none;
+}
+html.native-ios .native-app .section-heading h1 {
+  font-size: 26px;
+  line-height: 1.15;
+  letter-spacing: -0.8px;
+}
+html.native-ios .native-app .section-heading p {
+  font-size: 14px;
+  line-height: 1.5;
+  margin-top: 8px;
+}
+html.native-ios .native-app .app-footer {
+  display: block;
+  padding: 16px 0;
+  margin-top: 24px;
+}
+html.native-ios .native-app .app-footer > a,
+html.native-ios .native-app .app-footer > span {
+  display: none;
+}
+html.native-ios .native-app .app-footer .legal-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 14px;
+  justify-content: center;
+}
+html.native-ios .native-app .app-footer .legal-links a {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+}
+html.native-ios .native-quick-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 22px;
+}
+html.native-ios .native-quick-actions button {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 12px 4px;
+  border: 1px solid #d0d7c4;
+  border-radius: 18px;
+  background: #e8ecdf;
+  color: #193d2f;
+  font-size: 11px;
+}
+html.native-ios .native-app main[data-page="descubrir"] .section-heading,
+html.native-ios .native-app main[data-page="partidas"] .section-heading {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+html.native-ios .native-app main[data-page="descubrir"] .section-heading p,
+html.native-ios .native-app main[data-page="partidas"] .section-heading p {
+  display: none;
+}
+html.native-ios .native-app main[data-page="descubrir"] .section-heading h1 {
+  font-size: 23px;
+}
+html.native-ios .native-filter-disclosure {
+  border: 1px solid #c2c9b5;
+  border-radius: 14px;
+  background: #fffbf2;
+  margin-bottom: 16px;
+}
+html.native-ios .native-filter-disclosure > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 14px;
+  color: #193d2f;
+  font-size: 13px;
+  cursor: pointer;
+  list-style: none;
+}
+html.native-ios .native-filter-disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+html.native-ios .native-filter-disclosure > summary::after {
+  content: "+";
+  margin-left: auto;
+  font-size: 18px;
+}
+html.native-ios .native-filter-disclosure[open] > summary::after {
+  content: "−";
+}
+html.native-ios .native-filter-disclosure > .field,
+html.native-ios .native-filter-disclosure > .party-filter-sheet {
+  padding: 4px 14px 14px;
+}
+html.native-ios .native-app .button,
+html.native-ios .native-app .icon-btn,
+html.native-ios .native-app .tabs button {
+  min-height: 44px;
+}
+html.native-ios .native-app .button {
+  font-size: 14px;
+}
+html.native-ios .native-app .tabs button {
+  font-size: 12px;
+  padding: 10px 12px;
+}
+html.native-ios .native-app .city-explore-filter {
+  margin-bottom: 14px;
+}
+html.native-ios .native-app .swipe-discovery {
+  background: none;
+}
+html.native-ios .native-app .first-round-reminder {
+  padding: 16px;
+  margin-bottom: 18px;
+}
+html.native-ios .native-app .discovery-subline {
+  margin-bottom: 12px;
+}
+html.native-ios .native-tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 35;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  min-height: 72px;
+  padding: 6px 8px 8px;
+  background: #f5f3ea;
+  border-top: 1px solid #cfd6c5;
+}
+html.native-ios .native-tab-bar button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 0;
+  min-height: 52px;
+  padding: 3px 0;
+  color: #52604f;
+  font-size: 10px;
+}
+html.native-ios .native-tab-icon {
+  display: grid;
+  position: relative;
+  place-items: center;
+  width: 48px;
+  height: 30px;
+  border-radius: 18px;
+}
+html.native-ios .native-tab-bar [aria-current="page"] {
+  color: #193d2f;
+  font-weight: 700;
+}
+html.native-ios .native-tab-bar [aria-current="page"] .native-tab-icon {
+  background: #dae3c5;
+}
+html.native-ios .native-tab-badge {
+  position: absolute;
+  right: -4px;
+  top: -2px;
+  min-width: 17px;
+  padding: 2px 4px;
+  border: 1px solid #f5f3ea;
+  border-radius: 10px;
+  background: #193d2f;
+  color: white;
+  font-size: 9px;
+}
+html.native-ios .modal-overlay {
+  backdrop-filter: none;
+  background: #193d2f66;
+}
+html.native-ios .modal {
+  top: auto;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(100%, 640px);
+  max-height: 96dvh;
+  padding: 20px;
+  border-radius: 24px 24px 0 0;
+  border: 1px solid #d0d7c4;
+  background: #fffbf2;
+}
+html.native-ios .modal-heading {
+  position: sticky;
+  top: -20px;
+  z-index: 2;
+  background: #fffbf2;
+  padding: 12px 0;
+}
+html.native-ios .modal-heading h2 {
+  font-size: 21px;
+}
+html.native-ios .modal-heading .icon-btn {
+  min-width: 44px;
+  min-height: 44px;
+}
+html.native-ios .modal input:not([type="checkbox"]):not([type="radio"]),
+html.native-ios .modal select,
+html.native-ios .modal textarea,
+html.native-ios .native-app input:not([type="checkbox"]):not([type="radio"]),
+html.native-ios .native-app select,
+html.native-ios .native-app textarea {
+  font-size: 16px;
+  min-height: 48px;
+}
+html.native-ios .modal .button {
+  min-height: 48px;
+  font-size: 15px;
+}
+html.native-ios .native-app .chat-layout {
+  display: block;
+  min-height: 280px;
+  border: 0;
+  background: none;
+}
+html.native-ios .native-app .chat-sidebar {
+  border: 0;
+}
+html.native-ios .native-app .chat-layout:not(.native-chat-open) .chat-main,
+html.native-ios .native-app .native-chat-open .chat-sidebar {
+  display: none;
+}
+html.native-ios .native-app .chat-contact {
+  min-height: 80px;
+  border-bottom: 1px solid #d8ddcf;
+  padding: 16px 8px;
+}
+html.native-ios .native-app .chat-contact strong {
+  font-size: 15px;
+}
+html.native-ios .native-app .chat-contact small {
+  font-size: 13px;
+}
+html.native-ios .native-app .native-chat-open .chat-main {
+  display: flex;
+  height: calc(100dvh - 220px);
+  min-height: 300px;
+  border: 1px solid #d8ddcf;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #fffbf2;
+}
+html.native-ios .native-app .native-chat-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 0;
+  font-size: 14px;
+  color: #193d2f;
+}
+html.native-ios .native-app .chat-title {
+  padding: 8px 16px 12px;
+}
+html.native-ios .native-app .chat-title > strong {
+  font-size: 16px;
+}
+html.native-ios .native-app .chat-messages {
+  flex: 1;
+  min-height: 100px;
+  height: auto;
+  padding: 16px;
+}
+html.native-ios .native-app .chat-bubble {
+  font-size: 15px;
+}
+html.native-ios .native-app .chat-input {
+  padding: 10px;
+}
+html.native-ios .native-app .toast {
+  bottom: 84px;
+  font-size: 13px;
+}
+html.native-ios.native-keyboard-open .native-tab-bar {
+  display: none;
+}
+/* iPhone controls remain usable with touch, VoiceOver, larger text and a keyboard. */
+html.native-ios body button,
+html.native-ios body summary,
+html.native-ios .accessibility-choice {
+  min-height: 44px;
+  min-width: 44px;
+  touch-action: manipulation;
+}
+html.native-ios .native-tab-bar button {
+  font-size: 11px;
+}
+html.native-ios .native-welcome-footer a {
+  min-height: 44px;
+}
+html.native-ios :is(button, a, summary, input, select, textarea):focus-visible {
+  outline: 3px solid #193d2f;
+  outline-offset: 3px;
+}
+html.native-ios .modal {
+  bottom: var(--native-keyboard-height, 0px);
+  max-height: max(120px, calc(96dvh - var(--native-keyboard-height, 0px)));
+  scroll-padding-block: 84px 28px;
+  overscroll-behavior: contain;
+}
+html.native-ios.native-keyboard-open .native-app main {
+  padding-bottom: calc(var(--native-keyboard-height, 0px) + 28px);
+}
+html.native-ios.native-keyboard-open .native-app .native-chat-open .chat-main {
+  height: calc(100dvh - 160px - var(--native-keyboard-height, 0px));
+  min-height: 160px;
+}
+html.native-ios .native-story-sources {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 18px 0 12px;
+}
+html.native-ios .native-story-sources .button {
+  flex-direction: column;
+  gap: 7px;
+  min-height: 82px;
+  padding: 12px 8px;
+  border-radius: 16px;
+  white-space: normal;
+}
+html.native-ios .native-story-sources > p {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #52604f;
+  font-size: 13px;
+  line-height: 1.5;
+}
+html.native-ios .story-composer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+html.native-ios .story-composer .story-preview {
+  width: 100%;
+  height: clamp(180px, 32dvh, 300px);
+  min-height: 0;
+}
+html.native-ios .story-composer .story-preview > img {
+  object-fit: contain;
+}
+html.native-ios .story-composer-fields h3 {
+  font-size: 24px;
+}
+html.native-ios .story-composer-fields > p,
+html.native-ios .story-composer-fields .field > span,
+html.native-ios .story-composer-fields .field > label,
+html.native-ios .story-privacy-note {
+  font-size: 14px;
+  line-height: 1.5;
+}
+html.native-ios .story-composer .story-upload {
+  min-height: 64px;
+  padding: 12px;
+}
+html.native-ios .story-upload:focus-within {
+  outline: 3px solid #193d2f;
+  outline-offset: 3px;
+}
+html.native-ios .story-control {
+  width: 44px;
+  height: 44px;
+}
+html.native-ios .story-toolbar {
+  gap: 4px;
+}
+html.native-ios .story-author {
+  align-items: center;
+}
+html.native-ios .story-author-details {
+  min-width: 0;
+}
+html.native-ios .story-author-name {
+  flex-wrap: wrap;
+}
+html.native-ios .story-author-name strong {
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+html.native-ios .story-caption {
+  font-size: 16px;
+  line-height: 1.5;
+}
+html.native-ios .story-viewer-top {
+  padding: 12px;
+}
+html.native-ios .story-viewer-bottom {
+  padding: 16px;
+}
+html.native-ios .story-publish {
+  width: 100%;
+  min-height: 52px;
+}
+html.native-ios[data-accessibility="true"]
+  .native-app
+  :is(p, label, input, select, textarea),
+html.native-ios[data-accessibility="true"]
+  .modal
+  :is(p, label, input, select, textarea) {
+  font-size: 18px;
+  line-height: 1.6;
+}
+html.native-ios[data-accessibility="true"] .native-app .button,
+html.native-ios[data-accessibility="true"] .modal .button {
+  font-size: 17px;
+  white-space: normal;
+}
+html.native-ios[data-accessibility="true"] .native-app .tabs {
+  flex-wrap: wrap;
+}
+html.native-ios[data-accessibility="true"] .native-app .tabs button {
+  font-size: 15px;
+}
+html.native-ios[data-accessibility="true"] .native-quick-actions {
+  grid-template-columns: 1fr;
+}
+html.native-ios[data-accessibility="true"] .native-quick-actions button {
+  font-size: 16px;
+}
+html.native-ios[data-accessibility="true"] .native-tab-bar button {
+  font-size: 12px;
+}
+html.native-ios[data-accessibility="true"] .native-welcome-copy > p {
+  font-size: 18px;
+}
+@media (prefers-contrast: more) {
+  html.native-ios .native-tab-bar,
+  html.native-ios .native-filter-disclosure,
+  html.native-ios .native-quick-actions button {
+    border-color: #193d2f;
+  }
+}
+@media (orientation: landscape) and (max-height: 500px) {
+  html.native-ios .native-welcome {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 24px;
+  }
+  html.native-ios .native-welcome-header {
+    grid-column: 1 / -1;
+    margin: 0;
+  }
+  html.native-ios .native-welcome-art {
+    grid-column: 1;
+    grid-row: 2 / 4;
+    height: 100%;
+    min-height: 180px;
+  }
+  html.native-ios .native-welcome-copy {
+    padding: 0;
+  }
+  html.native-ios .native-welcome-copy h1 {
+    font-size: 30px;
+  }
+  html.native-ios .native-welcome-actions {
+    grid-column: 2;
+  }
+  html.native-ios .native-welcome-footer {
+    grid-column: 1 / -1;
+  }
+}
+/* New native affordances do not change browser layouts. */
+.native-modal-back,
+.native-deferred-skeleton {
+  display: none;
+}
+html.native-ios .checkbox,
+html.native-ios .switch-row {
+  min-height: 44px;
+  padding-block: 10px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+html.native-ios .native-app p,
+html.native-ios .modal p {
+  line-height: 1.55;
+}
+html.native-ios .story-viewer :is(button, a):focus-visible {
+  outline-color: #fff;
+}
+html.native-ios .modal .button.native-apple-signin {
+  width: 100%;
+  min-height: 50px;
+  margin-top: 12px;
+  color: #fff;
+  background: #000;
+  border-color: #000;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 17px;
+  font-weight: 500;
+  border-radius: 8px;
+}
+html.native-ios .native-modal-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 44px;
+  width: 44px;
+  min-height: 44px;
+  border: 1px solid #d4d5c8;
+  border-radius: 50%;
+  background: transparent;
+  color: #204a37;
+}
+html.native-ios .native-deferred-skeleton {
+  display: grid;
+  gap: 18px;
+  margin-top: 18px;
+}
+html.native-ios .native-app .app-footer {
+  display: none;
+}
+html.native-ios .native-onboarding {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 20px 24px;
+  background: #f5f3ea;
+}
+html.native-ios .native-onboarding > header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+html.native-ios .native-onboarding-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 12px 0;
+}
+html.native-ios .native-onboarding-art {
+  width: 140px;
+  height: 140px;
+  border-radius: 44px;
+  background: #e3e7cf;
+  color: #2d563d;
+  display: grid;
+  place-items: center;
+  margin-bottom: 24px;
+}
+html.native-ios .native-onboarding h1 {
+  font-size: clamp(30px, 8vw, 42px);
+  line-height: 1.1;
+  margin: 8px 0 18px;
+  max-width: 13ch;
+}
+html.native-ios .native-onboarding-content > p:not(.native-kicker) {
+  font-size: 17px;
+  line-height: 1.55;
+  color: #4c564b;
+  max-width: 34ch;
+}
+html.native-ios .native-onboarding-actions {
+  display: grid;
+  gap: 10px;
+}
+html.native-ios .native-onboarding-actions > button {
+  width: 100%;
+}
+html.native-ios .native-onboarding footer {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  color: #50594e;
+}
+html.native-ios .native-onboarding footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 6px;
+}
+html.native-ios .native-step-dots {
+  display: flex;
+  gap: 8px;
+  margin-top: 24px;
+}
+html.native-ios .native-step-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 8px;
+  background: #c4cabb;
+}
+html.native-ios .native-step-dots [data-active="true"] {
+  width: 28px;
+  background: #254c36;
+}
+html.native-ios .native-refresh {
+  display: flex;
+  justify-content: flex-end;
+  margin: -6px 0 10px;
+  min-height: 44px;
+}
+html.native-ios .native-refresh button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: transparent;
+  border: 0;
+  color: #35513c;
+  font-size: 13px;
+  padding: 8px;
+}
+html.native-ios .native-refresh[data-pulling="true"] {
+  justify-content: center;
+}
+html.native-ios .native-connection {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px;
+  margin-bottom: 14px;
+  background: #f0e7cf;
+  color: #4d4328;
+  border: 1px solid #c9ba92;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+html.native-ios .native-connection > svg {
+  flex: 0 0 18px;
+  margin-top: 2px;
+}
+html.native-ios .native-preference-row {
+  display: flex;
+  gap: 12px;
+  margin: 22px 0;
+}
+html.native-ios .native-preference-row > svg {
+  flex: 0 0 22px;
+  color: #35513c;
+}
+html.native-ios .native-preference-row p,
+html.native-ios .native-offline-panel > p {
+  font-size: 15px;
+  line-height: 1.55;
+  margin: 8px 0 14px;
+}
+html.native-ios .native-offline-panel {
+  border: 1px solid #cdd3c0;
+  background: #f5f5ec;
+  border-radius: 16px;
+  padding: 16px;
+  margin: 0 0 20px;
+}
+html.native-ios .native-offline-panel h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 17px;
+}
+html.native-ios .native-offline-panel article {
+  border-top: 1px solid #d6dacd;
+  margin-top: 14px;
+  padding-top: 12px;
+}
+html.native-ios .native-offline-panel summary {
+  padding: 10px 0;
+  font-size: 15px;
+}
+html.native-ios .native-draft-holes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  font-size: 14px;
+}
+html.native-ios .native-swipe-content {
+  display: flex;
+  align-items: stretch;
+}
+html.native-ios .native-swipe-content .chat-contact {
+  flex: 1;
+  min-width: 0;
+}
+html.native-ios .native-swipe-content > .icon-btn {
+  flex: 0 0 44px;
+}
+html.native-ios .native-read-action {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  background: #e6ebda;
+  color: #254c36;
+  border: 0;
+  padding: 12px;
+}
+html.native-ios .native-swipe-row {
+  border-bottom: 1px solid #e1e4d8;
+}
+html.native-ios .story-viewer :is(button, a):focus-visible {
+  outline-color: #fff;
+}
+@keyframes native-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+html.native-ios .native-spinning {
+  animation: native-spin 1.2s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  html.native-ios .native-spinning,
+  html.native-ios .skeleton {
+    animation: none;
+  }
+}

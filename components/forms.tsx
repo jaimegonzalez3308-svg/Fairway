@@ -21,6 +21,7 @@ import {
 } from "@/lib/profile-images";
 import { RegistrationConsent } from "./legal-links";
 import { supabase, signInWithGoogle } from "@/lib/supabase";
+import { isIOSApp, nativeBridge } from "@/lib/native-app";
 import { days, type Profile, type Game } from "@/lib/domain";
 import { profileSchema } from "@/lib/profile-validation";
 import type { FairwayData } from "@/lib/use-fairway";
@@ -54,6 +55,9 @@ export function AuthForm({
     [recovering, setRecovering] = useState(false),
     [resendWait, setResendWait] = useState(0);
   const [city, setCity] = useState(DEFAULT_CITY);
+  const [activeProvider, setActiveProvider] = useState<
+    "google" | "apple" | null
+  >(null);
   useEffect(() => {
     if (resendWait <= 0) return;
     const timer = setTimeout(() => setResendWait((value) => value - 1), 1000);
@@ -93,6 +97,7 @@ export function AuthForm({
         disabled={!supabase || busy || resendBusy || googleBusy}
         onClick={async () => {
           if (!supabase || googleBusy) return;
+          setActiveProvider("google");
           setGoogleBusy(true);
           setMessage("");
           try {
@@ -131,8 +136,46 @@ export function AuthForm({
             d="M24.8 12.24c2.88 0 5.45.99 7.49 2.94l5.62-5.62A18.8 18.8 0 0 0 24.8 4.4 19.6 19.6 0 0 0 7.3 15.25l6.54 5.06c1.54-4.63 5.86-8.07 10.96-8.07Z"
           />
         </svg>
-        {googleBusy ? "Conectando con Google…" : "Continuar con Google"}
+        {googleBusy && activeProvider === "google"
+          ? "Conectando con Google…"
+          : "Continuar con Google"}
       </Button>
+      {isIOSApp(nativeBridge()) && (
+        <Button
+          type="button"
+          className="native-apple-signin"
+          disabled={!supabase || busy || resendBusy || googleBusy}
+          onClick={async () => {
+            if (googleBusy) return;
+            setActiveProvider("apple");
+            setGoogleBusy(true);
+            setMessage("");
+            try {
+              const { signInWithApple } =
+                await import("@/lib/native-apple-auth");
+              await signInWithApple();
+            } catch (error) {
+              setMessage(
+                error instanceof Error
+                  ? error.message
+                  : "No se pudo completar el acceso con Apple.",
+              );
+            } finally {
+              setGoogleBusy(false);
+            }
+          }}
+        >
+          <svg width="20" height="24" viewBox="0 0 24 28" aria-hidden="true">
+            <path
+              fill="currentColor"
+              d="M17.1 4.5c.9-1.1 1.5-2.5 1.3-4-1.3.1-2.9.9-3.8 2-.8 1-1.5 2.4-1.3 3.8 1.5.1 2.9-.7 3.8-1.8ZM21.9 20.2c-.5 1.2-.8 1.7-1.5 2.8-1 1.5-2.4 3.3-4.1 3.3-1.5 0-1.9-1-4-1s-2.6 1-4 1c-1.7.1-3-1.6-4-3.1C1.4 19 1.1 13.9 2.9 11.2c1.3-1.9 3.3-3 5.2-3 1.7 0 2.8 1 4.2 1 1.3 0 2.2-1 4.2-1 1.6 0 3.4.9 4.7 2.4-4.1 2.2-3.4 7.8.7 9.6Z"
+            />
+          </svg>
+          {googleBusy && activeProvider === "apple"
+            ? "Conectando con Apple…"
+            : "Iniciar sesión con Apple"}
+        </Button>
+      )}
       <div className="auth-divider">
         <span>o usa tu correo</span>
       </div>

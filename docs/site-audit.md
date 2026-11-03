@@ -1,5 +1,7 @@
 # Revisión del sitio · 19 de octubre de 2026
 
+**Estado más reciente: 25 de octubre de 2026.** La tabla original es histórica; las actualizaciones al final documentan los cambios posteriores.
+
 Revisión del código y la exportación estática frente a la lista compartida por el propietario. No constituye certificación legal ni WCAG. No incluye una auditoría de contratos, logs, respaldos o configuración interna de proveedores.
 
 | Punto | Resultado y alcance |
@@ -37,3 +39,14 @@ Revisión del código y la exportación estática frente a la lista compartida p
 - Fotos: corregida y aplicada la política `view_images` de Storage; se verificó en Chrome que una foto guardada aparece en el perfil y menú de cuenta. El bucket sigue privado. La prueba PostgreSQL reproduce el fallo anterior y verifica visibilidad, bloqueos y suspensiones tras la corrección.
 - Rendimiento: reducción medida de JavaScript inicial, fuentes e imágenes, con carga diferida de pantallas y fotos secundarias. Suite completa: 152 pruebas aprobadas. Ver [informe de rendimiento](performance.md) para cifras, método, caché y limitaciones. No hay todavía una puntuación Lighthouse ni medición de LCP/CLS/INP.
 - El control de Chrome funcionó para la verificación de la foto, pero falló durante el intento de Lighthouse. Esto no completa la revisión visual, de teclado o de lectores de pantalla pendiente en la revisión original.
+
+## Actualización · 25 de octubre de 2026
+
+- **Lectura por defecto:** la paleta de contraste se aplica en ambos modos, conservando crema y verde. Los 50 pares declarados pasan tanto con `--standard` como con el modo opcional; esto no certifica todos los estados renderizados. El modo opcional conserva ajustes de tamaño y foco.
+- **Primera ronda:** el alta con disponibilidad vacía abre tres pasos: días/modalidad, ciudad/club opcional y elección entre descubrir golfistas o crear una partida. Se puede omitir y retomar desde Descubrir. Se guardan únicamente esos cinco campos; un error conserva las selecciones y permite reintentar.
+- **Comunidad pequeña:** Descubrir distingue ausencia de miembros, perfiles ya revisados y filtros restrictivos. Ofrece crear una partida, invitar con un enlace a Fairway y compartir el perfil. Favoritos ya no se limita a seis tarjetas. La búsqueda se mantiene visible en móvil.
+- **Navegación y enlaces:** los cambios de sección crean entradas de historial; Atrás/Adelante restauran la sección y los detalles de una partida. Los enlaces `?partida=UUID#partidas` mantienen el destino al autenticarse y consultan los permisos existentes. Hay estados diferenciados de carga, fallo con reintento y partida no disponible. Compartir no concede acceso al club ni confirma un lugar.
+- **Mantenimiento:** extraídos Descubrir, detalle de partida, tarjetas, historial, filtros, disponibilidad y galería. Las reglas consecutivas de la paleta compartida se agruparon sin alterar su orden. Se añadió restauración de foco al cerrar diálogos y títulos independientes de la descarga de pantallas.
+- **Verificación:** 161 pruebas aprobadas, TypeScript, construcción/exportación, metadatos y presupuestos de tamaño. Chrome local con API ficticia: acceso por correo, preparación de primera ronda, búsqueda/estados vacíos, invitación copiada, enlace de partida tras recarga, historial, unión y chat con respuestas demoradas y fallos simulados. La selección de foto quedó bloqueada por el permiso de archivos de la extensión; no se afirma una subida completa. No se usaron cuentas ni mensajes reales. No se verificaron SMTP, OAuth real, iOS/Safari, lectores de pantalla ni métricas de campo.
+
+Detalles y reproducción: [mejoras de experiencia y verificación](member-experience.md). Estos cambios son locales; esta revisión no acredita un nuevo despliegue público.

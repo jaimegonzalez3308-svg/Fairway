@@ -10,6 +10,9 @@ import "./hierarchy.css";
 import "./landing.css";
 import "./interactions.css";
 import "./member-details.css";
+import "./member-flows.css";
+import "./readability.css";
+import "./native-app.css";
 import "./accessibility.css";
 
 const inter = localFont({

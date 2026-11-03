@@ -11,6 +11,9 @@ import {
 } from "./demo";
 import type { Profile, Club, Game, Round } from "./domain";
 import { authErrorMessage } from "./auth";
+import { NATIVE_RESUME } from "./native-support";
+import { isIOSApp, nativeBridge } from "./native-app";
+import { nativeOnline, NATIVE_NETWORK_CHANGED } from "./native-network";
 import {
   resolveProfilePhoto,
   saveProfilePhoto,
@@ -84,6 +87,7 @@ export function useFairway() {
     [admin, setAdmin] = useState(false);
   const [publicDirectoryLive, setPublicDirectoryLive] = useState(false);
   const [needsGoogleProfile, setNeedsGoogleProfile] = useState(false);
+  const [nativeCachedAt, setNativeCachedAt] = useState<number | null>(null);
   const [partiesAvailable, setPartiesAvailable] = useState(!supabase);
   const [ratings, setRatings] = useState<RatingSummary[]>(
     supabase
@@ -131,7 +135,32 @@ export function useFairway() {
     const loadedPhotoRevision = photoRevision.current;
     if (!quiet) setLoading(true);
     setError("");
+    const restoreOffline = async () => {
+      if (!isIOSApp(nativeBridge())) return false;
+      const { readOfflineSnapshot } = await import("./native-offline");
+      const cached = await readOfflineSnapshot(u.id);
+      if (!cached || currentUserId.current !== u.id) return false;
+      setMe(cached.me);
+      setClubs(cached.clubs);
+      setPublicDirectoryLive(true);
+      setRounds(cached.rounds);
+      setProfiles([]);
+      setGames([]);
+      setConversations([]);
+      setMessages([]);
+      setAdmin(false);
+      setNeedsGoogleProfile(false);
+      setNativeCachedAt(cached.savedAt);
+      return true;
+    };
     try {
+      if (isIOSApp(nativeBridge()) && !nativeOnline()) {
+        if (!(await restoreOffline()))
+          setError(
+            "Sin conexión y sin una copia reciente. Conéctate para cargar tus datos por primera vez.",
+          );
+        return;
+      }
       // Un alta con Google no tiene perfil ni acceso privado hasta declarar su edad.
       const ownProfile = await supabase
         .from("profiles")
@@ -140,7 +169,10 @@ export function useFairway() {
         .maybeSingle();
       if (currentUserId.current !== u.id) return;
       if (ownProfile.error) throw ownProfile.error;
-      if (!ownProfile.data && u.app_metadata.provider === "google") {
+      if (
+        !ownProfile.data &&
+        ["google", "apple"].includes(u.app_metadata.provider || "")
+      ) {
         setNeedsGoogleProfile(true);
         return;
       }
@@ -245,8 +277,36 @@ export function useFairway() {
       setMessages(r[7].data as Message[]);
       setNotifications(r[8].data as Notification[]);
       setAdmin(!!r[9].data?.is_admin);
+      setNativeCachedAt(null);
+      if (isIOSApp(nativeBridge()))
+        void import("./native-offline")
+          .then(({ saveOfflineSnapshot }) =>
+            saveOfflineSnapshot(
+              {
+                userId: u.id,
+                savedAt: Date.now(),
+                me: ownPhoto,
+                clubs: r[1].data as Club[],
+                rounds: r[3].data as Round[],
+              },
+              () => currentUserId.current === u.id,
+            ),
+          )
+          .catch(() => {});
     } catch (e) {
       if (currentUserId.current !== u.id) return;
+      const networkFailure =
+        !nativeOnline() ||
+        e instanceof TypeError ||
+        /failed to fetch|network|fetch failed/i.test(
+          (e as { message?: string })?.message || "",
+        );
+      if (
+        isIOSApp(nativeBridge()) &&
+        networkFailure &&
+        (await restoreOffline().catch(() => false))
+      )
+        return;
       setError(
         e instanceof Error
           ? e.message
@@ -285,12 +345,38 @@ export function useFairway() {
         setAuthReady(true);
       });
     const { data } = supabase.auth.onAuthStateChange((event, s) => {
+      const previousId = currentUserId.current;
+      if (
+        previousId &&
+        s?.user &&
+        previousId !== s.user.id &&
+        isIOSApp(nativeBridge())
+      ) {
+        void import("./native-offline")
+          .then(({ clearOfflineData }) => clearOfflineData())
+          .catch(() => {});
+      }
       if (event === "PASSWORD_RECOVERY") setPasswordRecovery(true);
       if (event === "SIGNED_OUT") setPasswordRecovery(false);
       currentUserId.current = s?.user.id;
       setUser(s?.user ?? null);
       if (s?.user) setTimeout(() => void load(s.user), 0);
       else {
+        setNativeCachedAt(null);
+        if (isIOSApp(nativeBridge()))
+          void import("./native-offline")
+            .then(async ({ clearOfflineData }) => {
+              await clearOfflineData();
+              if (!currentUserId.current) {
+                const { NativeDevice } = await import("./native-device");
+                await NativeDevice.clearPrivateData();
+              }
+            })
+            .catch(() => {});
+        if (isIOSApp(nativeBridge()))
+          void import("./native-push")
+            .then(({ disconnectNativePush }) => disconnectNativePush())
+            .catch(() => {});
         setNeedsGoogleProfile(false);
         setMe(anonymousProfile);
         setDecided([]);
@@ -311,6 +397,57 @@ export function useFairway() {
     });
     return () => data.subscription.unsubscribe();
   }, [load]);
+  useEffect(() => {
+    if (!user || !isIOSApp(nativeBridge())) return;
+    let disposed = false;
+    let syncing = false;
+    const synchronize = async (event?: Event) => {
+      if (syncing || !nativeOnline() || currentUserId.current !== user.id)
+        return;
+      syncing = true;
+      try {
+        const { syncQueuedScores } = await import("./native-offline");
+        const count = await syncQueuedScores(
+          supabase!,
+          user.id,
+          () => !disposed && currentUserId.current === user.id,
+        );
+        if (!disposed) {
+          if (count)
+            notify(
+              `${count} borrador${count === 1 ? "" : "es"} de score sincronizado${count === 1 ? "" : "s"}.`,
+            );
+          if (
+            count ||
+            event?.type === "online" ||
+            event?.type === NATIVE_NETWORK_CHANGED
+          )
+            await load(user, true);
+        }
+      } catch (error) {
+        if (!disposed)
+          notify(
+            error instanceof Error
+              ? error.message
+              : "Tus borradores siguen en este iPhone. Intenta sincronizarlos más tarde.",
+          );
+      } finally {
+        syncing = false;
+      }
+    };
+    void synchronize();
+    window.addEventListener("online", synchronize);
+    window.addEventListener(NATIVE_NETWORK_CHANGED, synchronize);
+    window.addEventListener("fairway:sync-scores", synchronize);
+    window.addEventListener(NATIVE_RESUME, synchronize);
+    return () => {
+      disposed = true;
+      window.removeEventListener("online", synchronize);
+      window.removeEventListener(NATIVE_NETWORK_CHANGED, synchronize);
+      window.removeEventListener("fairway:sync-scores", synchronize);
+      window.removeEventListener(NATIVE_RESUME, synchronize);
+    };
+  }, [user?.id, load, notify]);
   const refreshRatings = useCallback(async () => {
     const userId = user?.id;
     if (!supabase || !userId) return false;
@@ -336,6 +473,18 @@ export function useFairway() {
       return false;
     }
   }, [user?.id]);
+  useEffect(() => {
+    if (!user || passwordRecovery) return;
+    const resume = () => {
+      void load(user, true);
+    };
+    window.addEventListener(NATIVE_RESUME, resume);
+    window.addEventListener("fairway:refresh-core", resume);
+    return () => {
+      window.removeEventListener(NATIVE_RESUME, resume);
+      window.removeEventListener("fairway:refresh-core", resume);
+    };
+  }, [user, passwordRecovery, load]);
   useEffect(() => {
     if (!user || passwordRecovery) return;
     const refresh = () => {
@@ -466,6 +615,12 @@ export function useFairway() {
     fn: () => PromiseLike<{ error: unknown; data?: unknown }>,
     success?: string,
   ) {
+    if (isIOSApp(nativeBridge()) && !nativeOnline()) {
+      notify(
+        "Esta acción necesita conexión. Para anotar en el campo, guarda una tarjeta nueva como borrador privado.",
+      );
+      return false;
+    }
     if (!supabase || !user) {
       notify(
         demo
@@ -578,6 +733,7 @@ export function useFairway() {
     admin,
     publicDirectoryLive,
     needsGoogleProfile,
+    nativeCachedAt,
     partiesAvailable,
     ratings,
     myReviews,
@@ -589,6 +745,23 @@ export function useFairway() {
     decide,
     favorite,
     reload: () => user && load(user),
+    refresh: async () => {
+      if (user) return load(user, true);
+      if (!supabase) return;
+      const result = await supabase
+        .from("clubs")
+        .select("id,name,city,verified,description,access_info")
+        .order("name");
+      if (currentUserId.current) return;
+      if (result.error)
+        notify(
+          "No pudimos actualizar los clubes. Revisa tu conexión e intenta de nuevo.",
+        );
+      else {
+        setClubs(result.data as Club[]);
+        setPublicDirectoryLive(true);
+      }
+    },
   };
 }
 export type FairwayData = ReturnType<typeof useFairway>;

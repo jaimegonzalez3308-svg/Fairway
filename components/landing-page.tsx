@@ -435,7 +435,7 @@ export function LandingPage({
                       className={holes === value ? "fw-choice-active" : ""}
                       onClick={() => setHoles(value)}
                     >
-                      {value} hoyos {holes === value && <Check size={15} />}
+                      {value} hoyos <Check size={15} aria-hidden="true" />
                     </button>
                   ))}
                 </div>

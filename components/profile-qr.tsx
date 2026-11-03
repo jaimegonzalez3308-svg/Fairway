@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Check, Copy, Download, Share2 } from "lucide-react";
 import { Button, Modal } from "./ui";
 import { profileShareUrl } from "@/lib/profile-share";
+import { canSharePublicLink, sharePublicLink } from "@/lib/share-public-link";
 import type { Profile } from "@/lib/domain";
 export function ProfileQR({
   profile,
@@ -18,7 +19,7 @@ export function ProfileQR({
     [canShare, setCanShare] = useState(false);
   useEffect(() => {
     let current = true;
-    setCanShare(typeof navigator.share === "function");
+    setCanShare(canSharePublicLink());
     try {
       const link = profileShareUrl(window.location.origin, profile.id);
       setUrl(link);
@@ -113,7 +114,7 @@ export function ProfileQR({
                   variant="outline"
                   onClick={async () => {
                     try {
-                      await navigator.share({
+                      await sharePublicLink({
                         title: "Mi perfil de Fairway",
                         text: "Encuéntrame en Fairway",
                         url,

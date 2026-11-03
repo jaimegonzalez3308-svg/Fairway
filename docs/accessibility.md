@@ -1,13 +1,13 @@
 # Revisión de accesibilidad de Fairway
 
-El aspecto anterior se mantiene por defecto. Las mejoras visuales se activan en **Ajustes → Accesibilidad → Modo de accesibilidad** o desde el control de la página pública y recuperación de contraseña. La elección se guarda en este navegador, se aplica antes de la hidratación y se sincroniza entre pestañas. Si el navegador bloquea el almacenamiento, el control funciona durante la visita sin prometer persistencia.
+Desde el 25 de octubre de 2026, la paleta de contraste legible se aplica por defecto a todas las personas en `app/readability.css`. El modo opcional de **Ajustes → Accesibilidad → Modo de accesibilidad** añade tamaños mínimos de texto y controles y foco de dos colores; también se puede activar desde la página pública y recuperación de contraseña. La elección se guarda en este navegador, se aplica antes de la hidratación y se sincroniza entre pestañas. Si el navegador bloquea el almacenamiento, el control funciona durante la visita sin prometer persistencia.
 
-Objetivo del modo activado: WCAG 2.2 AA. Esta revisión aplica correcciones de código y verificaciones de colores declarados; no constituye una certificación ni una auditoría completa del sitio renderizado. El modo estándar conserva los colores originales, incluidos los contrastes menores registrados en la columna «Before».
+Objetivo: WCAG 2.2 AA. Esta revisión aplica correcciones de código y verificaciones de colores declarados; no constituye una certificación ni una auditoría completa del sitio renderizado. La columna «Before» documenta los colores históricos; desde el 25 de octubre, los valores de «Modo activado» también corresponden a la paleta estándar. Desactivar el modo opcional conserva el contraste legible.
 
 ## Trabajo realizado
 
-- Con el modo activado: texto secundario, enlaces, avisos, errores, metadatos, resultados de golf y estados del calendario con colores más oscuros de las mismas familias verde, dorado y rojo. Las mediciones se basan en las declaraciones finales de las hojas de estilo.
-- Con el modo activado: texto pequeño más legible, límites de campos y foco de teclado más visibles. El foco usa dos colores para funcionar sobre crema y verde. Las fotos reciben un fondo oscuro detrás del texto y los controles.
+- En ambos modos: texto secundario, enlaces, avisos, errores, metadatos, resultados de golf y estados del calendario con colores más oscuros de las mismas familias verde, dorado y rojo. Las mediciones se basan en las declaraciones finales de las hojas de estilo.
+- En ambos modos: límites de campos visibles. Con el modo activado: tamaños mínimos de texto y controles, y foco de teclado más destacado. El foco usa dos colores para funcionar sobre crema y verde. Las fotos reciben un fondo oscuro detrás del texto y los controles.
 - En ambos modos: enlace para saltar al contenido en la app y la landing. Las transiciones de pantalla mueven el foco al contenido; la página actual se identifica en navegación y se actualiza el título del documento.
 - Etiquetas, ayuda y errores asociados por identificador en el componente Field. Los errores de inicio de sesión marcan el campo inválido; los errores de perfil se anuncian como alertas. Se conservan las referencias y manejadores de React Hook Form.
 - Estado de filtros, favoritos y reacciones mediante aria-pressed. Los contadores de búsqueda y mensajes nuevos se anuncian de forma no interruptiva. El historial del chat se puede enfocar y desplazar con teclado.
@@ -16,7 +16,7 @@ Objetivo del modo activado: WCAG 2.2 AA. Esta revisión aplica correcciones de c
 
 ## Validación automatizada
 
-Ejecutar `node scripts/check-contrast.mjs` para comprobar las parejas con el modo activado. Se puede pasar una revisión Git para mostrar el antes: `node scripts/check-contrast.mjs 865a84c8ab2343963e9b4eb2836c591689befd79`. El script usa PostCSS instalado por Next, resuelve las variables compartidas y calcula luminancia sRGB y composición alfa. Un resultado inferior al mínimo provoca un código de salida distinto de cero; no redondea antes de decidir. La lista es representativa y explícita: no recorre el DOM ni reproduce toda la cascada del navegador.
+Ejecutar `node scripts/check-contrast.mjs --standard` y `node scripts/check-contrast.mjs` para comprobar las parejas de la paleta estándar y del modo activado, respectivamente. Se puede pasar una revisión Git para mostrar el antes: `node scripts/check-contrast.mjs 865a84c8ab2343963e9b4eb2836c591689befd79`. El script usa PostCSS instalado por Next, resuelve las variables compartidas y calcula luminancia sRGB y composición alfa. Un resultado inferior al mínimo provoca un código de salida distinto de cero; no redondea antes de decidir. La lista es representativa y explícita: no recorre el DOM ni reproduce toda la cascada del navegador.
 
 Las pruebas de `tests/accessibility.test.ts` comprueban etiquetas, identificadores únicos, ayuda, descripciones existentes y errores. Las pruebas de `tests/accessibility-mode.test.ts` comprueban la preferencia desactivada por defecto, su persistencia, el arranque con la preferencia guardada y la tolerancia a almacenamiento bloqueado.
 
@@ -56,6 +56,7 @@ Referencias: [WCAG 2.2, contraste de texto](https://www.w3.org/WAI/WCAG22/Unders
 | Eagle score | 2.69:1 | 5.50:1 | 4.5:1 |
 | Chat metadata | 1.81:1 | 5.74:1 | 4.5:1 |
 | Own chat metadata | — | 8.54:1 | 4.5:1 |
+| Own chat sender | — | 8.54:1 | 4.5:1 |
 | Calendar full | 3.27:1 | 5.92:1 | 4.5:1 |
 | Calendar past | 2.57:1 | 5.88:1 | 4.5:1 |
 | Outside-month date | 1.45:1 | 5.44:1 | 4.5:1 |
@@ -74,13 +75,13 @@ Referencias: [WCAG 2.2, contraste de texto](https://www.w3.org/WAI/WCAG22/Unders
 | Focus on cream | — | 11.77:1 | 3:1 |
 | Focus on green | — | 11.77:1 | 3:1 |
 
-49/49 declared-color checks passed. Browser rendering, photos, forced-colors and real assistive technology still require manual review.
+50/50 declared-color checks passed in each mode. Browser rendering, photos, forced-colors and real assistive technology still require manual review.
 
 ## Verificación manual pendiente
 
-El entorno no expuso un navegador controlable. Antes de declarar conformidad del sitio completo, verificar en la instancia publicada:
+La revisión inicial no tuvo navegador controlable. El 25 de octubre se comprobaron recorridos locales en Chrome a 390 y 320 CSS px con datos ficticios; ver [la revisión de experiencia](member-experience.md). Esa verificación parcial no sustituye las siguientes comprobaciones en la instancia publicada:
 
-1. Activar y desactivar el modo en Ajustes, landing y recuperación; refrescar, abrir otra pestaña y cerrar sesión. Comprobar que el aspecto anterior vuelve al desactivarlo y que la preferencia persiste en este navegador.
+1. Activar y desactivar el modo en Ajustes, landing y recuperación; refrescar, abrir otra pestaña y cerrar sesión. Comprobar que los tamaños opcionales y el foco destacado se desactivan, se conserva el contraste legible y la preferencia persiste en este navegador.
 2. Solo teclado: salto al contenido, menú móvil, navegación, formularios, modales y retorno de foco, calendario, chat y visor de historias, sin trampas de teclado.
 3. VoiceOver/Safari y NVDA/Firefox o Chrome: títulos, etiquetas/errores, anuncios de mensajes/resultados, estados seleccionados y lectura de las tablas con datos reales.
 4. Zoom al 200% y 400%, ancho equivalente a 320 CSS px y espaciado de texto personalizado. No debe perderse contenido; el desplazamiento horizontal debe limitarse a tablas que lo necesiten.

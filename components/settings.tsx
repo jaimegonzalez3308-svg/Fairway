@@ -6,6 +6,13 @@ import type { FairwayData } from "@/lib/use-fairway";
 import { supabase } from "@/lib/supabase";
 import { AccessibilitySetting } from "./accessibility-mode";
 import { CourseIcon } from "./course-icon";
+import dynamic from "next/dynamic";
+import { isIOSApp, nativeBridge } from "@/lib/native-app";
+import { hasAppleIdentity } from "@/lib/social-identity";
+import { nativeOnline } from "@/lib/native-network";
+const NativePreferences = dynamic(() =>
+  import("./native-preferences").then((m) => m.NativePreferences),
+);
 export function Settings({
   data,
   onEdit,
@@ -17,6 +24,8 @@ export function Settings({
   onLogout: () => void;
   onDelete: () => void;
 }) {
+  const nativeOffline =
+    isIOSApp(nativeBridge()) && (!nativeOnline() || !!data.nativeCachedAt);
   const [prefs, setPrefs] = useState<Record<string, boolean>>({}),
     [followers, setFollowers] = useState<{ user_id: string }[]>([]),
     [password, setPassword] = useState("");
@@ -55,58 +64,69 @@ export function Settings({
         <AccessibilitySetting />
         <hr />
         <h3>Notificaciones</h3>
-        {[
-          ["matches", "Likes y matches"],
-          ["friends", "Amigos y solicitudes de amistad"],
-          ["messages", "Mensajes"],
-          ["games", "Partidas y solicitudes"],
-          ["community", "Comentarios y reacciones"],
-          ["reviews", "Calificaciones"],
-        ].map(([k, label]) => (
-          <label className="switch-row" key={k}>
-            <span>{label}</span>
-            <input
-              type="checkbox"
-              checked={prefs[k] ?? true}
-              onChange={async (e) => {
-                const enabled = e.target.checked;
-                const ok = await data.run(() =>
-                  supabase!
-                    .from("notification_preferences")
-                    .upsert({ user_id: data.user!.id, category: k, enabled }),
-                );
-                if (ok) setPrefs((p) => ({ ...p, [k]: enabled }));
-              }}
-            />
-          </label>
-        ))}
+        {nativeOffline ? (
+          <p>Conéctate para consultar y cambiar tus preferencias de avisos.</p>
+        ) : (
+          [
+            ["matches", "Likes y matches"],
+            ["friends", "Amigos y solicitudes de amistad"],
+            ["messages", "Mensajes"],
+            ["games", "Partidas y solicitudes"],
+            ["community", "Comentarios y reacciones"],
+            ["reviews", "Calificaciones"],
+          ].map(([k, label]) => (
+            <label className="switch-row" key={k}>
+              <span>{label}</span>
+              <input
+                type="checkbox"
+                checked={prefs[k] ?? true}
+                onChange={async (e) => {
+                  const enabled = e.target.checked;
+                  const ok = await data.run(() =>
+                    supabase!
+                      .from("notification_preferences")
+                      .upsert({ user_id: data.user!.id, category: k, enabled }),
+                  );
+                  if (ok) setPrefs((p) => ({ ...p, [k]: enabled }));
+                }}
+              />
+            </label>
+          ))
+        )}
         <hr />
         <h3>Solicitudes de seguimiento</h3>
-        {!followers.length && <p>No tienes solicitudes pendientes.</p>}
-        {followers.map((f) => (
-          <div className="list-row" key={f.user_id}>
-            <span>
-              {data.profiles.find((p) => p.id === f.user_id)?.name ||
-                "Golfista"}
-            </span>
-            <Button
-              variant="outline"
-              onClick={async () => {
-                const ok = await data.run(() =>
-                  supabase!
-                    .from("followers")
-                    .update({ approved: true })
-                    .eq("user_id", f.user_id)
-                    .eq("target_id", data.user!.id),
-                );
-                if (ok)
-                  setFollowers((x) => x.filter((p) => p.user_id !== f.user_id));
-              }}
-            >
-              Aprobar
-            </Button>
-          </div>
-        ))}
+        {nativeOffline ? (
+          <p>Las solicitudes se actualizan al conectar.</p>
+        ) : (
+          !followers.length && <p>No tienes solicitudes pendientes.</p>
+        )}
+        {!nativeOffline &&
+          followers.map((f) => (
+            <div className="list-row" key={f.user_id}>
+              <span>
+                {data.profiles.find((p) => p.id === f.user_id)?.name ||
+                  "Golfista"}
+              </span>
+              <Button
+                variant="outline"
+                onClick={async () => {
+                  const ok = await data.run(() =>
+                    supabase!
+                      .from("followers")
+                      .update({ approved: true })
+                      .eq("user_id", f.user_id)
+                      .eq("target_id", data.user!.id),
+                  );
+                  if (ok)
+                    setFollowers((x) =>
+                      x.filter((p) => p.user_id !== f.user_id),
+                    );
+                }}
+              >
+                Aprobar
+              </Button>
+            </div>
+          ))}
         <hr />
         <form
           className="form"
@@ -135,6 +155,7 @@ export function Settings({
         </form>
       </div>
       <div>
+        {isIOSApp(nativeBridge()) && <NativePreferences data={data} />}
         <div className="panel privacy">
           <span className="eyebrow">PRIVACIDAD</span>
           <h3>Tú decides qué compartir</h3>
@@ -144,12 +165,13 @@ export function Settings({
             conserva en el proveedor de autenticación y no se publica.
           </p>
           <p>
-            Tu ciudad ayuda a encontrar jugadores y clubes. Al completar un
-            perfil nuevo se solicita permiso de ubicación una vez en este
-            navegador; también puedes pulsar «Usar mi ubicación». Si aceptas, se
-            envían coordenadas aproximadas a BigDataCloud para obtener la
-            ciudad. Fairway guarda solo la ciudad elegida al enviar el
-            formulario, sin coordenadas ni seguimiento. Puedes escribirla
+            Tu ciudad ayuda a encontrar jugadores y clubes.{" "}
+            {isIOSApp(nativeBridge())
+              ? "La app solicita ubicación solo si pulsas «Usar mi ubicación»."
+              : "Al completar un perfil nuevo se solicita permiso de ubicación una vez en este navegador; también puedes pulsar «Usar mi ubicación»."}{" "}
+            Si aceptas, se envían coordenadas aproximadas a BigDataCloud para
+            obtener la ciudad. Fairway guarda solo la ciudad elegida al enviar
+            el formulario, sin coordenadas ni seguimiento. Puedes escribirla
             manualmente. Cada score tiene su propio control de visibilidad.
           </p>
           <p>
@@ -171,8 +193,9 @@ export function Settings({
             deshacer.
           </p>
           <p>
-            Te pediremos tu contraseña y una confirmación nueva por correo antes
-            del borrado definitivo.
+            {hasAppleIdentity(data.user)
+              ? "Te pediremos confirmar tu identidad con Apple antes del borrado definitivo."
+              : "Te pediremos tu contraseña y una confirmación nueva por correo antes del borrado definitivo."}
           </p>
           <Button variant="outline" onClick={onDelete}>
             Solicitar eliminación de cuenta

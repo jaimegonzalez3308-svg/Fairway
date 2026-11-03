@@ -29,6 +29,12 @@ import {
 } from "@/lib/stories";
 import { useStories } from "@/lib/use-stories";
 import { StoryFrame, StoryEngagement, StoryOptions } from "./story-frame";
+import { isIOSApp, nativeBridge } from "@/lib/native-app";
+import {
+  requestStoryPhoto,
+  type StoryPhotoSource,
+} from "@/lib/native-story-photo";
+import { NATIVE_PAUSE, NATIVE_RESUME } from "@/lib/native-support";
 
 function PersonAvatar({ photo, name }: { photo?: string; name: string }) {
   return (
@@ -194,18 +200,44 @@ export function Stories({ data }: { data: FairwayData }) {
   );
 }
 
-function StoryComposer({
+export function NativeStoryComposer({
+  data,
+  onClose,
+}: {
+  data: FairwayData;
+  onClose: () => void;
+}) {
+  const feed = useStories(data);
+  return (
+    <StoryComposer
+      data={data}
+      available={feed.available}
+      statusMessage={feed.loading ? "Cargando historias…" : feed.error}
+      onClose={onClose}
+      onPublished={async () => {
+        await feed.refresh();
+        onClose();
+      }}
+    />
+  );
+}
+
+export function StoryComposer({
   data,
   available,
   statusMessage,
   onClose,
   onPublished,
+  getNativePhoto = requestStoryPhoto,
+  preparePhoto = prepareStoryPhoto,
 }: {
   data: FairwayData;
   available: boolean;
   statusMessage: string;
   onClose: () => void;
   onPublished: () => Promise<void>;
+  getNativePhoto?: typeof requestStoryPhoto;
+  preparePhoto?: typeof prepareStoryPhoto;
 }) {
   const [photo, setPhoto] = useState<Blob | null>(null);
   const [preview, setPreview] = useState("");
@@ -213,13 +245,18 @@ function StoryComposer({
   const [audience, setAudience] = useState("members");
   const [busy, setBusy] = useState(false);
   const [preparing, setPreparing] = useState(false);
+  const [capturing, setCapturing] = useState(false);
   const [error, setError] = useState("");
+  const native = isIOSApp(nativeBridge());
+  const captureLock = useRef(false);
+  const publishLock = useRef(false);
   const fileGeneration = useRef(0);
   const mounted = useRef(true);
   useEffect(() => {
     mounted.current = true;
     return () => {
       mounted.current = false;
+      fileGeneration.current++;
     };
   }, []);
   useEffect(() => {
@@ -234,13 +271,11 @@ function StoryComposer({
     setPreparing(true);
     setError("");
     try {
-      const prepared = await prepareStoryPhoto(file);
+      const prepared = await preparePhoto(file);
       if (mounted.current && version === fileGeneration.current)
         setPhoto(prepared);
     } catch (e) {
       if (mounted.current && version === fileGeneration.current) {
-        setPhoto(null);
-        setPreview("");
         setError(e instanceof Error ? e.message : "No pudimos leer esta foto.");
       }
     } finally {
@@ -248,8 +283,40 @@ function StoryComposer({
         setPreparing(false);
     }
   }
+  async function takePhoto(source: StoryPhotoSource) {
+    if (captureLock.current || busy || preparing) return;
+    captureLock.current = true;
+    setCapturing(true);
+    setError("");
+    const version = ++fileGeneration.current;
+    try {
+      const file = await getNativePhoto(source);
+      if (file && mounted.current && version === fileGeneration.current)
+        await choose(file);
+    } catch (e) {
+      if (mounted.current && version === fileGeneration.current)
+        setError(
+          e instanceof Error ? e.message : "No pudimos abrir la cámara.",
+        );
+    } finally {
+      captureLock.current = false;
+      if (mounted.current) setCapturing(false);
+    }
+  }
   async function publish() {
-    if (!photo || !supabase || !data.user || !available || busy) return;
+    if (
+      !photo ||
+      !supabase ||
+      !data.user ||
+      !available ||
+      busy ||
+      publishLock.current ||
+      preparing ||
+      capturing ||
+      captureLock.current
+    )
+      return;
+    publishLock.current = true;
     setBusy(true);
     setError("");
     const id = crypto.randomUUID();
@@ -292,6 +359,7 @@ function StoryComposer({
           "No pudimos publicar. Revisa tu conexión e inténtalo de nuevo.",
       );
     } finally {
+      publishLock.current = false;
       if (mounted.current) setBusy(false);
     }
   }
@@ -330,7 +398,41 @@ function StoryComposer({
           <span className="eyebrow">SOLO POR HOY</span>
           <h3>Comparte ese momento.</h3>
           <p>Una foto de tu ronda. Una historia que desaparece en 24 horas.</p>
-          <label className="story-upload" aria-disabled={busy || preparing}>
+          {native && (
+            <div
+              className="native-story-sources"
+              aria-label="Elegir foto para tu historia"
+            >
+              <Button
+                type="button"
+                disabled={busy || preparing || capturing}
+                onClick={() => void takePhoto("camera")}
+              >
+                <Camera size={21} aria-hidden="true" />
+                {photo ? "Volver a tomar" : "Tomar foto"}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                disabled={busy || preparing || capturing}
+                onClick={() => void takePhoto("photos")}
+              >
+                <ImagePlus size={21} aria-hidden="true" />
+                Elegir de Fotos
+              </Button>
+              <p role="status" aria-live="polite">
+                {capturing
+                  ? "Abriendo cámara o Fotos…"
+                  : preparing
+                    ? "Preparando tu foto…"
+                    : "Revisa la foto antes de publicar. No se guarda automáticamente en Fotos."}
+              </p>
+            </div>
+          )}
+          <label
+            className="story-upload"
+            aria-disabled={busy || preparing || capturing}
+          >
             {preparing ? (
               <LoaderCircle size={20} className="story-spinner" />
             ) : (
@@ -341,14 +443,16 @@ function StoryComposer({
                 ? "Preparando foto…"
                 : photo
                   ? "Cambiar fotografía"
-                  : "Elegir una fotografía"}
+                  : native
+                    ? "Elegir un archivo"
+                    : "Elegir una fotografía"}
             </strong>
             <span>JPG, PNG o WebP · hasta 10 MB</span>
             <input
               type="file"
               accept="image/jpeg,image/png,image/webp"
               aria-label="Elegir fotografía para historia"
-              disabled={busy || preparing}
+              disabled={busy || preparing || capturing}
               onChange={(e) => {
                 void choose(e.target.files?.[0]);
                 e.target.value = "";
@@ -406,7 +510,14 @@ function StoryComposer({
           )}
           <Button
             className="story-publish"
-            disabled={!photo || preparing || busy || !available || !data.user}
+            disabled={
+              !photo ||
+              preparing ||
+              capturing ||
+              busy ||
+              !available ||
+              !data.user
+            }
             onClick={() => void publish()}
           >
             {busy ? (
@@ -422,7 +533,20 @@ function StoryComposer({
   );
 }
 
-function StoryViewer({
+function prefersManualStories() {
+  if (
+    typeof document === "undefined" ||
+    !document.documentElement.classList.contains("native-ios")
+  )
+    return false;
+  return (
+    document.documentElement.dataset.nativeScreenReader === "true" ||
+    document.documentElement.dataset.accessibility === "true" ||
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+}
+
+export function StoryViewer({
   story,
   siblings,
   data,
@@ -448,7 +572,7 @@ function StoryViewer({
   const [src, setSrc] = useState("");
   const [ready, setReady] = useState(false);
   const [error, setError] = useState("");
-  const [paused, setPaused] = useState(false);
+  const [paused, setPaused] = useState(prefersManualStories);
   const [holding, setHolding] = useState(false);
   const [options, setOptions] = useState(false);
   const [hidden, setHidden] = useState(
@@ -474,6 +598,22 @@ function StoryViewer({
   const storyId = story?.id;
   const path = story?.media_path;
   const expiry = story?.expires_at;
+  useEffect(() => {
+    const pauseForAccessibility = () => {
+      if (prefersManualStories()) setPaused(true);
+    };
+    const observer = new MutationObserver(pauseForAccessibility);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-native-screen-reader", "data-accessibility"],
+    });
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    motion.addEventListener("change", pauseForAccessibility);
+    return () => {
+      observer.disconnect();
+      motion.removeEventListener("change", pauseForAccessibility);
+    };
+  }, []);
   useEffect(() => {
     let cancelled = false;
     if (!supabase || !path || !expiry) return;
@@ -504,8 +644,15 @@ function StoryViewer({
   }, [storyId, path, expiry, retry]);
   useEffect(() => {
     const change = () => setHidden(document.hidden);
+    const pause = () => setHidden(true);
     document.addEventListener("visibilitychange", change);
-    return () => document.removeEventListener("visibilitychange", change);
+    window.addEventListener(NATIVE_PAUSE, pause);
+    window.addEventListener(NATIVE_RESUME, change);
+    return () => {
+      document.removeEventListener("visibilitychange", change);
+      window.removeEventListener(NATIVE_PAUSE, pause);
+      window.removeEventListener(NATIVE_RESUME, change);
+    };
   }, []);
   useEffect(() => {
     if (!ready || hidden || own || !storyId || seen.current || !supabase)
@@ -630,6 +777,7 @@ function StoryViewer({
         </div>
         <Dialog.Content
           className="story-viewer"
+          data-no-gestures
           ref={viewerRef}
           onOpenAutoFocus={(event) => {
             event.preventDefault();

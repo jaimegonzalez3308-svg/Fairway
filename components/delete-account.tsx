@@ -13,9 +13,53 @@ import { Button, Field, Modal } from "./ui";
 import { supabase } from "@/lib/supabase";
 import { authErrorMessage } from "@/lib/auth";
 import type { FairwayData } from "@/lib/use-fairway";
+import dynamic from "next/dynamic";
+import { isIOSApp, nativeBridge } from "@/lib/native-app";
+import { publicOrigin } from "@/lib/public-origin";
+import { hasAppleIdentity } from "@/lib/social-identity";
+const AppleDeleteAccount = dynamic(() =>
+  import("./apple-delete-account").then((m) => m.AppleDeleteAccount),
+);
 
 type Status = { expires_at: string; email_confirmed: boolean };
 export function DeleteAccountDialog({
+  data,
+  onClose,
+  onDeleted,
+}: {
+  data: FairwayData;
+  onClose: () => void;
+  onDeleted: () => void;
+}) {
+  if (isIOSApp(nativeBridge()) && hasAppleIdentity(data.user))
+    return (
+      <AppleDeleteAccount data={data} onClose={onClose} onDeleted={onDeleted} />
+    );
+  if (hasAppleIdentity(data.user))
+    return (
+      <Modal title="Eliminar mi cuenta de Apple" onClose={onClose}>
+        <p>
+          Confirma la eliminación desde Fairway para iPhone. Allí verificamos tu
+          identidad con Apple y desconectamos su permiso antes de borrar tus
+          datos.
+        </p>
+        <a
+          className="button primary"
+          href="com.fairway.app://open?screen=ajustes"
+        >
+          Abrir Fairway para iPhone
+        </a>
+      </Modal>
+    );
+  return (
+    <PasswordDeleteAccount
+      data={data}
+      onClose={onClose}
+      onDeleted={onDeleted}
+    />
+  );
+}
+function PasswordDeleteAccount({
   data,
   onClose,
   onDeleted,
@@ -70,8 +114,10 @@ export function DeleteAccountDialog({
       email: data.user.email,
       options: {
         shouldCreateUser: false,
-        emailRedirectTo: new URL("/?delete_account=1", window.location.origin)
-          .href,
+        emailRedirectTo: new URL(
+          "/?delete_account=1",
+          publicOrigin(window.location.origin),
+        ).href,
       },
     });
     if (error) throw error;

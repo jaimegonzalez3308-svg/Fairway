@@ -11,6 +11,8 @@ import { saveInitialSignupCity } from "@/lib/signup-city";
 import { CityField } from "./city-field";
 
 export function GoogleOnboarding({ data }: { data: FairwayData }) {
+  const apple = data.user?.app_metadata?.provider === "apple";
+  const provider = apple ? "Apple" : "Google";
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [showPrivacy, setShowPrivacy] = useState(false);
@@ -26,8 +28,8 @@ export function GoogleOnboarding({ data }: { data: FairwayData }) {
         <span className="eyebrow">BIENVENIDO A FAIRWAY</span>
         <h1>Completa tu cuenta</h1>
         <p className="form-intro">
-          Ya entraste con Google. Confirma tus datos para empezar. Fairway es
-          exclusivo para mayores de 18 años.
+          Ya entraste con {provider}. Confirma tus datos para empezar. Fairway
+          es exclusivo para mayores de 18 años.
         </p>
         <form
           className="form"
@@ -48,11 +50,14 @@ export function GoogleOnboarding({ data }: { data: FairwayData }) {
                 data: { signup_city: parsedCity.data },
               });
               if (metadata.error) throw metadata.error;
-              const { error } = await supabase.rpc("complete_google_signup", {
-                profile_name: String(values.get("name") || "").trim(),
-                profile_age: Number(values.get("age")),
-                accepted_terms: values.get("consent") === "on",
-              });
+              const { error } = await supabase.rpc(
+                apple ? "complete_apple_signup" : "complete_google_signup",
+                {
+                  profile_name: String(values.get("name") || "").trim(),
+                  profile_age: Number(values.get("age")),
+                  accepted_terms: values.get("consent") === "on",
+                },
+              );
               if (error) throw error;
               await saveInitialSignupCity(
                 supabase,
@@ -63,7 +68,7 @@ export function GoogleOnboarding({ data }: { data: FairwayData }) {
             } catch (error) {
               setError(
                 (error as { code?: string }).code === "PGRST202"
-                  ? "El registro con Google aún no está listo. Intenta más tarde."
+                  ? `El registro con ${provider} aún no está listo. Intenta más tarde.`
                   : authErrorMessage(
                       error as { message?: string; code?: string },
                     ),
@@ -118,10 +123,14 @@ export function GoogleOnboarding({ data }: { data: FairwayData }) {
           {showPrivacy && (
             <p className="notice">
               Fairway utiliza tu nombre, edad, ciudad, club, disponibilidad y
-              actividad para encontrar compañeros y organizar partidas. Google
-              comparte tu nombre y correo para autenticarte. Tu correo no se
-              publica. Puedes controlar la visibilidad de tu perfil, cerrar
-              sesión y solicitar la eliminación de tu cuenta en Ajustes.
+              actividad para encontrar compañeros y organizar partidas.{" "}
+              {provider}
+              {apple
+                ? " permite compartir u ocultar tu correo para autenticarte. El nombre, si se proporciona, se recibe solo en el primer acceso."
+                : " comparte tu nombre y correo para autenticarte."}{" "}
+              Tu correo no se publica. Puedes controlar la visibilidad de tu
+              perfil, cerrar sesión y solicitar la eliminación de tu cuenta en
+              Ajustes.
             </p>
           )}
           {(error || data.error) && (

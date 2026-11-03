@@ -1,8 +1,14 @@
 "use client";
+import { Avatar, InfoItem } from "./member-primitives";
+import { Rounds } from "./round-history";
+import { FilterForm } from "./discovery-filters";
+import { Availability } from "./availability";
+import { Gallery } from "./profile-gallery";
 import { LegalLinks } from "./legal-links";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { site } from "@/lib/site";
+import { useNativeApp } from "@/lib/use-native-app";
 import {
   Compass,
   Flag,
@@ -12,37 +18,25 @@ import {
   BarChart3,
   MapPin,
   Bell,
-  Search,
   ChevronDown,
   ChevronRight,
   ArrowUpRight,
-  ArrowRight,
   Plus,
-  SlidersHorizontal,
   Heart,
   X,
   Bookmark,
-  Star,
   CalendarDays,
-  Clock,
   Check,
   CheckCheck,
   Settings as SettingsIcon,
   LogOut,
   ShieldCheck,
   Target,
-  Sun,
-  Leaf,
-  RotateCcw,
   Send,
-  MoreHorizontal,
-  Info,
-  Globe,
-  TrendingUp,
   Trash2,
-  LockKeyhole,
   QrCode,
   Camera,
+  ArrowLeft,
 } from "lucide-react";
 import { useFairway } from "@/lib/use-fairway";
 import { supabase } from "@/lib/supabase";
@@ -54,9 +48,7 @@ import {
 } from "@/lib/auth";
 import {
   compatibility,
-  matchesFilters,
   initialFilters,
-  days,
   summarize,
   type Profile,
   type Filters,
@@ -64,8 +56,9 @@ import {
   type Round,
 } from "@/lib/domain";
 import { cn, dateFormat, timeFormat } from "@/lib/utils";
-import { Button, Modal, Field, Empty, SectionHeading, InlineLink } from "./ui";
-import { LandingPage } from "./landing-page";
+import { Button, Modal, Empty, SectionHeading } from "./ui";
+import { useNativeShell } from "@/lib/use-native-shell";
+import { nativeHaptic, NativeDevice } from "@/lib/native-device";
 import {
   AccountRequired,
   ClubDirectory,
@@ -76,37 +69,78 @@ import {
 import { requiresAccount } from "@/lib/access";
 import { useFriends, profileWithPhoto } from "@/lib/use-friends";
 import { sharedProfileId } from "@/lib/profile-share";
-import { GameJoinActions } from "./game-join-actions";
-import { gameIsUpcoming, golfDate } from "@/lib/parties";
+import { sharedGameId, sectionUrl } from "@/lib/game-share";
+
+import { golfDate } from "@/lib/parties";
 import { SidebarIcon } from "./sidebar-icon";
 import { useIllustratedSidebarIcons } from "@/lib/appearance";
 import { PlayerRating } from "./player-rating";
-import { RatingBeer } from "./rating-beer";
+
 import { CourseIcon } from "./course-icon";
 import { ProfileBio } from "./profile-bio";
 import { CityFilter } from "./city-field";
-import {
-  DEFAULT_CITY,
-  gameMatchesCity,
-  matchesCity,
-  normalizeCity,
-} from "@/lib/cities";
-import {
-  canRatePlayer,
-  ratingLabel,
-  reviewForPlayer,
-  reviewValue,
-  withRating,
-} from "@/lib/ratings";
+import { DEFAULT_CITY, normalizeCity } from "@/lib/cities";
+import { withRating } from "@/lib/ratings";
 
 // Screens and editors download when opened, rather than on every public visit.
 function DeferredPanel() {
   return (
-    <div className="deferred-panel" role="status">
-      Cargando…
+    <div
+      className="deferred-panel"
+      role="status"
+      aria-label="Cargando pantalla"
+      aria-busy="true"
+    >
+      <span>Cargando…</span>
+      <div className="native-deferred-skeleton" aria-hidden="true">
+        <div className="skeleton heading-skeleton" />
+        <div className="skeleton card-skeleton" />
+      </div>
     </div>
   );
 }
+const Discovery = dynamic(
+  () => import("./discovery").then((m) => m.Discovery),
+  { loading: DeferredPanel },
+);
+const LandingPage = dynamic(
+  () => import("./landing-page").then((m) => m.LandingPage),
+  { loading: DeferredPanel },
+);
+const NativeEntry = dynamic(
+  () => import("./native-shell").then((m) => m.NativeEntry),
+  { loading: DeferredPanel },
+);
+const NativeRefresh = dynamic(() =>
+  import("./native-shell").then((m) => m.NativeRefresh),
+);
+const NativeConnectionState = dynamic(() =>
+  import("./native-shell").then((m) => m.NativeConnectionState),
+);
+const NativeSwipeRow = dynamic(() =>
+  import("./native-shell").then((m) => m.NativeSwipeRow),
+);
+const NativeOfflinePanel = dynamic(() =>
+  import("./native-preferences").then((m) => m.NativeOfflinePanel),
+);
+const NativeTabBar = dynamic(() =>
+  import("./native-experience").then((m) => m.NativeTabBar),
+);
+const NativeQuickActions = dynamic(() =>
+  import("./native-experience").then((m) => m.NativeQuickActions),
+);
+const NativeStoryComposer = dynamic(
+  () => import("./stories").then((m) => m.NativeStoryComposer),
+  { loading: DeferredPanel },
+);
+const GameDetails = dynamic(
+  () => import("./game-details").then((m) => m.GameDetails),
+  { loading: DeferredPanel },
+);
+const FirstRoundSetup = dynamic(
+  () => import("./first-round-setup").then((m) => m.FirstRoundSetup),
+  { loading: DeferredPanel },
+);
 const AuthForm = dynamic(
   () => import("./forms").then((module) => module.AuthForm),
   { loading: DeferredPanel },
@@ -171,16 +205,6 @@ const ProfilePhotoEditor = dynamic(
   () => import("./profile-photo").then((module) => module.ProfilePhotoEditor),
   { loading: DeferredPanel },
 );
-const SwipeDeck = dynamic(
-  () => import("./swipe-deck").then((module) => module.SwipeDeck),
-  {
-    loading: () => (
-      <div className="deferred-deck" role="status">
-        Cargando golfistas…
-      </div>
-    ),
-  },
-);
 const ProfileBioEditor = dynamic(
   () =>
     import("./profile-bio-editor").then((module) => module.ProfileBioEditor),
@@ -205,6 +229,7 @@ const extras = [
   { id: "clubes", label: "Clubes de golf", icon: MapPin },
 ];
 export default function FairwayApp() {
+  const nativeApp = useNativeApp();
   const data = useFairway();
   const friends = useFriends(data);
   const [cityScope, setCityScope] = useState("mine");
@@ -228,8 +253,6 @@ export default function FairwayApp() {
     [round, setRound] = useState<Round | undefined>(),
     [filters, setFilters] = useState<Filters>(initialFilters),
     [draftFilters, setDraftFilters] = useState<Filters>(initialFilters),
-    [tab, setTab] = useState("Para ti"),
-    [search, setSearch] = useState(""),
     [mobileOpen, setMobileOpen] = useState(false),
     [sidebarCollapsed, setSidebarCollapsed] = useState(false),
     [isMobile, setIsMobile] = useState(false),
@@ -244,6 +267,34 @@ export default function FairwayApp() {
   const mainContentRef = useRef<HTMLElement>(null);
   const focusNextPage = useRef(false);
   const sidebarVisible = isMobile ? mobileOpen : !sidebarCollapsed;
+  const nativePrimaryPages = [
+    "descubrir",
+    "partidas",
+    "scores",
+    "mensajes",
+    "perfil",
+  ];
+  const nativeParentPage = useRef("descubrir");
+  const canNativeBack =
+    !nativePrimaryPages.includes(page) || (page === "mensajes" && !!activeChat);
+  const nativeBack = () => {
+    if (page === "mensajes" && activeChat) setActiveChat(null);
+    else go(nativeParentPage.current);
+  };
+  const nativeShell = useNativeShell({
+    enabled: nativeApp,
+    canBack: canNativeBack,
+    blocked: !!modal || mobileOpen,
+    onBack: nativeBack,
+    onRefresh: async () => {
+      await data.refresh();
+      window.dispatchEvent(new Event("fairway:manual-refresh"));
+    },
+  });
+  useEffect(() => {
+    if (nativeApp && nativePrimaryPages.includes(page))
+      nativeParentPage.current = page;
+  }, [page, nativeApp]);
 
   useEffect(() => {
     const content =
@@ -255,7 +306,16 @@ export default function FairwayApp() {
   }, [page, data.loading, modal, data.user?.id]);
 
   useEffect(() => {
-    const title = mainContentRef.current?.querySelector("h1")?.textContent;
+    const title =
+      [...navigation, ...extras].find((item) => item.id === page)?.label ||
+      (
+        {
+          ajustes: "Ajustes",
+          admin: "Administración",
+          hoy: "¿Quién juega hoy?",
+          privacidad: "Privacidad",
+        } as Record<string, string>
+      )[page];
     document.title = title ? `${title} · Fairway` : site.title;
   }, [page, data.loading, data.user?.id]);
 
@@ -266,13 +326,13 @@ export default function FairwayApp() {
   useEffect(() => {
     const media = window.matchMedia("(max-width: 740px)");
     function syncViewport() {
-      setIsMobile(media.matches);
+      setIsMobile(media.matches || nativeApp);
       setMobileOpen(false);
     }
     syncViewport();
     media.addEventListener("change", syncViewport);
     return () => media.removeEventListener("change", syncViewport);
-  }, []);
+  }, [nativeApp]);
 
   useEffect(() => {
     if (!isMobile || !mobileOpen) return;
@@ -313,6 +373,8 @@ export default function FairwayApp() {
     };
   }, [isMobile, mobileOpen]);
 
+  const [sharedLocation, setSharedLocation] = useState("");
+  const [gameLinkAttempt, setGameLinkAttempt] = useState(0);
   const onboarded = useRef<string | null>(null);
   const lastPublicPage = useRef("descubrir");
   const deletionReturn = useRef(false);
@@ -329,6 +391,28 @@ export default function FairwayApp() {
   }
   async function logout() {
     if (!supabase) return;
+    if (nativeApp) {
+      try {
+        const { readQueuedScores } = await import("@/lib/native-offline");
+        if (data.user && (await readQueuedScores(data.user.id)).length) {
+          setModal("logout-pending");
+          return;
+        }
+      } catch {
+        data.notify(
+          "No pudimos revisar los borradores. Intenta de nuevo antes de cerrar sesión.",
+        );
+        return;
+      }
+    }
+    await finishLogout();
+  }
+  async function finishLogout() {
+    if (!supabase) return;
+    if (nativeApp)
+      await import("@/lib/native-push")
+        .then(({ disconnectNativePush }) => disconnectNativePush())
+        .catch(() => {});
     const { error } = await supabase.auth.signOut();
     if (error) {
       data.notify(error.message);
@@ -341,6 +425,41 @@ export default function FairwayApp() {
     window.history.replaceState(null, "", location.pathname + "#inicio");
     data.notify("Cerraste sesión. Nos vemos pronto en el green.");
   }
+  useEffect(() => {
+    if (!nativeApp || !data.user) return;
+    let current = true;
+    let stop: (() => void) | undefined;
+    void import("@/lib/native-push").then(async ({ installNativePush }) => {
+      const cleanup = await installNativePush(data.user!.id);
+      if (current) stop = cleanup;
+      else cleanup();
+    });
+    return () => {
+      current = false;
+      stop?.();
+    };
+  }, [nativeApp, data.user?.id]);
+  const appleSubject =
+    data.user?.app_metadata.provider === "apple"
+      ? data.user.identities?.find((identity) => identity.provider === "apple")
+          ?.identity_data?.sub
+      : null;
+  useEffect(() => {
+    if (!nativeApp || typeof appleSubject !== "string") return;
+    let current = true;
+    let stop: (() => void) | undefined;
+    void import("@/lib/native-apple-auth")
+      .then(async ({ installAppleSession }) => {
+        const cleanup = await installAppleSession(appleSubject);
+        if (current) stop = cleanup;
+        else cleanup();
+      })
+      .catch(() => {});
+    return () => {
+      current = false;
+      stop?.();
+    };
+  }, [nativeApp, appleSubject]);
   useEffect(() => {
     if (
       !data.loading &&
@@ -367,16 +486,18 @@ export default function FairwayApp() {
       data.me.id === data.user.id &&
       data.me.availability.length === 0 &&
       !sharedProfileId(location.search) &&
+      !sharedGameId(location.search) &&
       onboarded.current !== data.user.id
     ) {
       onboarded.current = data.user.id;
-      setModal("edit-profile");
+      setModal("first-round");
     }
   }, [data.user, data.loading, data.me, data.passwordRecovery]);
   useEffect(() => {
     const id = sharedProfileId(location.search);
     if (
       !id ||
+      sharedGameId(location.search) ||
       data.passwordRecovery ||
       data.loading ||
       !data.user ||
@@ -420,9 +541,13 @@ export default function FairwayApp() {
       current = false;
       sharedProfileHandled.current = null;
     };
-  }, [data.user?.id, data.loading, data.passwordRecovery]);
+  }, [data.user?.id, data.loading, data.passwordRecovery, sharedLocation]);
   function go(p: string) {
-    if (p === "inicio" && data.user) p = "descubrir";
+    if (nativeApp && p !== page) nativeHaptic();
+    if (p === "inicio" && (data.user || (nativeApp && data.demo)))
+      p = "descubrir";
+    if (nativeApp && p === "mensajes" && page !== "mensajes")
+      setActiveChat(null);
     focusNextPage.current = true;
     if (p === page && !modal) {
       mainContentRef.current?.focus({ preventScroll: true });
@@ -431,13 +556,20 @@ export default function FairwayApp() {
     setPage(p);
     setMobileOpen(false);
     if (!requiresAccount(p)) lastPublicPage.current = p;
+    const href = sectionUrl(location.href, p);
+    if (href !== location.pathname + location.search + location.hash)
+      window.history.pushState(null, "", href);
+    setSharedLocation("");
+    setModal(null);
+    setGame(null);
     if (!data.user && !data.demo && requiresAccount(p)) requireAccount(p);
-    window.history.replaceState(null, "", "#" + p);
     window.scrollTo({
       top: 0,
-      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
-        ? "instant"
-        : "smooth",
+      behavior:
+        nativeApp ||
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          ? "instant"
+          : "smooth",
     });
   }
   useEffect(() => {
@@ -475,8 +607,16 @@ export default function FairwayApp() {
       );
       return true;
     };
-    const change = (event?: HashChangeEvent) => {
-      if (event) focusNextPage.current = true;
+    const change = (event?: Event) => {
+      if (event) {
+        focusNextPage.current = true;
+        setMobileOpen(false);
+        setModal(null);
+        setSelected(null);
+        setGame(null);
+        setReviewTarget(null);
+      }
+      setSharedLocation(location.search);
       if (recovery) {
         setPage("ajustes");
         return;
@@ -484,7 +624,11 @@ export default function FairwayApp() {
       if (!handleReturnError()) {
         const next = deletion
           ? "ajustes"
-          : routeFromHash(location.hash, routes, !!data.user);
+          : routeFromHash(
+              location.hash,
+              routes,
+              !!data.user || (nativeApp && data.demo),
+            );
         setPage(next);
         if (data.user && location.hash === "#inicio")
           window.history.replaceState(
@@ -496,8 +640,12 @@ export default function FairwayApp() {
     };
     change();
     window.addEventListener("hashchange", change);
-    return () => window.removeEventListener("hashchange", change);
-  }, [data.user?.id, data.passwordRecovery]);
+    window.addEventListener("popstate", change);
+    return () => {
+      window.removeEventListener("hashchange", change);
+      window.removeEventListener("popstate", change);
+    };
+  }, [data.user?.id, data.passwordRecovery, nativeApp, data.demo]);
   useEffect(() => {
     if (!supabase || !data.user) return;
     void supabase
@@ -528,36 +676,6 @@ export default function FairwayApp() {
   const clubName = (id: string | null) =>
     data.clubs.find((c) => c.id === id)?.name || "Sin club";
   const allProfiles = [data.me, ...data.profiles];
-  const visible = useMemo(
-    () =>
-      data.profiles
-        .filter(
-          (p) =>
-            (tab === "Favoritos" || !data.decided.includes(p.id)) &&
-            (tab === "Favoritos" || matchesCity(p.city, cityScope, ownCity)) &&
-            matchesFilters(p, filters, data.me) &&
-            p.name.toLocaleLowerCase().includes(search.toLocaleLowerCase()) &&
-            (tab !== "Favoritos" || data.favorites.includes(p.id)),
-        )
-        .sort(
-          (a, b) =>
-            compatibility(data.me, b).score - compatibility(data.me, a).score,
-        ),
-    [
-      data.profiles,
-      data.decided,
-      data.me,
-      data.favorites,
-      filters,
-      search,
-      tab,
-      cityScope,
-      ownCity,
-    ],
-  );
-  const activeFilterCount = Object.keys(filters).filter(
-    (k) => filters[k as keyof Filters] !== initialFilters[k as keyof Filters],
-  ).length;
   const unread = data.notifications.filter((n) => !n.read).length;
   const unreadMessages = data.messages.filter((m) => {
     const c = data.conversations.find((c) => c.id === m.conversation_id);
@@ -573,11 +691,21 @@ export default function FairwayApp() {
   const hasAuth = !!data.user || data.demo;
   function close() {
     if (
-      ["profile", "profile-unavailable"].includes(modal || "") ||
+      [
+        "profile",
+        "profile-unavailable",
+        "game",
+        "game-unavailable",
+        "game-error",
+        "loading-game",
+        "review",
+      ].includes(modal || "") ||
       (!data.user && sharedProfileId(location.search))
     ) {
       const url = new URL(location.href);
       url.searchParams.delete("golfista");
+      url.searchParams.delete("partida");
+      setSharedLocation("");
       window.history.replaceState(
         null,
         "",
@@ -602,6 +730,51 @@ export default function FairwayApp() {
     setSelected(null);
     setReviewTarget(null);
   }
+  function openGame(next: Game) {
+    const url = new URL(location.href);
+    url.searchParams.delete("golfista");
+    url.searchParams.set("partida", next.id);
+    const href = url.pathname + url.search + url.hash;
+    if (href !== location.pathname + location.search + location.hash)
+      window.history.pushState(null, "", href);
+    setGame(next);
+    setModal("game");
+  }
+  useEffect(() => {
+    const id = sharedGameId(sharedLocation);
+    if (!id || !data.user || data.loading || data.passwordRecovery || !supabase)
+      return;
+    let current = true;
+    setModal("loading-game");
+    void supabase
+      .from("games")
+      .select("*,participants:game_participants(user_id,status)")
+      .eq("id", id)
+      .maybeSingle()
+      .then(
+        (result) => {
+          if (!current) return;
+          if (result.error) setModal("game-error");
+          else if (!result.data) setModal("game-unavailable");
+          else {
+            setGame(result.data as Game);
+            setModal("game");
+          }
+        },
+        () => {
+          if (current) setModal("game-error");
+        },
+      );
+    return () => {
+      current = false;
+    };
+  }, [
+    sharedLocation,
+    gameLinkAttempt,
+    data.user?.id,
+    data.loading,
+    data.passwordRecovery,
+  ]);
   function openProfile(p: Profile) {
     if (!data.user && !data.demo) {
       requireAccount("perfil");
@@ -668,17 +841,27 @@ export default function FairwayApp() {
     };
   }, [modal, selectedGameId, data.user?.id, data.games, data.notify]);
   const currentGame = game;
+  useEffect(() => {
+    if (!nativeApp) return;
+    void NativeDevice.setBadge({
+      count: data.user ? unread + unreadMessages : 0,
+    }).catch(() => {});
+  }, [nativeApp, data.user?.id, unread, unreadMessages]);
   if (!data.authReady)
     return (
       <main className="auth-screen">
         <section className="panel" aria-labelledby="session-title">
-          <h1 id="session-title">Golfistas y partidas en León</h1>
-          <p>
-            Fairway te ayuda a encontrar con quién jugar, consultar clubes y
-            organizar partidas.
-          </p>
+          <h1 id="session-title">
+            {nativeApp ? "Abriendo Fairway" : "Golfistas y partidas en León"}
+          </h1>
+          {!nativeApp && (
+            <p>
+              Fairway te ayuda a encontrar con quién jugar, consultar clubes y
+              organizar partidas.
+            </p>
+          )}
           <p role="status">Recuperando tu sesión…</p>
-          <LegalLinks />
+          {nativeApp ? <DeferredPanel /> : <LegalLinks />}
           <noscript>
             Activa JavaScript para iniciar sesión y utilizar Fairway.
           </noscript>
@@ -716,7 +899,11 @@ export default function FairwayApp() {
     );
   if (data.user && data.needsGoogleProfile)
     return <GoogleOnboarding data={data} />;
-  if (!data.user && (page === "inicio" || page === "descubrir"))
+  if (
+    !data.user &&
+    !(nativeApp && data.demo) &&
+    (page === "inicio" || page === "descubrir")
+  )
     return (
       <>
         {data.error && (
@@ -725,15 +912,23 @@ export default function FairwayApp() {
             <button onClick={() => void data.reload()}>Reintentar</button>
           </div>
         )}
-        <LandingPage
-          onSignup={() => (data.user ? go("descubrir") : openAuth("signup"))}
-          onLogin={() => (data.user ? go("perfil") : openAuth("login"))}
-          onClubs={() => go("clubes")}
-          onPrivacy={() => go("privacidad")}
-          clubs={data.clubs}
-          liveDirectory={data.publicDirectoryLive}
-          signedIn={!!data.user}
-        />
+        {nativeApp ? (
+          <NativeEntry
+            onLogin={() => openAuth("login")}
+            onSignup={() => openAuth("signup")}
+            onClubs={() => go("clubes")}
+          />
+        ) : (
+          <LandingPage
+            onSignup={() => (data.user ? go("descubrir") : openAuth("signup"))}
+            onLogin={() => (data.user ? go("perfil") : openAuth("login"))}
+            onClubs={() => go("clubes")}
+            onPrivacy={() => go("privacidad")}
+            clubs={data.clubs}
+            liveDirectory={data.publicDirectoryLive}
+            signedIn={!!data.user}
+          />
+        )}
         {modal === "auth" && (
           <Modal
             title={
@@ -769,6 +964,7 @@ export default function FairwayApp() {
     <div
       className={cn(
         "app-shell",
+        nativeApp && "native-app",
         hasAuth && "member-shell",
         sidebarCollapsed && "sidebar-collapsed",
         mobileOpen && "mobile-sidebar-open",
@@ -808,7 +1004,10 @@ export default function FairwayApp() {
           <a
             className="brand"
             href="#descubrir"
-            onClick={() => go("descubrir")}
+            onClick={(event) => {
+              event.preventDefault();
+              go("descubrir");
+            }}
           >
             <span className="brand-mark">
               <Flag size={26} strokeWidth={1.6} />
@@ -821,51 +1020,61 @@ export default function FairwayApp() {
           {ownCity}
           <span className="live-dot" />
         </div>
-        <span className="nav-caption">TU COMUNIDAD DE GOLF</span>
+        <span className="nav-caption">
+          {nativeApp ? "MÁS EN FAIRWAY" : "TU COMUNIDAD DE GOLF"}
+        </span>
         <nav aria-label="Navegación principal">
-          {navigation.map(({ id, label, icon: Icon }) => (
-            <button
-              key={id}
-              className={cn("nav-item", page === id && "active")}
-              aria-current={page === id ? "page" : undefined}
-              onClick={() => go(id)}
-            >
-              {useIllustratedSidebarIcons ? (
-                <SidebarIcon name={id} />
-              ) : (
-                <Icon size={20} strokeWidth={1.7} />
-              )}
-              <span className="nav-label">{label}</span>
-              {id === "mensajes" && unreadMessages > 0 && (
-                <span className="count">{unreadMessages}</span>
-              )}
-              {id === "amigos" &&
-                friends.relations.some(
-                  (r) =>
-                    r.status === "pending" && r.recipient_id === data.user?.id,
-                ) && (
-                  <span className="count">
-                    {
-                      friends.relations.filter(
-                        (r) =>
-                          r.status === "pending" &&
-                          r.recipient_id === data.user?.id,
-                      ).length
-                    }
+          {navigation
+            .filter(
+              ({ id }) => !nativeApp || ["comunidad", "amigos"].includes(id),
+            )
+            .map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                className={cn("nav-item", page === id && "active")}
+                aria-current={page === id ? "page" : undefined}
+                onClick={() => go(id)}
+              >
+                {useIllustratedSidebarIcons ? (
+                  <SidebarIcon name={id} />
+                ) : (
+                  <Icon size={20} strokeWidth={1.7} />
+                )}
+                <span className="nav-label">{label}</span>
+                {id === "mensajes" && unreadMessages > 0 && (
+                  <span className="count">{unreadMessages}</span>
+                )}
+                {id === "amigos" &&
+                  friends.relations.some(
+                    (r) =>
+                      r.status === "pending" &&
+                      r.recipient_id === data.user?.id,
+                  ) && (
+                    <span className="count">
+                      {
+                        friends.relations.filter(
+                          (r) =>
+                            r.status === "pending" &&
+                            r.recipient_id === data.user?.id,
+                        ).length
+                      }
+                    </span>
+                  )}
+                {page === id && (
+                  <span className="nav-dot" aria-hidden="true">
+                    <CourseIcon part="green" size={20} />
                   </span>
                 )}
-              {page === id && (
-                <span className="nav-dot" aria-hidden="true">
-                  <CourseIcon part="green" size={20} />
-                </span>
-              )}
-            </button>
-          ))}
+              </button>
+            ))}
         </nav>
         <div className="nav-divider" />
         <span className="nav-caption">MI JUEGO</span>
         <nav aria-label="Mi juego">
-          {extras.map(({ id, label, icon: Icon }) => (
+          {(nativeApp
+            ? [...extras, { id: "hoy", label: "Jugar hoy", icon: Flag }]
+            : extras
+          ).map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               className={cn("nav-item", page === id && "active")}
@@ -989,11 +1198,27 @@ export default function FairwayApp() {
       <div className="workspace" inert={isMobile && mobileOpen}>
         <header className="topbar">
           <div className="breadcrumb">
+            {nativeApp && canNativeBack && (
+              <button
+                type="button"
+                className="icon-btn native-screen-back"
+                aria-label="Volver a la pantalla anterior"
+                onClick={nativeBack}
+              >
+                <ArrowLeft size={20} />
+              </button>
+            )}
             <button
               type="button"
               ref={menuButtonRef}
               className="icon-btn sidebar-toggle"
-              aria-label={sidebarVisible ? "Ocultar menú" : "Mostrar menú"}
+              aria-label={
+                sidebarVisible
+                  ? "Ocultar menú"
+                  : nativeApp
+                    ? "Más opciones"
+                    : "Mostrar menú"
+              }
               title={sidebarVisible ? "Ocultar menú" : "Mostrar menú"}
               aria-expanded={sidebarVisible}
               aria-controls="fairway-sidebar"
@@ -1024,6 +1249,12 @@ export default function FairwayApp() {
                 ].find((n) => n.id === page)?.label
               }
             </strong>
+            {nativeApp && (
+              <span className="native-header-brand">
+                <Flag size={16} />
+                fairway.
+              </span>
+            )}
           </div>
           <div className="topbar-actions">
             <button
@@ -1120,6 +1351,12 @@ export default function FairwayApp() {
           tabIndex={-1}
           data-page={page}
         >
+          {nativeApp && (
+            <>
+              <NativeConnectionState cachedAt={data.nativeCachedAt} />
+              <NativeRefresh {...nativeShell} />
+            </>
+          )}
           {data.demo && (
             <div className="demo-notice">
               <span>
@@ -1148,6 +1385,28 @@ export default function FairwayApp() {
                 ))}
               </div>
             </div>
+          ) : nativeApp &&
+            data.nativeCachedAt &&
+            [
+              "descubrir",
+              "partidas",
+              "mensajes",
+              "comunidad",
+              "amigos",
+              "hoy",
+            ].includes(page) ? (
+            <Empty
+              title="Esta pantalla necesita conexión"
+              description="Para mostrar jugadores, lugares disponibles y conversaciones actualizados necesitamos internet. Tus scores guardados y las tarjetas nuevas siguen a mano."
+              action={
+                <div className="button-row">
+                  <Button onClick={() => go("scores")}>Abrir mis scores</Button>
+                  <Button variant="outline" onClick={score}>
+                    Anotar un borrador
+                  </Button>
+                </div>
+              }
+            />
           ) : !hasAuth ? (
             <>
               {page === "descubrir" && (
@@ -1178,226 +1437,46 @@ export default function FairwayApp() {
             </>
           ) : (
             <>
+              {nativeApp && page === "descubrir" && (
+                <NativeQuickActions
+                  onCreate={() => {
+                    setPartyDate(undefined);
+                    setModal("create-party");
+                  }}
+                  onScore={score}
+                  onFriends={() => go("amigos")}
+                  onStory={() => setModal("create-story")}
+                />
+              )}
               {page === "descubrir" && (
                 <>
-                  <SectionHeading
-                    eyebrow="MEJOR GOLF. MEJOR COMPAÑÍA."
-                    title="Encuentra tu próximo foursome."
-                    description="Filtra por club, handicap y días disponibles para encontrar con quién jugar."
-                    action={
-                      <Button
-                        variant="outline"
-                        onClick={() => {
-                          setDraftFilters(filters);
-                          setModal("filters");
-                        }}
-                      >
-                        <SlidersHorizontal size={16} />
-                        Filtros
-                        {activeFilterCount > 0 && (
-                          <span className="filter-count">
-                            {activeFilterCount}
-                          </span>
-                        )}
-                      </Button>
-                    }
+                  <Discovery
+                    compact={nativeApp}
+                    data={data}
+                    filters={filters}
+                    cityScope={cityScope}
+                    onCityScopeChange={setCityScope}
+                    onFilters={() => {
+                      setDraftFilters(filters);
+                      setModal("filters");
+                    }}
+                    onResetFilters={() => setFilters(initialFilters)}
+                    onProfile={openProfile}
+                    onGame={openGame}
+                    onCreate={() => {
+                      setPartyDate(undefined);
+                      setModal("create-party");
+                    }}
+                    onShareProfile={() => setModal("profile-qr")}
+                    onSetup={() => setModal("first-round")}
+                    onNavigate={go}
+                    onCompatibility={() => setModal("compatibility")}
                   />
-                  <div className="city-explore-filter">
-                    <CityFilter
-                      scope={cityScope}
-                      ownCity={ownCity}
-                      cities={[
-                        ...data.clubs.map((c) => c.city),
-                        ...data.profiles.map((p) => p.city),
-                      ]}
-                      onChange={setCityScope}
-                    />
-                  </div>
-                  <div className="discover-toolbar">
-                    <div className="tabs">
-                      <button
-                        onClick={() => setTab("Para ti")}
-                        className={tab === "Para ti" ? "active" : ""}
-                        aria-pressed={tab === "Para ti"}
-                      >
-                        Para ti<span>{visible.length}</span>
-                      </button>
-                      <button
-                        onClick={() => setTab("Favoritos")}
-                        className={tab === "Favoritos" ? "active" : ""}
-                        aria-pressed={tab === "Favoritos"}
-                      >
-                        Favoritos
-                        <Bookmark size={13} />
-                      </button>
-                      <button
-                        onClick={() => {
-                          go("mensajes");
-                        }}
-                      >
-                        Mis matches
-                      </button>
-                    </div>
-                    <label className="search-input">
-                      <Search size={16} />
-                      <input
-                        aria-label="Buscar golfista"
-                        type="search"
-                        placeholder="Buscar golfista"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                      />
-                    </label>
-                  </div>
-                  <div className="discovery-subline">
-                    <p aria-live="polite" aria-atomic="true">
-                      <span className="sr-only">
-                        {visible.length} golfistas encontrados.{" "}
-                      </span>
-                      <span className="live-dot" />
-                      {tab === "Favoritos"
-                        ? "Tus compañeros guardados"
-                        : "Personas con las que vale la pena compartir 18 hoyos"}
-                    </p>
-                    <span>
-                      Ordenados por compatibilidad
-                      <ChevronDown size={13} />
-                    </span>
-                  </div>
-                  {tab === "Para ti" ? (
-                    <SwipeDeck
-                      key={`${data.user?.id || "demo"}:${cityScope}:${search}:${JSON.stringify(filters)}`}
-                      profiles={visible}
-                      onDecide={data.decide}
-                      renderCard={(p, actions) => (
-                        <ProfileCard
-                          profile={p}
-                          me={data.me}
-                          club={clubName(p.club_id)}
-                          favorite={data.favorites.includes(p.id)}
-                          onOpen={() => openProfile(p)}
-                          onLike={actions.onLike}
-                          onPass={actions.onPass}
-                          onFavorite={() => void data.favorite(p.id)}
-                          disabled={actions.busy}
-                        />
-                      )}
-                      empty={
-                        <Empty
-                          title="Llegaste al final del fairway"
-                          description="Prueba con otros filtros o vuelve más tarde para descubrir nuevos golfistas."
-                          action={
-                            <Button
-                              variant="outline"
-                              onClick={() => {
-                                setFilters(initialFilters);
-                                setSearch("");
-                                setCityScope("any");
-                              }}
-                            >
-                              Ver todas las ciudades
-                            </Button>
-                          }
-                        />
-                      }
-                    />
-                  ) : (
-                    <div className="profile-grid">
-                      {visible.slice(0, 6).map((p) => (
-                        <ProfileCard
-                          key={p.id}
-                          profile={p}
-                          me={data.me}
-                          club={clubName(p.club_id)}
-                          favorite={data.favorites.includes(p.id)}
-                          onOpen={() => openProfile(p)}
-                          onLike={() => void data.decide(p.id, "like")}
-                          onPass={() => void data.decide(p.id, "pass")}
-                          onFavorite={() => void data.favorite(p.id)}
-                        />
-                      ))}
-                    </div>
-                  )}
-                  {tab === "Favoritos" && visible.length === 0 && (
-                    <Empty
-                      title="Tu próximo compañero favorito está por llegar"
-                      description="Guarda perfiles para encontrarlos aquí."
-                    />
-                  )}
-                  <div className="discovery-footnote">
-                    <ShieldCheck size={14} />
-                    <span>
-                      La compatibilidad se basa en club, disponibilidad,
-                      modalidad, handicap y estilo de juego.
-                    </span>
-                    <button onClick={() => setModal("compatibility")}>
-                      ¿Cómo funciona?
-                    </button>
-                  </div>
-                  <section className="golf-hero discovery-party-promo">
-                    <div className="hero-image" />
-                    <div className="hero-content">
-                      <span className="hero-eyebrow">
-                        <span className="live-dot" />
-                        PARTIDAS ENTRE GOLFISTAS
-                        {cityScope !== "any" ? ` · ${exploringCity}` : ""}
-                      </span>
-                      <h2>
-                        ¿Te falta alguien
-                        <br />
-                        para completar el grupo?
-                      </h2>
-                      <p>
-                        Consulta las partidas y acuerda el horario en el chat.
-                      </p>
-                      <button onClick={() => go("partidas")}>
-                        Explorar partidas
-                        <ArrowUpRight size={16} />
-                      </button>
-                    </div>
-                    <div className="hero-stamp">
-                      <CourseIcon part="fairway" size={26} />
-                      <span>
-                        GOOD GOLF.
-                        <br />
-                        GREAT COMPANY.
-                      </span>
-                    </div>
-                  </section>
-                  <div className="next-section-heading">
-                    <div>
-                      <span className="eyebrow">HAZ ESPACIO EN TU AGENDA</span>
-                      <h2>El green te está esperando</h2>
-                    </div>
-                    <InlineLink onClick={() => go("partidas")}>
-                      Ver todas las partidas
-                    </InlineLink>
-                  </div>
-                  <div className="game-grid">
-                    {data.games
-                      .filter(
-                        (g) =>
-                          g.status === "open" &&
-                          gameIsUpcoming(g) &&
-                          gameMatchesCity(g, data.clubs, cityScope, ownCity),
-                      )
-                      .slice(0, 2)
-                      .map((g) => (
-                        <GameCard
-                          key={g.id}
-                          game={g}
-                          club={clubName(g.club_id)}
-                          onOpen={() => {
-                            setGame(g);
-                            setModal("game");
-                          }}
-                        />
-                      ))}
-                  </div>
                 </>
               )}
               {page === "partidas" && (
                 <Parties
+                  compact={nativeApp}
                   data={data}
                   cityScope={cityScope}
                   onCityScopeChange={setCityScope}
@@ -1407,20 +1486,26 @@ export default function FairwayApp() {
                     setPartyDate(date);
                     setModal("create-party");
                   }}
-                  onOpen={(g) => {
-                    setGame(g);
-                    setModal("game");
-                  }}
+                  onOpen={openGame}
                 />
               )}
               {page === "mensajes" && (
                 <>
                   <SectionHeading
                     eyebrow="DEL MATCH AL TEE"
-                    title="Buenas conversaciones. Mejores rondas."
+                    title={
+                      nativeApp
+                        ? "Tus conversaciones"
+                        : "Buenas conversaciones. Mejores rondas."
+                    }
                     description="Conversa con tus matches y con los participantes de tus partidas."
                   />
-                  <div className="chat-layout">
+                  <div
+                    className={cn(
+                      "chat-layout",
+                      nativeApp && currentChat && "native-chat-open",
+                    )}
+                  >
                     <aside className="chat-sidebar">
                       <h3>
                         Mis conversaciones{" "}
@@ -1430,7 +1515,7 @@ export default function FairwayApp() {
                         const last = data.messages
                           .filter((m) => m.conversation_id === c.id)
                           .at(-1);
-                        return (
+                        const contact = (
                           <button
                             key={c.id}
                             onClick={() => selectChat(c.id)}
@@ -1467,6 +1552,33 @@ export default function FairwayApp() {
                             </div>
                           </button>
                         );
+                        return nativeApp ? (
+                          <NativeSwipeRow
+                            key={c.id}
+                            onRead={async () => {
+                              if (!data.user || !supabase) return false;
+                              const result = await supabase
+                                .from("conversation_members")
+                                .update({
+                                  last_read_at: new Date().toISOString(),
+                                })
+                                .eq("conversation_id", c.id)
+                                .eq("user_id", data.user.id);
+                              if (result.error) {
+                                data.notify(
+                                  "No se pudo marcar como leída. Revisa tu conexión.",
+                                );
+                                return false;
+                              }
+                              await data.refresh();
+                              return true;
+                            }}
+                          >
+                            {contact}
+                          </NativeSwipeRow>
+                        ) : (
+                          contact
+                        );
                       })}
                       {!data.conversations.length && (
                         <p className="muted padded">
@@ -1479,6 +1591,16 @@ export default function FairwayApp() {
                       {currentChat ? (
                         <>
                           <div className="chat-title">
+                            {nativeApp && (
+                              <button
+                                type="button"
+                                className="native-chat-back"
+                                onClick={() => setActiveChat(null)}
+                              >
+                                <ArrowLeft size={18} />
+                                Conversaciones
+                              </button>
+                            )}
                             <strong>{conversationName(currentChat)}</strong>
                             {currentChatGame && (
                               <small className="party-chat-date">
@@ -1809,9 +1931,12 @@ export default function FairwayApp() {
               )}
               {page === "scores" && (
                 <>
+                  {nativeApp && <NativeOfflinePanel userId={data.user?.id} />}
                   <SectionHeading
                     eyebrow="CADA GOLPE CUENTA"
-                    title="La historia de tu juego."
+                    title={
+                      nativeApp ? "Mis scores" : "La historia de tu juego."
+                    }
                     description="Guarda tus rondas, celebra tus mejores scores y sigue mejorando."
                     action={
                       <Button onClick={score}>
@@ -1834,7 +1959,9 @@ export default function FairwayApp() {
                 <>
                   <SectionHeading
                     eyebrow="UN POCO MEJOR, CADA RONDA"
-                    title="Tu juego en números."
+                    title={
+                      nativeApp ? "Mis estadísticas" : "Tu juego en números."
+                    }
                     description="El progreso está en los detalles. Descubre los tuyos."
                     action={
                       <Button onClick={score}>
@@ -1850,7 +1977,9 @@ export default function FairwayApp() {
                 <>
                   <SectionHeading
                     eyebrow="MÁS ALLÁ DEL HOYO 18"
-                    title="Historias que se comparten."
+                    title={
+                      nativeApp ? "Tu comunidad" : "Historias que se comparten."
+                    }
                     description="Logros, rondas y conversaciones de tu comunidad de golf."
                   />
                   <Community data={data} />
@@ -1922,25 +2051,34 @@ export default function FairwayApp() {
           </footer>
         </main>
       </div>
-      <nav
-        className="mobile-nav"
-        aria-label="Navegación móvil"
-        inert={isMobile && mobileOpen}
-      >
-        {navigation
-          .filter(({ id }) => id !== "comunidad")
-          .map(({ id, label, icon: Icon }) => (
-            <button
-              key={id}
-              className={page === id ? "active" : ""}
-              aria-current={page === id ? "page" : undefined}
-              onClick={() => go(id)}
-            >
-              <Icon size={20} />
-              <span>{label}</span>
-            </button>
-          ))}
-      </nav>
+      {nativeApp ? (
+        <NativeTabBar
+          page={page}
+          onNavigate={go}
+          unreadMessages={unreadMessages}
+          inert={isMobile && mobileOpen}
+        />
+      ) : (
+        <nav
+          className="mobile-nav"
+          aria-label="Navegación móvil"
+          inert={isMobile && mobileOpen}
+        >
+          {navigation
+            .filter(({ id }) => id !== "comunidad")
+            .map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                className={page === id ? "active" : ""}
+                aria-current={page === id ? "page" : undefined}
+                onClick={() => go(id)}
+              >
+                <Icon size={20} />
+                <span>{label}</span>
+              </button>
+            ))}
+        </nav>
+      )}
       {data.toast && (
         <div
           className="toast"
@@ -1954,6 +2092,30 @@ export default function FairwayApp() {
             <X size={15} />
           </button>
         </div>
+      )}
+      {nativeApp && modal === "create-story" && (
+        <NativeStoryComposer data={data} onClose={close} />
+      )}
+      {nativeApp && modal === "logout-pending" && (
+        <Modal title="Tienes scores sin sincronizar" onClose={close}>
+          <p>
+            Cerrar sesión eliminará de este iPhone los borradores que todavía no
+            se han subido. Puedes conservar la sesión y sincronizarlos primero.
+          </p>
+          <div className="button-row">
+            <Button
+              onClick={() => {
+                close();
+                go("scores");
+              }}
+            >
+              Conservar y revisar scores
+            </Button>
+            <Button variant="outline" onClick={() => void finishLogout()}>
+              Cerrar sesión y eliminar borradores locales
+            </Button>
+          </div>
+        </Modal>
       )}
       {modal === "city" && (
         <Modal
@@ -1996,6 +2158,68 @@ export default function FairwayApp() {
           onLogin={() => openAuth("login")}
           onSignup={() => openAuth("signup")}
         />
+      )}
+      {modal === "first-round" && data.user && (
+        <Modal title="Prepara tu primera ronda" onClose={close}>
+          <FirstRoundSetup
+            profile={data.me}
+            clubs={data.clubs}
+            onSkip={close}
+            onSave={async (preferences) => {
+              const ok = await data.run(
+                () =>
+                  supabase!
+                    .from("profiles")
+                    .update(preferences)
+                    .eq("id", data.user!.id)
+                    .select("id")
+                    .single(),
+                "Preferencias guardadas.",
+              );
+              if (!ok)
+                throw new Error(
+                  "No pudimos guardar tus preferencias. Revisa tu conexión e intenta de nuevo.",
+                );
+            }}
+            onDone={(destination) => {
+              close();
+              go(destination === "crear" ? "partidas" : "descubrir");
+              if (destination === "crear") {
+                setPartyDate(undefined);
+                setModal("create-party");
+              }
+            }}
+          />
+        </Modal>
+      )}
+      {modal === "loading-game" && (
+        <Modal title="Abriendo partida" onClose={close}>
+          <p role="status">Buscando el plan…</p>
+        </Modal>
+      )}
+      {(modal === "game-unavailable" || modal === "game-error") && (
+        <Modal
+          title={
+            modal === "game-error"
+              ? "No pudimos cargar la partida"
+              : "Partida no disponible"
+          }
+          onClose={close}
+        >
+          <p>
+            {modal === "game-error"
+              ? "Revisa tu conexión e intenta de nuevo."
+              : "Puede ser privada, haberse eliminado o requerir una invitación. El enlace no cambia los permisos de acceso."}
+          </p>
+          {modal === "game-error" && (
+            <Button onClick={() => setGameLinkAttempt((n) => n + 1)}>
+              Reintentar
+            </Button>
+          )}
+          <Button variant="outline" onClick={close}>
+            Volver a explorar
+          </Button>
+        </Modal>
       )}
       {modal === "profile-qr" && (
         <ProfileQR profile={data.me} onClose={close} />
@@ -2308,219 +2532,21 @@ export default function FairwayApp() {
         </Modal>
       )}
       {modal === "game" && currentGame && (
-        <Modal title="Nos vemos en el tee" onClose={close}>
-          <div className="game-detail-hero">
-            <Flag size={24} />
-            <h2>{clubName(currentGame.club_id)}</h2>
-            <p>
-              {dateFormat(currentGame.starts_at)} ·{" "}
-              {timeFormat(currentGame.starts_at)} · {currentGame.holes} hoyos
-            </p>
-          </div>
-          <div className="chips">
-            <span className="badge">
-              {currentGame.join_mode === "open"
-                ? "Party abierta · unión directa"
-                : "Con aprobación"}
-            </span>
-            <span className="badge">{currentGame.format}</span>
-            <span className="badge">{currentGame.kind}</span>
-            <span className="badge">{statusLabel(currentGame.status)}</span>
-          </div>
-          <p>{currentGame.description}</p>
-          <div className="notice">
-            <Info size={17} />
-            {currentGame.access_conditions}
-          </div>
-          <GameJoinActions
-            key={currentGame.id}
-            game={currentGame}
-            data={data}
-            onChat={(id) => {
-              selectChat(id);
-              close();
-              go("mensajes");
-            }}
-          />
-          <h3>Jugadores confirmados</h3>
-          {currentGame.participants
-            ?.filter((p) => p.status === "confirmed")
-            .map((p) => (
-              <div className="list-row" key={p.user_id}>
-                <span>
-                  {allProfiles.find((u) => u.id === p.user_id)?.name ||
-                    "Golfista"}
-                </span>
-                <span className="badge">Confirmado</span>
-              </div>
-            ))}
-          {currentGame.host_id === data.user?.id &&
-          ["open", "full"].includes(currentGame.status) ? (
-            <>
-              <form
-                className="form"
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  const fd = new FormData(e.currentTarget);
-                  await data.run(
-                    () =>
-                      supabase!.rpc("invite_to_game", {
-                        g: currentGame.id,
-                        invitee: fd.get("invitee"),
-                      }),
-                    "Invitación enviada. La persona debe aceptarla y confirmar acceso.",
-                  );
-                }}
-              >
-                <Field label="Invitar a un golfista">
-                  <select name="invitee" required>
-                    {data.profiles.map((p) => (
-                      <option value={p.id} key={p.id}>
-                        {p.name}
-                      </option>
-                    ))}
-                  </select>
-                </Field>
-                <Button variant="outline">Enviar invitación</Button>
-              </form>
-              <h3>Solicitudes pendientes</h3>
-              {currentGame.participants
-                ?.filter((p) => p.status === "requested")
-                .map((p) => (
-                  <div className="list-row" key={p.user_id}>
-                    <span>
-                      {allProfiles.find((u) => u.id === p.user_id)?.name ||
-                        "Golfista"}
-                    </span>
-                    <Button
-                      variant="outline"
-                      onClick={() =>
-                        void data.run(
-                          () =>
-                            supabase!.rpc("manage_game", {
-                              g: currentGame.id,
-                              player: p.user_id,
-                              action: "confirmed",
-                            }),
-                          "Jugador confirmado.",
-                        )
-                      }
-                    >
-                      Aprobar
-                    </Button>
-                    <button
-                      className="icon-btn"
-                      aria-label="Rechazar solicitud"
-                      onClick={() =>
-                        void data.run(() =>
-                          supabase!.rpc("manage_game", {
-                            g: currentGame.id,
-                            player: p.user_id,
-                            action: "rejected",
-                          }),
-                        )
-                      }
-                    >
-                      <X size={17} />
-                    </button>
-                  </div>
-                ))}
-              <div className="button-row">
-                <Button
-                  variant="outline"
-                  onClick={() =>
-                    void data.run(
-                      () =>
-                        supabase!.rpc("manage_game", {
-                          g: currentGame.id,
-                          player: data.user!.id,
-                          action: "finished",
-                        }),
-                      "Partida finalizada. Ya pueden evaluarse.",
-                    )
-                  }
-                >
-                  Finalizar partida
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() =>
-                    void data.run(
-                      () =>
-                        supabase!.rpc("manage_game", {
-                          g: currentGame.id,
-                          player: data.user!.id,
-                          action: "cancelled",
-                        }),
-                      "Partida cancelada.",
-                    )
-                  }
-                >
-                  Cancelar partida
-                </Button>
-              </div>
-            </>
-          ) : null}
-
-          {currentGame.status === "finished" &&
-            currentGame.participants?.some(
-              (p) => p.user_id === data.user?.id && p.status === "confirmed",
-            ) && (
-              <>
-                <h3>Califica a tus compañeros</h3>
-                <p>
-                  De 1 a 5 estrellas. Una calificación por compañero en esta
-                  partida.
-                </p>
-                {currentGame.participants
-                  .filter(
-                    (p) =>
-                      p.status === "confirmed" && p.user_id !== data.user?.id,
-                  )
-                  .map((p) => {
-                    const target = allProfiles.find((u) => u.id === p.user_id);
-                    const submitted = reviewForPlayer(
-                      data.myReviews,
-                      currentGame.id,
-                      p.user_id,
-                    );
-                    return (
-                      target && (
-                        <div className="review-player-row" key={p.user_id}>
-                          <span>{target.name}</span>
-                          {submitted ? (
-                            <span className="review-submitted" role="status">
-                              <Check size={15} aria-hidden="true" /> Calificado:{" "}
-                              {reviewValue(submitted)} de 5
-                            </span>
-                          ) : (
-                            <Button
-                              variant="outline"
-                              disabled={
-                                !canRatePlayer(
-                                  currentGame,
-                                  data.user?.id,
-                                  target.id,
-                                  data.myReviews,
-                                )
-                              }
-                              aria-label={`Calificar a ${target.name}`}
-                              onClick={() => {
-                                setReviewTarget(target);
-                                setModal("review");
-                              }}
-                            >
-                              <Star size={15} aria-hidden="true" />
-                              Calificar
-                            </Button>
-                          )}
-                        </div>
-                      )
-                    );
-                  })}
-              </>
-            )}
-        </Modal>
+        <GameDetails
+          game={currentGame}
+          clubName={clubName(currentGame.club_id)}
+          data={data}
+          onClose={close}
+          onChat={(id) => {
+            selectChat(id);
+            close();
+            go("mensajes");
+          }}
+          onReview={(target) => {
+            setReviewTarget(target);
+            setModal("review");
+          }}
+        />
       )}
       {modal === "review" && reviewTarget && currentGame && (
         <Modal
@@ -2620,614 +2646,4 @@ export default function FairwayApp() {
       )}
     </div>
   );
-}
-function Avatar({
-  profile,
-  large = false,
-}: {
-  profile: Profile;
-  large?: boolean;
-}) {
-  return (
-    <span className={cn("avatar", large && "large")}>
-      {profile.photo ? <img src={profile.photo} alt="" /> : profile.name[0]}
-    </span>
-  );
-}
-function InfoItem({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="info-item">
-      <small>{label}</small>
-      <strong>{value}</strong>
-    </div>
-  );
-}
-function statusLabel(s: string) {
-  return (
-    {
-      open: "Abierta",
-      full: "Completa",
-      cancelled: "Cancelada",
-      finished: "Finalizada",
-    }[s] || s
-  );
-}
-function ProfileCard({
-  profile: p,
-  me,
-  club,
-  favorite,
-  onOpen,
-  onLike,
-  onPass,
-  onFavorite,
-  disabled = false,
-}: {
-  profile: Profile;
-  me: Profile;
-  club: string;
-  favorite: boolean;
-  onOpen: () => void;
-  onLike: () => void;
-  onPass: () => void;
-  onFavorite: () => void;
-  disabled?: boolean;
-}) {
-  const match = compatibility(me, p);
-  return (
-    <article className="golfer-card">
-      <div className="golfer-photo">
-        <button
-          disabled={disabled}
-          onClick={onOpen}
-          aria-label={`Ver perfil de ${p.name}`}
-          className="photo-open"
-        >
-          <img
-            src={p.photo || "/images/avatar.svg"}
-            alt={p.name}
-            loading="lazy"
-          />
-        </button>
-        <span className="match-pill">
-          <span className="live-dot" />
-          {match.score}% compatible
-        </span>
-        <button
-          disabled={disabled}
-          className={cn("save-profile", favorite && "saved")}
-          aria-label={favorite ? "Quitar de favoritos" : "Guardar perfil"}
-          aria-pressed={favorite}
-          onClick={onFavorite}
-        >
-          <Bookmark size={17} fill={favorite ? "currentColor" : "none"} />
-        </button>
-        <div className="photo-gradient" />
-        <div className="golfer-name">
-          <button disabled={disabled} onClick={onOpen}>
-            {p.name}
-            <span>, {p.age}</span>
-            {p.verified && (
-              <>
-                <ShieldCheck size={18} />
-                <span className="sr-only">Perfil verificado</span>
-              </>
-            )}
-          </button>
-          <span>
-            <MapPin size={12} />
-            {p.city}
-          </span>
-        </div>
-      </div>
-      <div className="golfer-details">
-        <div className="golfer-meta">
-          <span className="handicap-chip">
-            HCP <strong>{p.handicap ?? "S/H"}</strong>
-          </span>
-          <span className="rating" role="img" aria-label={ratingLabel(p)}>
-            <RatingBeer profile={p} compact />
-            <Star size={12} fill="currentColor" aria-hidden="true" />
-            {p.review_count ? p.rating : "—"}
-            <small>{p.review_count ? `(${p.review_count})` : ""}</small>
-          </span>
-        </div>
-        <p className="golfer-club">
-          <Flag size={13} />
-          {club}
-        </p>
-        <p className="golfer-bio">{p.bio}</p>
-        <div className="golfer-tags">
-          <span>
-            <CalendarDays size={12} />
-            {p.availability.includes("Sábado") &&
-            p.availability.includes("Domingo")
-              ? "Fines de semana"
-              : p.availability.slice(0, 2).join(" y ")}
-          </span>
-          <span>
-            <Target size={12} />
-            {p.holes} hoyos
-          </span>
-        </div>
-        <div className="golfer-actions">
-          <button
-            disabled={disabled}
-            className="pass-button"
-            onClick={onPass}
-            aria-label={`Pasar a ${p.name}`}
-          >
-            <X size={21} />
-          </button>
-          <button
-            disabled={disabled}
-            className="profile-info-button"
-            onClick={onOpen}
-          >
-            Ver perfil
-            <ArrowUpRight size={13} />
-          </button>
-          <button
-            disabled={disabled}
-            className="like-button"
-            onClick={onLike}
-            aria-label={`Dar like a ${p.name}`}
-          >
-            <Heart size={22} />
-          </button>
-        </div>
-      </div>
-    </article>
-  );
-}
-function GameCard({
-  game: g,
-  club,
-  onOpen,
-}: {
-  game: Game;
-  club: string;
-  onOpen: () => void;
-}) {
-  const confirmed =
-    g.participants?.filter((p) => p.status === "confirmed").length || 1;
-  return (
-    <article className="game-card">
-      <div className="game-icon">
-        <Flag size={23} strokeWidth={1.5} />
-      </div>
-      <div className="game-card-content">
-        <div className="game-card-top">
-          <span className="eyebrow">
-            {g.status === "open"
-              ? `BUSCAMOS ${g.capacity - confirmed} ${g.capacity - confirmed === 1 ? "JUGADOR" : "JUGADORES"}`
-              : statusLabel(g.status)}
-          </span>
-          <span className="game-type">{g.holes} hoyos</span>
-        </div>
-        <h3>{club}</h3>
-        <p>
-          <CalendarDays size={13} />
-          {dateFormat(g.starts_at)}
-          <i /> <Clock size={13} />
-          {timeFormat(g.starts_at)}
-        </p>
-        <div className="game-card-bottom">
-          <div className="participant-preview">
-            <span>
-              {confirmed}/{g.capacity}
-            </span>
-            Jugadores confirmados
-          </div>
-          <button onClick={onOpen}>
-            Ver partida
-            <ArrowUpRight size={15} />
-          </button>
-        </div>
-      </div>
-    </article>
-  );
-}
-function Rounds({
-  data,
-  onEdit,
-  onNew,
-}: {
-  data: ReturnType<typeof useFairway>;
-  onEdit: (r: Round) => void;
-  onNew: () => void;
-}) {
-  return (
-    <div className="panel round-history">
-      <div className="panel-heading">
-        <h3>Historial de rondas</h3>
-        <span className="badge">{data.rounds.length} rondas</span>
-      </div>
-      {data.rounds.length ? (
-        <div
-          className="table-scroll"
-          role="region"
-          aria-label="Historial de rondas, desplaza para ver todas las columnas"
-          tabIndex={0}
-        >
-          <table className="rounds-table">
-            <caption className="sr-only">
-              Tus rondas registradas, resultados y estado de publicación.
-            </caption>
-            <thead>
-              <tr>
-                <th scope="col">Campo / fecha</th>
-                <th scope="col">Modalidad</th>
-                <th scope="col">Score</th>
-                <th scope="col">Contra par</th>
-                <th scope="col">Estado</th>
-                <th scope="col">
-                  <span className="sr-only">Acciones</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.rounds.map((r) => {
-                const s = summarize(r.scores);
-                return (
-                  <tr key={r.id}>
-                    <td>
-                      <strong>
-                        {data.clubs.find((c) => c.id === r.club_id)?.name ||
-                          r.course ||
-                          "Otro campo"}
-                      </strong>
-                      <small>
-                        {r.played_at} ·{" "}
-                        {r.verified
-                          ? "Datos verificados"
-                          : "Captura no verificada"}
-                      </small>
-                    </td>
-                    <td>{r.holes} hoyos</td>
-                    <td className="total-score">{s.total}</td>
-                    <td>
-                      {s.relative === null
-                        ? "—"
-                        : s.relative > 0
-                          ? "+" + s.relative
-                          : s.relative}
-                    </td>
-                    <td>
-                      <span className="badge">
-                        {r.status === "draft"
-                          ? "Borrador"
-                          : r.status === "published"
-                            ? "Publicado"
-                            : "Finalizado"}
-                      </span>
-                    </td>
-                    <td>
-                      <button
-                        className="icon-btn"
-                        aria-label="Abrir scorecard"
-                        onClick={() => onEdit(r)}
-                      >
-                        <ArrowUpRight size={19} />
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <Empty
-          title="El primer score es el comienzo"
-          description="Registra una ronda, hoyo por hoyo, y construye tu historial."
-          action={<Button onClick={onNew}>Registrar mi primera ronda</Button>}
-        />
-      )}
-    </div>
-  );
-}
-function FilterForm({
-  filters: f,
-  setFilters: set,
-  clubs,
-  onSave,
-  onReset,
-}: {
-  filters: Filters;
-  setFilters: (v: Filters) => void;
-  clubs: { id: string; name: string }[];
-  onSave: () => void;
-  onReset: () => void;
-}) {
-  const update = (key: keyof Filters, value: string | number | boolean) =>
-    set({ ...f, [key]: value });
-  return (
-    <form
-      className="form"
-      onSubmit={(e) => {
-        e.preventDefault();
-        if (f.minAge > f.maxAge || f.minHcp > f.maxHcp) return;
-        onSave();
-      }}
-    >
-      <Field label="Club de golf">
-        <select value={f.club} onChange={(e) => update("club", e.target.value)}>
-          <option value="any">Cualquier club</option>
-          <option value="mine">Solo jugadores de mi club</option>
-          <option value="none">Sin club</option>
-          {clubs.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
-      </Field>
-      <div className="form-grid">
-        <Field label="Handicap mínimo">
-          <input
-            type="number"
-            min={-10}
-            max={f.maxHcp}
-            value={f.minHcp}
-            onChange={(e) => update("minHcp", Number(e.target.value))}
-          />
-        </Field>
-        <Field label="Handicap máximo">
-          <input
-            type="number"
-            min={f.minHcp}
-            max={54}
-            value={f.maxHcp}
-            onChange={(e) => update("maxHcp", Number(e.target.value))}
-          />
-        </Field>
-        <Field label="Edad mínima">
-          <input
-            type="number"
-            min={18}
-            max={f.maxAge}
-            value={f.minAge}
-            onChange={(e) => update("minAge", Number(e.target.value))}
-          />
-        </Field>
-        <Field label="Edad máxima">
-          <input
-            type="number"
-            min={f.minAge}
-            max={100}
-            value={f.maxAge}
-            onChange={(e) => update("maxAge", Number(e.target.value))}
-          />
-        </Field>
-        <Field label="Disponibilidad">
-          <select value={f.day} onChange={(e) => update("day", e.target.value)}>
-            <option value="any">Cualquier día</option>
-            {days.map((d) => (
-              <option key={d}>{d}</option>
-            ))}
-          </select>
-        </Field>
-        <Field label="Modalidad">
-          <select
-            value={f.holes}
-            onChange={(e) => update("holes", e.target.value)}
-          >
-            <option value="any">9 o 18 hoyos</option>
-            <option value="9">9 hoyos</option>
-            <option value="18">18 hoyos</option>
-          </select>
-        </Field>
-      </div>
-      <Field label="Estilo de juego">
-        <select
-          value={f.style}
-          onChange={(e) => update("style", e.target.value)}
-        >
-          <option value="any">Cualquier estilo</option>
-          <option value="social">Social</option>
-          <option value="intermedio">Intermedio</option>
-          <option value="competitivo">Competitivo</option>
-        </select>
-      </Field>
-      {[
-        ["noHcp", "Incluir jugadores sin handicap"],
-        ["verified", "Solo perfiles verificados"],
-        ["guests", "Aceptan solicitudes de invitados"],
-        ["beginner", "Acompañan a principiantes"],
-        ["goodRating", "Calificación de 4 o más (con evaluaciones)"],
-      ].map(([k, label]) => (
-        <label className="checkbox" key={k}>
-          <input
-            type="checkbox"
-            checked={Boolean(f[k as keyof Filters])}
-            onChange={(e) => update(k as keyof Filters, e.target.checked)}
-          />
-          {label}
-        </label>
-      ))}
-      <div className="button-row">
-        <Button type="button" variant="outline" onClick={onReset}>
-          <RotateCcw size={15} />
-          Restablecer
-        </Button>
-        <Button>
-          Aplicar filtros
-          <Check size={16} />
-        </Button>
-      </div>
-    </form>
-  );
-}
-function Availability({
-  data,
-  openProfile,
-  onCreate,
-  cityScope = "any",
-  onCityScopeChange,
-}: {
-  data: ReturnType<typeof useFairway>;
-  openProfile: (p: Profile) => void;
-  onCreate: () => void;
-  cityScope?: string;
-  onCityScopeChange?: (scope: string) => void;
-}) {
-  const [entries, setEntries] = useState<
-    {
-      user_id: string;
-      starts_at: string;
-      expires_at: string;
-      holes: number;
-      club_id: string;
-    }[]
-  >([]);
-  async function load() {
-    if (!supabase) return;
-    const { data: r, error } = await supabase
-      .from("availability")
-      .select("*")
-      .gt("expires_at", new Date().toISOString());
-    if (error) data.notify(error.message);
-    else setEntries(r || []);
-  }
-  useEffect(() => {
-    void load();
-  }, [data.user]);
-  const visibleEntries = entries.filter(
-    (entry) =>
-      entry.user_id !== data.user?.id &&
-      data.profiles.some((profile) => profile.id === entry.user_id) &&
-      gameMatchesCity(entry, data.clubs, cityScope, data.me.city),
-  );
-  return (
-    <>
-      <SectionHeading
-        eyebrow="ESPONTÁNEO TAMBIÉN ES UN GRAN PLAN"
-        title="¿Quién juega hoy?"
-        description="Publica tu disponibilidad temporal y encuentra compañía."
-        action={
-          <Button onClick={onCreate}>
-            <Plus size={16} />
-            Armar partida
-          </Button>
-        }
-      />
-      {onCityScopeChange && (
-        <div className="city-explore-filter">
-          <CityFilter
-            scope={cityScope}
-            ownCity={data.me.city}
-            cities={data.clubs.map((club) => club.city)}
-            onChange={onCityScopeChange}
-          />
-        </div>
-      )}
-      <form
-        className="panel availability-form"
-        onSubmit={async (e) => {
-          e.preventDefault();
-          const f = new FormData(e.currentTarget);
-          const start = new Date(
-            String(f.get("date")) + "T" + String(f.get("time")) + ":00-06:00",
-          );
-          const end = new Date(start.getTime() + 4 * 60 * 60 * 1000);
-          const ok = await data.run(
-            () =>
-              supabase!.from("availability").upsert({
-                user_id: data.user!.id,
-                club_id: f.get("club"),
-                starts_at: start.toISOString(),
-                expires_at: end.toISOString(),
-                holes: Number(f.get("holes")),
-              }),
-            "Disponibilidad publicada por 4 horas desde el horario indicado.",
-          );
-          if (ok) void load();
-        }}
-      >
-        <Field label="Fecha">
-          <input type="date" name="date" required />
-        </Field>
-        <Field label="Hora aproximada">
-          <input type="time" name="time" required />
-        </Field>
-        <Field label="Club">
-          <select name="club">
-            {data.clubs.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-        </Field>
-        <Field label="Hoyos">
-          <select name="holes">
-            <option>18</option>
-            <option>9</option>
-          </select>
-        </Field>
-        <Button>
-          Estoy disponible
-          <Sun size={16} />
-        </Button>
-      </form>
-      <div className="profile-grid">
-        {visibleEntries.map((e) => {
-          const p = data.profiles.find((p) => p.id === e.user_id);
-          return (
-            p && (
-              <article className="panel availability-card" key={e.user_id}>
-                <Avatar profile={p} large />
-                <h3>{p.name}</h3>
-                <p>
-                  {dateFormat(e.starts_at)} · {timeFormat(e.starts_at)} ·{" "}
-                  {e.holes} hoyos
-                </p>
-                <Button variant="outline" onClick={() => openProfile(p)}>
-                  Ver perfil
-                </Button>
-              </article>
-            )
-          );
-        })}
-      </div>
-      {!visibleEntries.length && (
-        <Empty
-          title="Sé el primero en salir al green"
-          description="La disponibilidad vence automáticamente. Publica la tuya para que otros golfistas te encuentren."
-        />
-      )}
-    </>
-  );
-}
-
-function Gallery({ paths }: { paths: string[] }) {
-  const [urls, setUrls] = useState<string[]>([]);
-  useEffect(() => {
-    let current = true;
-    void Promise.all(
-      paths.map(async (p) => {
-        if (p.startsWith("http")) return p;
-        if (!supabase) return "";
-        const { data } = await supabase.storage
-          .from("profile-images")
-          .createSignedUrl(p, 3600);
-        return data?.signedUrl || "";
-      }),
-    ).then((u) => {
-      if (current) setUrls(u.filter(Boolean));
-    });
-    return () => {
-      current = false;
-    };
-  }, [paths.join("|")]);
-  return urls.length ? (
-    <div className="photo-gallery">
-      {urls.map((u, i) => (
-        <a href={u} key={u} target="_blank" rel="noreferrer">
-          <img src={u} alt={`Fotografía de galería ${i + 1}`} />
-        </a>
-      ))}
-    </div>
-  ) : null;
 }
