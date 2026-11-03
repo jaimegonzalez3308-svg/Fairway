@@ -15,8 +15,8 @@
   grid-template-rows: auto minmax(0, 1fr) auto;
   padding: calc(12px + env(safe-area-inset-top, 0px)) 16px
     calc(14px + env(safe-area-inset-bottom, 0px));
-  background:
-    radial-gradient(90% 60% at 50% 0%, #1d4433 0%, transparent 70%), #0b1a13;
+  background: #10201a url("/images/paper-grain.svg") repeat;
+  background-blend-mode: soft-light;
   color: #fffbf2;
   outline: none;
   touch-action: none;
@@ -46,7 +46,17 @@
 }
 .story-editor-tools {
   display: flex;
-  gap: 8px;
+  overflow: hidden;
+  border: 1px solid #ffffff29;
+  border-radius: 12px;
+}
+.story-editor-tools > .story-editor-round {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.story-editor-tools > .story-editor-round + .story-editor-round {
+  border-left: 1px solid #ffffff1f;
 }
 .story-editor-round {
   position: relative;
@@ -55,8 +65,8 @@
   width: 46px;
   height: 46px;
   border: 1px solid #ffffff2e;
-  border-radius: 50%;
-  background: #ffffff14;
+  border-radius: 10px;
+  background: #ffffff0f;
   transition:
     background 0.15s,
     transform 0.15s;
@@ -94,9 +104,9 @@
 .story-editor-stage {
   position: relative;
   overflow: hidden;
-  border-radius: 18px;
+  border-radius: 6px;
   background: #16382b;
-  box-shadow: 0 24px 60px #0008;
+  box-shadow: 0 0 0 1px #ffffff14;
   isolation: isolate;
 }
 .story-editor-stage > img {
@@ -156,7 +166,6 @@
   border: 2px solid #193d2f;
   border-radius: 50%;
   background: #ead06f;
-  box-shadow: 0 2px 8px #0006;
   cursor: nwse-resize;
   touch-action: none;
 }
@@ -175,8 +184,7 @@
   display: grid;
   grid-template-rows: auto 1fr;
   padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 16px;
-  background: #0b1a13c7;
-  backdrop-filter: blur(3px);
+  background: #0b1a13f2;
 }
 .story-editor-textbar {
   display: grid;
@@ -196,8 +204,8 @@
   min-height: 40px;
   padding: 0 14px;
   border: 1px solid #ffffff33;
-  border-radius: 999px;
-  background: #ffffff12;
+  border-radius: 8px;
+  background: #ffffff0f;
   font-size: 15px;
 }
 .story-editor-fonts button[aria-pressed="true"] {
@@ -226,7 +234,7 @@
   gap: 6px;
   min-height: 44px;
   padding: 0 16px;
-  border-radius: 999px;
+  border-radius: 10px;
   background: #ead06f;
   color: #193d2f !important;
   font-weight: 650;
@@ -249,9 +257,9 @@
 }
 .story-editor-colors {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   overflow-x: auto;
-  padding: 4px 2px;
+  padding: 6px;
   scrollbar-width: none;
 }
 .story-editor-colors button {
@@ -304,8 +312,8 @@
   min-height: 50px;
   padding: 0 14px;
   border: 1px solid #ffffff33;
-  border-radius: 999px;
-  background: #ffffff14;
+  border-radius: 10px;
+  background: #ffffff0f;
   color: #fffbf2;
   font: inherit;
   font-size: 15px;
@@ -320,12 +328,11 @@
   gap: 8px;
   min-height: 50px;
   padding: 0 24px;
-  border-radius: 999px;
+  border-radius: 10px;
   background: #ead06f;
   color: #193d2f !important;
   font-size: 16px !important;
   font-weight: 700 !important;
-  box-shadow: 0 8px 24px #ead06f40;
 }
 .story-editor-publish:disabled {
   opacity: 0.6;
@@ -335,9 +342,9 @@
   display: grid;
   gap: 10px;
   padding: 12px;
-  border: 1px solid #ffffff1f;
-  border-radius: 20px;
-  background: #ffffff0d;
+  border: 1px solid #ffffff1a;
+  border-radius: 12px;
+  background: #16302a;
 }
 .story-editor-stickers {
   display: grid;
@@ -346,7 +353,7 @@
 }
 .story-editor-stickers button {
   min-height: 48px;
-  border-radius: 12px;
+  border-radius: 8px;
   font-size: 28px;
   line-height: 1;
 }
@@ -371,7 +378,7 @@
   width: 64px;
   height: 64px;
   border: 2px solid transparent;
-  border-radius: 14px;
+  border-radius: 8px;
   object-fit: cover;
 }
 .story-editor-filters button[aria-pressed="true"] img {
@@ -424,11 +431,11 @@
   gap: 10px;
   width: min(calc(100% - 32px), 340px);
   padding: 24px 20px 14px;
-  border-radius: 22px;
+  border-radius: 14px;
   background: #fffbf2;
   color: #193d2f;
   text-align: center;
-  box-shadow: 0 24px 60px #0009;
+  box-shadow: 0 12px 32px #0006;
 }
 .story-editor-confirm h2 {
   margin: 0;
@@ -443,7 +450,7 @@
 }
 .story-editor-confirm button {
   min-height: 46px;
-  border-radius: 999px;
+  border-radius: 10px;
   color: #193d2f;
   font-weight: 600;
 }
@@ -553,9 +560,6 @@
 }
 
 @media (max-width: 560px) {
-  .story-editor-tools {
-    gap: 6px;
-  }
   .story-editor-round {
     width: 44px;
     height: 44px;
@@ -574,4 +578,24 @@
 /* Website viewer: vertical swipes open the menu instead of scrolling. */
 .story-stage.swipe-menu .story-tap-navigation {
   touch-action: none;
+}
+
+/* Inside the clipped tool strip, the focus ring is drawn inward. */
+.story-editor-tools > .story-editor-round:focus-visible {
+  outline-offset: -4px;
+}
+.story-editor-tools > .story-editor-round[aria-pressed="true"]:focus-visible {
+  outline-color: #193d2f;
+}
+/* Font and colour choices meet the 44px touch target. */
+.story-editor-fonts button {
+  min-height: 44px;
+}
+.story-editor-colors button {
+  position: relative;
+}
+.story-editor-colors button::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
 }
