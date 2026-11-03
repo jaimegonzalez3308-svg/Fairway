@@ -183,7 +183,11 @@ export function NativeRefresh({
   pull: number;
 }) {
   return (
-    <div className="native-refresh" data-pulling={pull > 0}>
+    <div
+      className="native-refresh"
+      data-pulling={pull > 0}
+      data-refreshing={refreshing}
+    >
       <button
         type="button"
         onClick={() => void refresh()}

@@ -111,40 +111,44 @@ test("the compact welcome keeps login, signup, public clubs and legal notices ac
   }
 });
 
-test("app tabs expose scores directly, announce unread messages and select the destination", async () => {
+test("app tabs put friends one tap away, announce unread messages and requests, and select the destination", async () => {
   const view = mount();
   const destinations: string[] = [];
   try {
     await act(async () =>
       view.root.render(
         createElement(NativeTabBar, {
-          page: "scores",
+          page: "amigos",
           unreadMessages: 3,
+          friendRequests: 2,
           onNavigate: (page) => destinations.push(page),
         }),
       ),
     );
     const buttons = Array.from(view.container.querySelectorAll("button"));
     assert.equal(buttons.length, 5);
-    assert.equal(
-      view.container.querySelector('[aria-current="page"]')?.textContent,
-      "Scores",
+    assert.match(
+      view.container.querySelector('[aria-current="page"]')?.textContent || "",
+      /Amigos$/,
     );
     assert.ok(
       view.container.querySelector('[aria-label="3 mensajes sin leer"]'),
+    );
+    assert.ok(
+      view.container.querySelector('[aria-label="2 solicitudes de amistad"]'),
     );
     for (const button of buttons) await act(async () => button.click());
     assert.deepEqual(destinations, [
       "descubrir",
       "partidas",
-      "scores",
+      "amigos",
       "mensajes",
       "perfil",
     ]);
     await act(async () =>
       view.root.render(
         createElement(NativeTabBar, {
-          page: "scores",
+          page: "amigos",
           inert: true,
           onNavigate() {},
         }),

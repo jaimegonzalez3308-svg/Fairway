@@ -90,7 +90,7 @@ export function NativeWelcome({
 export const nativeTabs = [
   { id: "descubrir", label: "Descubrir", icon: Compass },
   { id: "partidas", label: "Partidas", icon: Flag },
-  { id: "scores", label: "Scores", icon: Target },
+  { id: "amigos", label: "Amigos", icon: Users },
   { id: "mensajes", label: "Mensajes", icon: MessageCircle },
   { id: "perfil", label: "Mi perfil", icon: UserRound },
 ];
@@ -99,11 +99,13 @@ export function NativeTabBar({
   page,
   onNavigate,
   unreadMessages = 0,
+  friendRequests = 0,
   inert = false,
 }: {
   page: string;
   onNavigate: (page: string) => void;
   unreadMessages?: number;
+  friendRequests?: number;
   inert?: boolean;
 }) {
   return (
@@ -127,6 +129,14 @@ export function NativeTabBar({
                 aria-label={`${unreadMessages} mensajes sin leer`}
               >
                 {unreadMessages > 99 ? "99+" : unreadMessages}
+              </span>
+            )}
+            {id === "amigos" && friendRequests > 0 && (
+              <span
+                className="native-tab-badge"
+                aria-label={`${friendRequests} ${friendRequests === 1 ? "solicitud" : "solicitudes"} de amistad`}
+              >
+                {friendRequests > 99 ? "99+" : friendRequests}
               </span>
             )}
           </span>

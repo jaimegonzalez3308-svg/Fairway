@@ -270,7 +270,7 @@ export default function FairwayApp() {
   const nativePrimaryPages = [
     "descubrir",
     "partidas",
-    "scores",
+    "amigos",
     "mensajes",
     "perfil",
   ];
@@ -1025,9 +1025,7 @@ export default function FairwayApp() {
         </span>
         <nav aria-label="Navegación principal">
           {navigation
-            .filter(
-              ({ id }) => !nativeApp || ["comunidad", "amigos"].includes(id),
-            )
+            .filter(({ id }) => !nativeApp || id === "comunidad")
             .map(({ id, label, icon: Icon }) => (
               <button
                 key={id}
@@ -2056,6 +2054,11 @@ export default function FairwayApp() {
           page={page}
           onNavigate={go}
           unreadMessages={unreadMessages}
+          friendRequests={
+            friends.relations.filter(
+              (r) => r.status === "pending" && r.recipient_id === data.user?.id,
+            ).length
+          }
           inert={isMobile && mobileOpen}
         />
       ) : (
@@ -2412,7 +2415,12 @@ export default function FairwayApp() {
         </Modal>
       )}
       {modal === "profile" && selected && (
-        <Modal title="Conoce a tu próximo compañero" onClose={close}>
+        <Modal
+          title={
+            nativeApp ? "Perfil de golfista" : "Conoce a tu próximo compañero"
+          }
+          onClose={close}
+        >
           <img
             src={selected.photo || "/images/avatar.svg"}
             alt={selected.name}
@@ -2465,31 +2473,56 @@ export default function FairwayApp() {
             <PlayerRating profile={withRating(selected, data.ratings)} />
             <p>Solo califican compañeros de partidas finalizadas.</p>
           </section>
-          <div className="button-row">
-            <FriendshipActions
-              personId={selected.id}
-              friends={friends}
-              userId={data.user?.id || data.me.id}
-            />
-          </div>
-          <div className="button-row">
-            <Button
-              onClick={() => {
-                void data.decide(selected.id, "like");
-                close();
-              }}
-            >
-              <Heart size={17} />
-              Me gustaría jugar
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => void data.favorite(selected.id)}
-            >
-              <Bookmark size={16} />
-              {data.favorites.includes(selected.id) ? "Guardado" : "Guardar"}
-            </Button>
-          </div>
+          {(() => {
+            const friendship = (
+              <div className="button-row">
+                <FriendshipActions
+                  personId={selected.id}
+                  friends={friends}
+                  userId={data.user?.id || data.me.id}
+                />
+              </div>
+            );
+            const playActions = (
+              <div className="button-row">
+                <Button
+                  onClick={() => {
+                    void data.decide(selected.id, "like");
+                    close();
+                  }}
+                >
+                  <Heart size={17} />
+                  Me gustaría jugar
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => void data.favorite(selected.id)}
+                >
+                  <Bookmark size={16} />
+                  {data.favorites.includes(selected.id)
+                    ? "Guardado"
+                    : "Guardar"}
+                </Button>
+              </div>
+            );
+            // The app keeps the decision within thumb reach while the
+            // profile scrolls; the website keeps its original order.
+            return nativeApp ? (
+              <div
+                className="native-profile-dock"
+                role="group"
+                aria-label={`Acciones para ${selected.name}`}
+              >
+                {playActions}
+                {friendship}
+              </div>
+            ) : (
+              <>
+                {friendship}
+                {playActions}
+              </>
+            );
+          })()}
           <div className="safety-actions">
             <button
               onClick={async () => {

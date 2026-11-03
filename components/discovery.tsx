@@ -144,94 +144,151 @@ export function Discovery({
           <Button onClick={onSetup}>Preparar mi primera ronda</Button>
         </section>
       )}
-      <SectionHeading
-        eyebrow="MEJOR GOLF. MEJOR COMPAÑÍA."
-        title={compact ? "Golfistas para ti" : "Encuentra tu próximo foursome."}
-        description={
-          compact
-            ? "Encuentra compañía para tu próxima ronda."
-            : "Filtra por club, handicap y días disponibles para encontrar con quién jugar."
-        }
-        action={
-          <Button
-            variant="outline"
-            onClick={() => {
-              onFilters();
-            }}
-          >
-            <SlidersHorizontal size={16} />
-            Filtros
-            {activeFilterCount > 0 && (
-              <span className="filter-count">{activeFilterCount}</span>
-            )}
-          </Button>
-        }
-      />
-      <div className="city-explore-filter">
-        {compact ? (
-          <details className="native-filter-disclosure">
-            <summary>
-              <MapPin size={16} />
-              {cityScope === "any" ? "Todas las ciudades" : exploringCity}
-              <ChevronDown size={14} />
-            </summary>
-            {cityPicker}
-          </details>
-        ) : (
-          cityPicker
-        )}
-      </div>
-      <div className="discover-toolbar">
-        <div className="tabs">
-          <button
-            onClick={() => setTab("Para ti")}
-            className={tab === "Para ti" ? "active" : ""}
-            aria-pressed={tab === "Para ti"}
-          >
-            Para ti<span>{visible.length}</span>
-          </button>
-          <button
-            onClick={() => setTab("Favoritos")}
-            className={tab === "Favoritos" ? "active" : ""}
-            aria-pressed={tab === "Favoritos"}
-          >
-            Favoritos
-            <Bookmark size={13} />
-          </button>
-          <button
-            onClick={() => {
-              onNavigate("mensajes");
-            }}
-          >
-            Mis matches
-          </button>
+      {compact ? (
+        <div className="native-discover-head">
+          <h1 className="sr-only">Golfistas para ti</h1>
+          <div className="tabs native-discover-tabs">
+            <button
+              onClick={() => setTab("Para ti")}
+              className={tab === "Para ti" ? "active" : ""}
+              aria-pressed={tab === "Para ti"}
+            >
+              Para ti<span>{visible.length}</span>
+            </button>
+            <button
+              onClick={() => setTab("Favoritos")}
+              className={tab === "Favoritos" ? "active" : ""}
+              aria-pressed={tab === "Favoritos"}
+            >
+              Favoritos
+              <Bookmark size={13} />
+            </button>
+            <button
+              onClick={() => {
+                onNavigate("mensajes");
+              }}
+            >
+              Mis matches
+            </button>
+          </div>
+          <div className="native-discover-tools">
+            <label className="search-input">
+              <Search size={16} />
+              <input
+                aria-label="Buscar golfista"
+                type="search"
+                placeholder="Buscar golfista"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </label>
+            <details className="native-filter-disclosure native-city-chip">
+              <summary
+                aria-label={`Ciudad: ${cityScope === "any" ? "Todas las ciudades" : exploringCity}. Cambiar`}
+              >
+                <MapPin size={16} aria-hidden="true" />
+                <span>{cityScope === "any" ? "Todas" : exploringCity}</span>
+                <ChevronDown size={14} aria-hidden="true" />
+              </summary>
+              {cityPicker}
+            </details>
+            <Button
+              variant="outline"
+              className="native-filters-button"
+              aria-label={
+                activeFilterCount > 0
+                  ? `Filtros, ${activeFilterCount} activos`
+                  : "Filtros"
+              }
+              onClick={() => {
+                onFilters();
+              }}
+            >
+              <SlidersHorizontal size={18} aria-hidden="true" />
+              {activeFilterCount > 0 && (
+                <span className="filter-count">{activeFilterCount}</span>
+              )}
+            </Button>
+          </div>
+          <p className="sr-only" aria-live="polite" aria-atomic="true">
+            {visible.length} golfistas encontrados.
+          </p>
         </div>
-        <label className="search-input">
-          <Search size={16} />
-          <input
-            aria-label="Buscar golfista"
-            type="search"
-            placeholder="Buscar golfista"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+      ) : (
+        <>
+          <SectionHeading
+            eyebrow="MEJOR GOLF. MEJOR COMPAÑÍA."
+            title="Encuentra tu próximo foursome."
+            description="Filtra por club, handicap y días disponibles para encontrar con quién jugar."
+            action={
+              <Button
+                variant="outline"
+                onClick={() => {
+                  onFilters();
+                }}
+              >
+                <SlidersHorizontal size={16} />
+                Filtros
+                {activeFilterCount > 0 && (
+                  <span className="filter-count">{activeFilterCount}</span>
+                )}
+              </Button>
+            }
           />
-        </label>
-      </div>
-      <div className="discovery-subline">
-        <p aria-live="polite" aria-atomic="true">
-          <span className="sr-only">
-            {visible.length} golfistas encontrados.{" "}
-          </span>
-          <span className="live-dot" />
-          {tab === "Favoritos"
-            ? "Tus compañeros guardados"
-            : "Personas con las que vale la pena compartir 18 hoyos"}
-        </p>
-        <span>
-          Ordenados por compatibilidad
-          <ChevronDown size={13} />
-        </span>
-      </div>
+          <div className="city-explore-filter">{cityPicker}</div>
+          <div className="discover-toolbar">
+            <div className="tabs">
+              <button
+                onClick={() => setTab("Para ti")}
+                className={tab === "Para ti" ? "active" : ""}
+                aria-pressed={tab === "Para ti"}
+              >
+                Para ti<span>{visible.length}</span>
+              </button>
+              <button
+                onClick={() => setTab("Favoritos")}
+                className={tab === "Favoritos" ? "active" : ""}
+                aria-pressed={tab === "Favoritos"}
+              >
+                Favoritos
+                <Bookmark size={13} />
+              </button>
+              <button
+                onClick={() => {
+                  onNavigate("mensajes");
+                }}
+              >
+                Mis matches
+              </button>
+            </div>
+            <label className="search-input">
+              <Search size={16} />
+              <input
+                aria-label="Buscar golfista"
+                type="search"
+                placeholder="Buscar golfista"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </label>
+          </div>
+          <div className="discovery-subline">
+            <p aria-live="polite" aria-atomic="true">
+              <span className="sr-only">
+                {visible.length} golfistas encontrados.{" "}
+              </span>
+              <span className="live-dot" />
+              {tab === "Favoritos"
+                ? "Tus compañeros guardados"
+                : "Personas con las que vale la pena compartir 18 hoyos"}
+            </p>
+            <span>
+              Ordenados por compatibilidad
+              <ChevronDown size={13} />
+            </span>
+          </div>
+        </>
+      )}
       {tab === "Para ti" ? (
         <SwipeDeck
           key={`${data.user?.id || "demo"}:${cityScope}:${search}:${JSON.stringify(filters)}`}

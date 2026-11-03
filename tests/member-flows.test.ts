@@ -322,7 +322,7 @@ test("section navigation creates history entries and Back/Forward restores the v
   }
 });
 
-test("installed iOS opens the app shell and its score tab preserves navigation history", async () => {
+test("installed iOS opens the app shell and its friends tab preserves navigation history", async () => {
   const view = mount();
   Object.assign(view.dom.window, { Capacitor: { getPlatform: () => "ios" } });
   try {
@@ -339,13 +339,18 @@ test("installed iOS opens the app shell and its score tab preserves navigation h
     });
     const nav = view.container.querySelector(".native-tab-bar");
     assert.ok(nav);
-    const scores = Array.from(nav.querySelectorAll("button")).find(
-      (b) => b.textContent === "Scores",
+    const friendsTab = Array.from(nav.querySelectorAll("button")).find(
+      (b) => b.textContent === "Amigos",
     );
-    assert.ok(scores);
-    await click(scores);
-    assert.equal(view.dom.window.location.hash, "#scores");
-    assert.equal(view.container.querySelector("main")?.dataset.page, "scores");
+    assert.ok(friendsTab);
+    await click(friendsTab);
+    assert.equal(view.dom.window.location.hash, "#amigos");
+    assert.equal(view.container.querySelector("main")?.dataset.page, "amigos");
+    assert.equal(
+      view.container.querySelector(".native-screen-back"),
+      null,
+      "Amigos is a top-level tab, not a pushed screen",
+    );
     assert.equal(
       view.container.querySelectorAll('.native-tab-bar [aria-current="page"]')
         .length,
@@ -369,7 +374,7 @@ test("installed iOS opens the app shell and its score tab preserves navigation h
     );
     assert.match(
       view.container.querySelector("#fairway-sidebar")?.textContent || "",
-      /Amigos/,
+      /Mis scores/,
     );
   } finally {
     await view.cleanup();
