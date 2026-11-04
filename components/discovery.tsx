@@ -33,6 +33,7 @@ import { ProfileCard } from "./profile-card";
 import { GameCard } from "./game-card";
 import { CommunityInvite } from "./community-invite";
 import { DiscoveryEmpty, PhotoStack } from "./discovery-empty";
+import { useImageTint } from "@/lib/image-tint";
 const SwipeDeck = dynamic(
   () => import("./swipe-deck").then((m) => m.SwipeDeck),
   {
@@ -108,6 +109,10 @@ export function Discovery({
       ownCity,
     ],
   );
+  // iOS app: the screen takes a soft wash of the golfer on top of the deck.
+  const topTint = useImageTint(
+    compact && tab === "Para ti" ? visible[0]?.photo : null,
+  );
   const activeFilterCount = Object.keys(filters).filter(
     (k) => filters[k as keyof Filters] !== initialFilters[k as keyof Filters],
   ).length;
@@ -143,6 +148,13 @@ export function Discovery({
           </div>
           <Button onClick={onSetup}>Preparar mi primera ronda</Button>
         </section>
+      )}
+      {compact && (
+        <div
+          className="native-tint-backdrop"
+          style={topTint}
+          aria-hidden="true"
+        />
       )}
       {compact ? (
         <div className="native-discover-head">
@@ -307,6 +319,7 @@ export function Discovery({
               onPass={actions.onPass}
               onFavorite={() => void data.favorite(p.id)}
               disabled={actions.busy}
+              tinted={compact}
             />
           )}
           empty={

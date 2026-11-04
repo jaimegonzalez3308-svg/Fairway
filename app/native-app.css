@@ -3271,3 +3271,49 @@ html.native-ios[data-accessibility="true"] .modal-overlay {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
+
+/* Colour from the photo you are looking at (iOS app). Shades come from
+   lib/image-tint.ts with fixed lightness, so text contrast never depends
+   on the picture. Without a usable photo everything stays on paper. */
+html.native-ios .native-tint-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--tint-soft, transparent);
+  -webkit-mask-image: radial-gradient(ellipse 110% 55% at 50% 40%, #000 0%, transparent 72%);
+  mask-image: radial-gradient(ellipse 110% 55% at 50% 40%, #000 0%, transparent 72%);
+  transition: background-color 450ms ease;
+}
+.native-tint-backdrop {
+  display: none;
+}
+html.native-ios .native-tint-backdrop {
+  display: block;
+}
+html.native-ios .native-app .swipe-card .golfer-card[style*="--tint-soft"] .golfer-details {
+  background-color: color-mix(in srgb, var(--tint-soft) 70%, #fcfaf1);
+  border-top-color: var(--tint-accent);
+}
+html.native-ios .native-app .swipe-card .golfer-card[style*="--tint-soft"] {
+  box-shadow:
+    0 1px 0 #fff inset,
+    0 14px 30px color-mix(in srgb, var(--tint-accent) 22%, transparent);
+}
+html.native-ios .modal[style*="--tint-soft"] {
+  background: linear-gradient(180deg, var(--tint-soft) 0, var(--nx-card) 440px)
+    var(--nx-card);
+}
+html.native-ios .modal[style*="--tint-soft"] .modal-heading {
+  background: var(--tint-soft);
+}
+@media (prefers-reduced-motion: reduce) {
+  html.native-ios .native-tint-backdrop {
+    transition: none;
+  }
+}
+@media (prefers-contrast: more) {
+  html.native-ios .native-tint-backdrop {
+    display: none;
+  }
+}

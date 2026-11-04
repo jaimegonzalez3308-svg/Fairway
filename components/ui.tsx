@@ -53,12 +53,15 @@ export function Modal({
   onClose,
   wide = false,
   soft = false,
+  style,
 }: {
   title: string;
   children: React.ReactNode;
   onClose: () => void;
   wide?: boolean;
   soft?: boolean;
+  /** CSS variables for the sheet, e.g. a photo tint. */
+  style?: React.CSSProperties;
 }) {
   const returnFocus = useRef(
     typeof document !== "undefined" &&
@@ -85,6 +88,7 @@ export function Modal({
         <Dialog.Content
           ref={setSheet}
           className={cn("modal", wide && "wide")}
+          style={style}
           onOpenAutoFocus={(event) => {
             if (document.documentElement.classList.contains("native-ios")) {
               event.preventDefault();

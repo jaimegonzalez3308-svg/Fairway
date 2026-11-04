@@ -16,6 +16,7 @@ import { compatibility, type Profile } from "@/lib/domain";
 import { cn } from "@/lib/utils";
 import { ratingLabel } from "@/lib/ratings";
 import { RatingBeer } from "./rating-beer";
+import { useImageTint } from "@/lib/image-tint";
 
 export function ProfileCard({
   profile: p,
@@ -27,6 +28,7 @@ export function ProfileCard({
   onPass,
   onFavorite,
   disabled = false,
+  tinted = false,
 }: {
   profile: Profile;
   me: Profile;
@@ -37,10 +39,13 @@ export function ProfileCard({
   onPass: () => void;
   onFavorite: () => void;
   disabled?: boolean;
+  /** iOS deck card: take accents from the photo. */
+  tinted?: boolean;
 }) {
   const match = compatibility(me, p);
+  const tint = useImageTint(tinted ? p.photo : null);
   return (
-    <article className="golfer-card">
+    <article className="golfer-card" style={tint}>
       <div className="golfer-photo">
         <button
           disabled={disabled}

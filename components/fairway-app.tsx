@@ -11,6 +11,7 @@ import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { site } from "@/lib/site";
 import { useNativeApp } from "@/lib/use-native-app";
+import { useImageTint } from "@/lib/image-tint";
 import {
   Compass,
   Flag,
@@ -280,6 +281,10 @@ export default function FairwayApp() {
     [profileTab, setProfileTab] = useState("Información"),
     [reviewTarget, setReviewTarget] = useState<Profile | null>(null),
     [busy, setBusy] = useState(false);
+  // iOS app: the golfer's profile sheet takes a wash from their photo.
+  const profileTint = useImageTint(
+    modal === "profile" ? selected?.photo : null,
+  );
   const chatEnd = useRef<HTMLDivElement>(null);
   const sidebarRef = useRef<HTMLElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -2748,6 +2753,7 @@ export default function FairwayApp() {
             nativeApp ? "Perfil de golfista" : "Conoce a tu próximo compañero"
           }
           onClose={close}
+          style={profileTint}
         >
           <img
             src={selected.photo || "/images/avatar.svg"}
