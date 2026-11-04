@@ -2164,6 +2164,21 @@ h1 {
 .post-actions .liked {
   color: #b39a65;
 }
+/* Replies stay folded until the arrow opens them. */
+.post-actions .replies-chevron {
+  transition: transform 0.2s ease;
+}
+.post-actions [aria-expanded="true"] .replies-chevron {
+  transform: rotate(180deg);
+}
+.post-replies[hidden] {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .post-actions .replies-chevron {
+    transition: none;
+  }
+}
 .post .comment {
   font-size: 11px;
   background: #f7f9f2;

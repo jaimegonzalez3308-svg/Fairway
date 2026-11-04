@@ -9,6 +9,7 @@ import {
   Bookmark,
   UserPlus,
   Check,
+  ChevronDown,
 } from "lucide-react";
 import { Button, Empty } from "./ui";
 import { supabase } from "@/lib/supabase";
@@ -31,6 +32,8 @@ export function Community({ data }: { data: FairwayData }) {
     [tab, setTab] = useState("Para ti"),
     [body, setBody] = useState(""),
     [comment, setComment] = useState<Record<string, string>>({}),
+    // Replies start folded; each post opens with its own arrow.
+    [openReplies, setOpenReplies] = useState<Record<string, boolean>>({}),
     [following, setFollowing] = useState<string[]>([]),
     [followedHere, setFollowedHere] = useState<string[]>([]),
     [burst, setBurst] = useState<string | null>(null);
@@ -303,11 +306,30 @@ export function Community({ data }: { data: FairwayData }) {
                         <Heart size={18} />
                         {p.reactions.length}
                       </button>
-                      <span>
-                        <span className="sr-only">Comentarios: </span>
-                        <MessageCircle size={18} />
+                      <button
+                        type="button"
+                        className="replies-toggle"
+                        aria-expanded={!!openReplies[p.id]}
+                        aria-controls={`replies-${p.id}`}
+                        aria-label={
+                          openReplies[p.id]
+                            ? "Ocultar respuestas"
+                            : p.comments.length
+                              ? `Ver ${p.comments.length} ${p.comments.length === 1 ? "respuesta" : "respuestas"}`
+                              : "Responder"
+                        }
+                        onClick={() =>
+                          setOpenReplies((x) => ({ ...x, [p.id]: !x[p.id] }))
+                        }
+                      >
+                        <MessageCircle size={18} aria-hidden="true" />
                         {p.comments.length}
-                      </span>
+                        <ChevronDown
+                          size={15}
+                          className="replies-chevron"
+                          aria-hidden="true"
+                        />
+                      </button>
                       {p.user_id !== data.user?.id && (
                         <button onClick={() => void toggleFollow(p.user_id)}>
                           <UserPlus size={16} />
@@ -317,50 +339,59 @@ export function Community({ data }: { data: FairwayData }) {
                         </button>
                       )}
                     </div>
-                    {p.comments.map((c) => (
-                      <p className="comment" key={c.id}>
-                        <strong>
-                          {all.find((u) => u.id === c.user_id)?.name ||
-                            "Golfista"}
-                          :
-                        </strong>{" "}
-                        {c.body}
-                      </p>
-                    ))}
-                    <form
-                      className="comment-form"
-                      onSubmit={async (e) => {
-                        e.preventDefault();
-                        const ok = await data.run(() =>
-                          supabase!.from("comments").insert({
-                            post_id: p.id,
-                            user_id: data.user!.id,
-                            body: comment[p.id],
-                          }),
-                        );
-                        if (ok) {
-                          setComment((x) => ({ ...x, [p.id]: "" }));
-                          void load();
-                        }
-                      }}
+                    <div
+                      className="post-replies"
+                      id={`replies-${p.id}`}
+                      hidden={!openReplies[p.id]}
                     >
-                      <input
-                        aria-label="Escribe un comentario"
-                        placeholder="Escribe un comentario…"
-                        value={comment[p.id] || ""}
-                        onChange={(e) =>
-                          setComment((x) => ({ ...x, [p.id]: e.target.value }))
-                        }
-                        required
-                        maxLength={1000}
-                      />
-                      <button
-                        className="icon-btn"
-                        aria-label="Enviar comentario"
+                      {p.comments.map((c) => (
+                        <p className="comment" key={c.id}>
+                          <strong>
+                            {all.find((u) => u.id === c.user_id)?.name ||
+                              "Golfista"}
+                            :
+                          </strong>{" "}
+                          {c.body}
+                        </p>
+                      ))}
+                      <form
+                        className="comment-form"
+                        onSubmit={async (e) => {
+                          e.preventDefault();
+                          const ok = await data.run(() =>
+                            supabase!.from("comments").insert({
+                              post_id: p.id,
+                              user_id: data.user!.id,
+                              body: comment[p.id],
+                            }),
+                          );
+                          if (ok) {
+                            setComment((x) => ({ ...x, [p.id]: "" }));
+                            void load();
+                          }
+                        }}
                       >
-                        <Send size={17} />
-                      </button>
-                    </form>
+                        <input
+                          aria-label="Escribe un comentario"
+                          placeholder="Escribe un comentario…"
+                          value={comment[p.id] || ""}
+                          onChange={(e) =>
+                            setComment((x) => ({
+                              ...x,
+                              [p.id]: e.target.value,
+                            }))
+                          }
+                          required
+                          maxLength={1000}
+                        />
+                        <button
+                          className="icon-btn"
+                          aria-label="Enviar comentario"
+                        >
+                          <Send size={17} />
+                        </button>
+                      </form>
+                    </div>
                   </article>
                 );
               })}
