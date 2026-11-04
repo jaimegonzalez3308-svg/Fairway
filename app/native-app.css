@@ -3701,3 +3701,93 @@ html.native-ios .native-app main[data-page="perfil"] .panel {
 html.native-ios .native-app main[data-page="perfil"] .profile-bio {
   margin: 0 0 12px;
 }
+
+/* Mi perfil sections: a segmented control instead of web tabs, and the
+   Información panel as an iOS-style list (label left, value right). */
+html.native-ios .native-app main[data-page="perfil"] .tabs.spaced {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 2px;
+  margin: 4px 0 12px;
+  padding: 3px;
+  overflow: visible;
+  border: 0;
+  border-radius: var(--nx-radius-control);
+  background: #e8ecdf;
+}
+html.native-ios .native-app main[data-page="perfil"] .tabs.spaced button {
+  justify-content: center;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 2px;
+  border: 0;
+  border-radius: 11px;
+  color: #52604f;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  box-shadow: none;
+}
+html.native-ios .native-app main[data-page="perfil"] .tabs.spaced button.active {
+  background: var(--nx-card);
+  color: var(--nx-green);
+  box-shadow: 0 1px 3px #193d2f1f;
+}
+html.native-ios .native-app main[data-page="perfil"] .tabs.spaced button::after {
+  display: none;
+}
+html.native-ios .native-app main[data-page="perfil"] .profile-info {
+  padding: 4px 0 6px;
+}
+html.native-ios .native-app main[data-page="perfil"] .profile-info > h3 {
+  margin: 14px 16px 6px;
+  color: #52604f;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+html.native-ios .native-app main[data-page="perfil"] .profile-info .info-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  margin: 0;
+}
+/* Handicap and Rondas registradas already show in the profile card. */
+html.native-ios .native-app main[data-page="perfil"] .profile-info .info-grid > :is(:nth-child(4), :nth-child(6)) {
+  display: none;
+}
+html.native-ios .native-app main[data-page="perfil"] .profile-info .info-item {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  padding: 0 16px;
+  border-top: 1px solid var(--nx-line);
+}
+html.native-ios .native-app main[data-page="perfil"] .profile-info .info-item small {
+  color: var(--nx-green);
+  font-size: 15px;
+}
+html.native-ios .native-app main[data-page="perfil"] .profile-info .info-item strong {
+  min-width: 0;
+  overflow: hidden;
+  color: #52604f;
+  font-size: 15px;
+  font-weight: 400;
+  display: block;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* "social" → "Social", while "18 hoyos" stays as written. */
+html.native-ios .native-app main[data-page="perfil"] .profile-info .info-item strong::first-letter {
+  text-transform: uppercase;
+}
+html.native-ios .native-app main[data-page="perfil"] .profile-info .chips {
+  padding: 4px 16px 10px;
+}
+html.native-ios .native-app main[data-page="perfil"] .profile-info .chips .muted {
+  font-size: 14px;
+}
