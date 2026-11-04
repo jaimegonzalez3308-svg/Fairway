@@ -3754,7 +3754,7 @@ html.native-ios .native-app main[data-page="perfil"] .profile-info .info-grid {
   margin: 0;
 }
 /* Handicap and Rondas registradas already show in the profile card. */
-html.native-ios .native-app main[data-page="perfil"] .profile-info .info-grid > :is(:nth-child(4), :nth-child(6)) {
+html.native-ios .native-app main[data-page="perfil"] .profile-info .profile-card-duplicate {
   display: none;
 }
 html.native-ios .native-app main[data-page="perfil"] .profile-info .info-item {
@@ -3771,15 +3771,16 @@ html.native-ios .native-app main[data-page="perfil"] .profile-info .info-item sm
   font-size: 15px;
 }
 html.native-ios .native-app main[data-page="perfil"] .profile-info .info-item strong {
+  display: block;
   min-width: 0;
-  overflow: hidden;
+  max-width: 62%;
+  padding: 10px 0;
   color: #52604f;
   font-size: 15px;
   font-weight: 400;
-  display: block;
+  line-height: 1.35;
   text-align: right;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 /* "social" → "Social", while "18 hoyos" stays as written. */
 html.native-ios .native-app main[data-page="perfil"] .profile-info .info-item strong::first-letter {
@@ -3790,4 +3791,13 @@ html.native-ios .native-app main[data-page="perfil"] .profile-info .chips {
 }
 html.native-ios .native-app main[data-page="perfil"] .profile-info .chips .muted {
   font-size: 14px;
+}
+
+/* Larger text: profile sections become a 2×2 control at a readable size. */
+html.native-ios[data-accessibility="true"] .native-app main[data-page="perfil"] .tabs.spaced {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+html.native-ios[data-accessibility="true"] .native-app main[data-page="perfil"] .tabs.spaced button {
+  font-size: 15px;
+  white-space: normal;
 }

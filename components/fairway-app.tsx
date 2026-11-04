@@ -2243,6 +2243,7 @@ export default function FairwayApp() {
                         <InfoItem label="Estilo" value={data.me.style} />
                         <InfoItem
                           label="Handicap"
+                          className="profile-card-duplicate"
                           value={
                             data.me.handicap === null
                               ? "Sin handicap"
@@ -2255,6 +2256,7 @@ export default function FairwayApp() {
                         />
                         <InfoItem
                           label="Rondas registradas"
+                          className="profile-card-duplicate"
                           value={String(
                             data.rounds.filter((r) => r.status !== "draft")
                               .length,

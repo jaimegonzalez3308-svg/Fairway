@@ -15,9 +15,17 @@ export function Avatar({
     </span>
   );
 }
-export function InfoItem({ label, value }: { label: string; value: string }) {
+export function InfoItem({
+  label,
+  value,
+  className,
+}: {
+  label: string;
+  value: string;
+  className?: string;
+}) {
   return (
-    <div className="info-item">
+    <div className={className ? `info-item ${className}` : "info-item"}>
       <small>{label}</small>
       <strong>{value}</strong>
     </div>
