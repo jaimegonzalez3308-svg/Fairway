@@ -3317,3 +3317,39 @@ html.native-ios .modal[style*="--tint-soft"] .modal-heading {
     display: none;
   }
 }
+
+/* Count-led Discover title: the number carries the headline, marked with
+   the website's pencil highlight. The deck's own counter is then redundant. */
+html.native-ios .native-discover-count {
+  padding: 0 4px;
+  background: linear-gradient(transparent 58%, var(--nx-pencil-wash) 58%);
+  font-variant-numeric: tabular-nums;
+}
+html.native-ios .native-app .swipe-heading {
+  display: none;
+}
+
+/* Mi perfil: your own rhythm in one line above the stats. */
+html.native-ios .native-streak {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  border: 1px solid var(--nx-line);
+  border-radius: var(--nx-radius-card);
+  background: var(--nx-card);
+  color: #3f4d3d;
+  font-size: 13px;
+  line-height: 1.4;
+}
+html.native-ios .native-streak > svg {
+  flex-shrink: 0;
+  color: #b8752a;
+}
+html.native-ios .native-streak strong {
+  display: block;
+  color: var(--nx-green);
+  font-size: 15px;
+  font-weight: 650;
+}

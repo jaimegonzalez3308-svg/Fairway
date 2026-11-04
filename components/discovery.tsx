@@ -159,7 +159,17 @@ export function Discovery({
       {compact ? (
         <div className="native-discover-head">
           <h1 className="native-discover-title">
-            Golfistas <em>para ti</em>
+            {tab === "Para ti" && visible.length > 0 ? (
+              <>
+                <span className="native-discover-count">{visible.length}</span>{" "}
+                {visible.length === 1 ? "golfista" : "golfistas"}{" "}
+                <em>para ti</em>
+              </>
+            ) : (
+              <>
+                Golfistas <em>para ti</em>
+              </>
+            )}
           </h1>
           <div className="tabs native-discover-tabs">
             <button
@@ -175,7 +185,11 @@ export function Discovery({
               aria-pressed={tab === "Favoritos"}
             >
               Favoritos
-              <Bookmark size={13} />
+              {data.favorites.length > 0 ? (
+                <span>{data.favorites.length}</span>
+              ) : (
+                <Bookmark size={13} />
+              )}
             </button>
             <button
               onClick={() => {

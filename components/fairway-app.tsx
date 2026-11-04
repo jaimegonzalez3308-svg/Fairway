@@ -7,11 +7,12 @@ import { FilterForm } from "./discovery-filters";
 import { Availability } from "./availability";
 import { Gallery } from "./profile-gallery";
 import { LegalLinks } from "./legal-links";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { site } from "@/lib/site";
 import { useNativeApp } from "@/lib/use-native-app";
 import { useImageTint } from "@/lib/image-tint";
+import { roundStreak } from "@/lib/round-streak";
 import {
   Compass,
   Flag,
@@ -34,6 +35,7 @@ import {
   Settings as SettingsIcon,
   LogOut,
   ShieldCheck,
+  Flame,
   Target,
   Send,
   Trash2,
@@ -281,6 +283,11 @@ export default function FairwayApp() {
     [profileTab, setProfileTab] = useState("Información"),
     [reviewTarget, setReviewTarget] = useState<Profile | null>(null),
     [busy, setBusy] = useState(false);
+  // iOS app: your own rhythm, never compared with other members.
+  const streak = useMemo(
+    () => (nativeApp ? roundStreak(data.rounds) : null),
+    [nativeApp, data.rounds],
+  );
   // iOS app: the golfer's profile sheet takes a wash from their photo.
   const profileTint = useImageTint(
     modal === "profile" ? selected?.photo : null,
@@ -2091,6 +2098,15 @@ export default function FairwayApp() {
                   </div>
                   {nativeApp && (
                     <>
+                      {streak && (
+                        <p className="native-streak">
+                          <Flame size={20} aria-hidden="true" />
+                          <span>
+                            <strong>{streak.title}</strong>
+                            {streak.detail}
+                          </span>
+                        </p>
+                      )}
                       <dl className="native-profile-stats">
                         <div>
                           <dt>Rondas</dt>
