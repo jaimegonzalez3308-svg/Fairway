@@ -2777,7 +2777,24 @@ export default function FairwayApp() {
       )}
       {modal === "my-friends" && (
         <Modal title="Mis amigos" onClose={close}>
-          {myFriends.length ? (
+          {!myFriends.length && friends.loading ? (
+            <p className="muted" role="status">
+              Cargando tus amigos…
+            </p>
+          ) : !myFriends.length && (friends.error || !friends.available) ? (
+            <Empty
+              title="No pudimos cargar tus amigos"
+              description="Revisa tu conexión y vuelve a intentarlo."
+              action={
+                <Button
+                  variant="outline"
+                  onClick={() => void friends.refresh()}
+                >
+                  Reintentar
+                </Button>
+              }
+            />
+          ) : myFriends.length ? (
             <ul className="native-friend-list">
               {myFriends.map((friend) => (
                 <li key={friend.id}>
@@ -2880,6 +2897,7 @@ export default function FairwayApp() {
           </section>
           {nativeApp && selected.id !== data.me.id && (
             <GolferRounds
+              key={selected.id}
               userId={selected.id}
               name={selected.name}
               clubs={data.clubs}

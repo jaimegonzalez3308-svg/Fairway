@@ -40,3 +40,22 @@ test("Mi perfil keeps stats in the profile card and links Amigos to a sheet", as
     /nativeApp && selected\.id !== data\.me\.id && \(\s*<GolferRounds/,
   );
 });
+
+test("profile switches remount the rounds list and the friends sheet has load states", async () => {
+  const { readFileSync } = await import("node:fs");
+  const source = readFileSync(
+    new URL("../components/fairway-app.tsx", import.meta.url),
+    "utf8",
+  );
+  assert.match(source, /<GolferRounds\s+key=\{selected\.id\}/);
+  const sheet = source.slice(source.indexOf('modal === "my-friends"'));
+  assert.ok(
+    sheet.indexOf("friends.loading") <
+      sheet.indexOf("Todavía no tienes amigos"),
+  );
+  assert.ok(
+    sheet.indexOf("No pudimos cargar tus amigos") <
+      sheet.indexOf("Todavía no tienes amigos"),
+  );
+  assert.match(sheet, /onClick=\{\(\) => void friends\.refresh\(\)\}/);
+});
