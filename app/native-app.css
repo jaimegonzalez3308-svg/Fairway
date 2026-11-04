@@ -2276,14 +2276,38 @@ html.native-ios .native-app .outside-month .party-day-number {
   color: #66735f;
   font-weight: 400;
 }
+/* Today in a muted fairway green rather than a bright one. */
 html.native-ios .native-app .party-month-grid .today .party-day-number {
-  color: #2f7d4f;
+  color: #4b6b3c;
   font-weight: 700;
 }
+/* The selected day sits on a golf ball: white, dimpled, softly shaded. */
 html.native-ios .native-app .party-month-grid .selected-day .party-day-number {
-  background: #193d2f;
-  color: #fffbf2;
+  width: 36px;
+  height: 36px;
+  background:
+    radial-gradient(circle, #6b735f2e 0.9px, transparent 1.4px) 0 0 / 5px 5px,
+    radial-gradient(circle, #6b735f24 0.9px, transparent 1.4px) 2.5px 2.5px /
+      5px 5px,
+    radial-gradient(
+      circle at 34% 28%,
+      #ffffff 0 22%,
+      #f3f3ec 52%,
+      #d8dacf 100%
+    );
+  box-shadow:
+    inset -2px -3px 5px #4b553f26,
+    0 0 0 1.5px #7d8a78,
+    0 2px 3px #2a352033;
+  color: #1f2d22;
   font-weight: 700;
+}
+html.native-ios
+  .native-app
+  .party-month-grid
+  .selected-day.today
+  .party-day-number {
+  color: #3f5c31;
 }
 html.native-ios .native-app .party-day-total,
 html.native-ios .native-app .party-day-events {
@@ -2299,6 +2323,10 @@ html.native-ios .native-app .party-day-mobile-dots {
 html.native-ios .native-app .party-day-mobile-dots i {
   width: 6px;
   height: 6px;
+}
+html.native-ios .native-app .party-day-mobile-dots .available,
+html.native-ios .native-app .party-month-legend .available {
+  background: #6f8f57;
 }
 /* More than three parties: a small plus after the dots (app only). */
 .party-day-mobile-dots .more {
