@@ -3803,3 +3803,201 @@ html.native-ios[data-accessibility="true"] .native-app main[data-page="perfil"] 
   font-size: 15px;
   white-space: normal;
 }
+
+/* Community, social-app style (iOS app). Stories are tall photo tiles with
+   a small face in the corner; posts are rounded cards with a pill author
+   row, a rounded photo and pill actions. Fairway's paper and green stay. */
+html.native-ios .native-app main[data-page="comunidad"] .stories-rail {
+  gap: 10px;
+  margin: 0 -16px;
+  padding: 2px 16px 6px;
+  scroll-padding-inline: 16px;
+}
+html.native-ios .native-app main[data-page="comunidad"] .story-circle {
+  position: relative;
+  flex: 0 0 96px;
+  justify-content: flex-end;
+  align-items: flex-start;
+  height: 132px;
+  padding: 10px;
+  overflow: hidden;
+  border: 1px solid var(--nx-line);
+  border-radius: 20px;
+  background: var(--nx-card);
+  text-align: left;
+}
+html.native-ios .native-app main[data-page="comunidad"] .story-tile-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+html.native-ios .native-app main[data-page="comunidad"] .story-circle:has(.story-tile-photo)::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background: linear-gradient(180deg, #0b1f1633 0%, transparent 35%, transparent 55%, #0b1f16cc 100%);
+}
+/* The face sits in the top corner of a photo tile. */
+html.native-ios .native-app main[data-page="comunidad"] .story-circle:has(.story-tile-photo) .story-ring {
+  position: absolute;
+  z-index: 2;
+  top: 8px;
+  left: 8px;
+  margin: 0;
+  padding: 2px;
+  border: 2px solid #fffbf2;
+  background: none;
+  box-shadow: none;
+}
+html.native-ios .native-app main[data-page="comunidad"] .story-circle:has(.story-tile-photo).unseen .story-ring {
+  border-color: var(--nx-pencil);
+}
+html.native-ios .native-app main[data-page="comunidad"] .story-circle:has(.story-tile-photo) .story-avatar {
+  width: 28px;
+  height: 28px;
+  font-size: 12px;
+}
+html.native-ios .native-app main[data-page="comunidad"] .story-circle:has(.story-tile-photo) :is(strong, small) {
+  position: relative;
+  z-index: 2;
+  color: #fff;
+  text-shadow: 0 1px 4px #0b1f1699;
+}
+/* Tiles without a photo (and Crear historia) show the face large. */
+html.native-ios .native-app main[data-page="comunidad"] .story-circle:not(:has(.story-tile-photo)) {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+html.native-ios .native-app main[data-page="comunidad"] .story-circle strong {
+  max-width: 100%;
+  font-size: 13px;
+  font-weight: 650;
+}
+html.native-ios .native-app main[data-page="comunidad"] .story-circle small {
+  font-size: 11px;
+}
+html.native-ios .native-app main[data-page="comunidad"] .story-create {
+  background: #e8ecdf;
+  border-style: dashed;
+}
+
+/* Posts as cards. */
+html.native-ios .native-app main[data-page="comunidad"] .post {
+  margin: 0 0 14px;
+  padding: 10px 10px 12px;
+  border: 1px solid var(--nx-line);
+  border-radius: 24px;
+  background: var(--nx-card);
+  box-shadow: 0 6px 18px #193d2f0f;
+}
+html.native-ios .native-app main[data-page="comunidad"] .post-author {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 6px 6px 6px;
+  border-radius: var(--nx-radius-pill);
+  background: #f1ede1;
+}
+html.native-ios .native-app main[data-page="comunidad"] .post-author .avatar {
+  width: 38px;
+  height: 38px;
+  border: 2px solid var(--nx-card);
+}
+html.native-ios .native-app main[data-page="comunidad"] .post-author strong {
+  color: var(--nx-green);
+  font-size: 15px;
+}
+html.native-ios .native-app main[data-page="comunidad"] .post-author small {
+  color: #52604f;
+  font-size: 12px;
+}
+html.native-ios .native-app main[data-page="comunidad"] .post-author .icon-btn {
+  margin-left: auto;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+  border-radius: 50%;
+  background: var(--nx-card);
+}
+html.native-ios .native-app main[data-page="comunidad"] .post > p:not(.comment) {
+  margin: 12px 6px;
+  color: var(--nx-ink);
+  font-size: 15px;
+  line-height: 1.5;
+}
+html.native-ios .native-app main[data-page="comunidad"] .post-photo {
+  width: 100%;
+  margin: 0;
+  border-radius: 18px;
+}
+html.native-ios .native-app main[data-page="comunidad"] .post-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0 0;
+  padding: 0;
+  border: 0;
+}
+html.native-ios .native-app main[data-page="comunidad"] .post-actions > button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: var(--nx-radius-pill);
+  background: #f1ede1;
+  color: var(--nx-green);
+  font-size: 14px;
+  font-weight: 600;
+}
+html.native-ios .native-app main[data-page="comunidad"] .post-actions > button.liked {
+  background: #f7e3dc;
+  color: #b5452f;
+}
+/* Seguir is a quiet chip at the end of the row. */
+html.native-ios .native-app main[data-page="comunidad"] .post-actions > button:not(.replies-toggle, .liked):last-child:not(:first-child) {
+  margin-left: auto;
+  border: 1px solid var(--nx-line-strong);
+  background: var(--nx-card);
+}
+html.native-ios .native-app main[data-page="comunidad"] .post-replies {
+  margin-top: 8px;
+}
+html.native-ios .native-app main[data-page="comunidad"] .post .comment {
+  margin: 6px 0;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: #f1ede1;
+  font-size: 14px;
+}
+html.native-ios .native-app main[data-page="comunidad"] .comment-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 4px 4px 4px 14px;
+  border-radius: var(--nx-radius-pill);
+  background: #f1ede1;
+}
+html.native-ios .native-app main[data-page="comunidad"] .comment-form input {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+html.native-ios .native-app main[data-page="comunidad"] .comment-form .icon-btn {
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+  border-radius: 50%;
+  background: var(--nx-green);
+  color: #fffdf3;
+}

@@ -74,6 +74,30 @@ export function Stories({ data }: { data: FairwayData }) {
     ),
     userId,
   );
+  // iOS app: tall story tiles show each person's latest photo. One batch
+  // of short-lived signed URLs; the viewer still signs its own full image.
+  const [thumbs, setThumbs] = useState<Record<string, string>>({});
+  const thumbPaths = native
+    ? groups.map((g) => g.items[g.items.length - 1]?.media_path).filter(Boolean)
+    : [];
+  const thumbKey = thumbPaths.join("|");
+  useEffect(() => {
+    if (!supabase || !thumbKey) return;
+    let current = true;
+    void supabase.storage
+      .from("story-images")
+      .createSignedUrls(thumbKey.split("|"), 300)
+      .then(({ data: signed }) => {
+        if (!current || !signed) return;
+        const next: Record<string, string> = {};
+        for (const item of signed)
+          if (item.path && item.signedUrl) next[item.path] = item.signedUrl;
+        setThumbs(next);
+      });
+    return () => {
+      current = false;
+    };
+  }, [thumbKey]);
   function mute(authorId: string) {
     if (!userId || authorId === userId) return;
     const next = [...muted, authorId];
@@ -183,6 +207,16 @@ export function Stories({ data }: { data: FairwayData }) {
                 }}
                 aria-label={`Ver ${own ? "tus historias" : `historias de ${person?.name || "Golfista"}`}${group.unseen && !own ? ", sin ver" : ""}`}
               >
+                {thumbs[group.items[group.items.length - 1]?.media_path] && (
+                  <img
+                    className="story-tile-photo"
+                    src={thumbs[group.items[group.items.length - 1].media_path]}
+                    alt=""
+                    aria-hidden="true"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                )}
                 <span className="story-ring">
                   <PersonAvatar
                     photo={person?.photo}
