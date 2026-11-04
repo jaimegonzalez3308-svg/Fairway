@@ -85,3 +85,83 @@ test("the floating tab bar stays below the 84px line used by toasts and actions"
   const height = Number(rule.match(/min-height: (\d+)px/)![1]);
   assert.ok(bottom + height <= 84, `${bottom}+${height}`);
 });
+
+test("frosted glass covers bars and menus in the app, with opaque fallbacks", () => {
+  const glass = (html: string, extra = "") => {
+    const globals = readFileSync(
+      new URL("../app/globals.css", import.meta.url),
+      "utf8",
+    );
+    const native = readFileSync(
+      new URL("../app/native-app.css", import.meta.url),
+      "utf8",
+    );
+    const dom = new JSDOM(
+      `<html class="${html}" ${extra}><head><style>${globals}</style><style>${native}</style></head><body><div class="native-app"><header class="topbar"></header></div><nav class="native-tab-bar"></nav><div class="modal"></div></body></html>`,
+      { virtualConsole: new VirtualConsole() },
+    );
+    const style = (s: string) =>
+      dom.window.getComputedStyle(dom.window.document.querySelector(s)!);
+    const result = {
+      modal: style(".modal").getPropertyValue("backdrop-filter"),
+    };
+    dom.window.close();
+    return result;
+  };
+  // Sheets never become translucent.
+  assert.equal(glass("native-ios").modal, "");
+  for (const block of native().split("}")) {
+    const selector = block.split("{").slice(-2, -1)[0] ?? "";
+    if (
+      /\.modal(?!-overlay)\b/.test(selector) &&
+      !selector.includes(".modal-overlay")
+    )
+      assert.doesNotMatch(
+        block,
+        /--nx-glass|backdrop-filter: (?!none)/,
+        selector.trim(),
+      );
+  }
+  // Glass is strong enough for secondary labels.
+  const alpha = Number(
+    native().match(/--nx-glass: rgb\(255 251 242 \/ ([\d.]+)\)/)![1],
+  );
+  assert.ok(alpha >= 0.8, `glass alpha ${alpha}`);
+  // Visible secondary ink over glass: tab labels and the header subtitle.
+  assert.match(
+    native(),
+    /\.native-tab-bar button:not\(\[aria-current="page"\]\),\s*html\.native-ios \.native-app \.topbar \.breadcrumb > strong \{\s*color: #3f4d3d;/,
+  );
+  // The drawer scrim only blurs while visible.
+  assert.match(
+    native(),
+    /\.sidebar-scrim\.visible,\s*html\.native-ios \.modal-overlay \{\s*background: #193d2f47;/,
+  );
+  // Source checks for what JSDOM cannot evaluate (@supports / media queries).
+  assert.match(
+    native(),
+    /@supports \(\(backdrop-filter: blur\(1px\)\) or \(-webkit-backdrop-filter: blur\(1px\)\)\)/,
+  );
+  assert.match(
+    native(),
+    /@media \(prefers-reduced-transparency: reduce\), \(prefers-contrast: more\)/,
+  );
+  assert.match(
+    native(),
+    /html\.native-ios\[data-accessibility="true"\] \.native-tab-bar,/,
+  );
+  for (const block of native()
+    .split("}")
+    .filter((b) => b.includes("var(--nx-glass"))) {
+    const selector = block.split("{").slice(-2, -1)[0] ?? "";
+    for (const part of selector.split(/,(?![^(]*\))/))
+      if (part.trim()) assert.match(part, /html\.native-ios/, part.trim());
+  }
+});
+
+function native() {
+  return readFileSync(
+    new URL("../app/native-app.css", import.meta.url),
+    "utf8",
+  ).replace(/\/\*[\s\S]*?\*\//g, "");
+}

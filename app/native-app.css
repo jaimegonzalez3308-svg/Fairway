@@ -1747,6 +1747,9 @@ html.native-ios {
   --nx-radius-card: 16px;
   --nx-radius-control: 14px;
   --nx-radius-pill: 999px;
+  --nx-glass: rgb(255 251 242 / 0.82);
+  --nx-glass-strong: rgb(255 251 242 / 0.9);
+  --nx-glass-blur: blur(20px) saturate(160%);
   --nx-blue: #174bcc;
   --nx-blue-wash: #e6ecfb;
   --nx-pencil: #ead06f;
@@ -3206,4 +3209,65 @@ html.native-ios .native-app .party-avatar-stack:not(:empty) + .party-seat-icons 
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
+}
+
+/* Frosted glass: bars and menus are translucent paper over the content
+   scrolling beneath. Sheets stay opaque so forms read cleanly; their
+   backdrop is blurred instead. Opaque again for Reduce Transparency,
+   Increase Contrast, Fairway's accessibility mode or no blur support. */
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  html.native-ios .native-tab-bar,
+  html.native-ios .native-app .topbar {
+    background: var(--nx-glass);
+    -webkit-backdrop-filter: var(--nx-glass-blur);
+    backdrop-filter: var(--nx-glass-blur);
+  }
+  html.native-ios .native-app .topbar {
+    border-bottom-color: rgb(216 221 207 / 0.7);
+  }
+  /* Darker secondary ink keeps 4.5:1 even over dark content behind. */
+  html.native-ios .native-tab-bar button:not([aria-current="page"]),
+  html.native-ios .native-app .topbar .breadcrumb > strong {
+    color: #3f4d3d;
+  }
+  html.native-ios .native-app :is(.account-menu-items, .sidebar) {
+    border-color: rgb(216 221 207 / 0.8);
+    background: var(--nx-glass-strong);
+    -webkit-backdrop-filter: var(--nx-glass-blur);
+    backdrop-filter: var(--nx-glass-blur);
+  }
+  html.native-ios .native-app .sidebar-scrim.visible,
+  html.native-ios .modal-overlay {
+    background: #193d2f47;
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+  }
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  html.native-ios .native-tab-bar,
+  html.native-ios .native-app :is(.topbar, .account-menu-items, .sidebar) {
+    background: var(--nx-card);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  html.native-ios .native-app .sidebar-scrim.visible,
+  html.native-ios .modal-overlay {
+    background: #193d2f66;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+html.native-ios[data-accessibility="true"] .native-tab-bar,
+html.native-ios[data-accessibility="true"]
+  .native-app
+  :is(.topbar, .account-menu-items, .sidebar) {
+  background: var(--nx-card);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+html.native-ios[data-accessibility="true"] .native-app .sidebar-scrim.visible,
+html.native-ios[data-accessibility="true"] .modal-overlay {
+  background: #193d2f66;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
