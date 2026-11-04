@@ -24,7 +24,7 @@ export const nativeTourSteps = [
   {
     tab: "perfil",
     title: "Tu tarjeta de golfista",
-    text: "Edita tu foto, tu handicap y tu bio. Desliza desde el borde para volver y hacia abajo para actualizar.",
+    text: "Edita tu foto, tu handicap y tu bio, y anota tus scores. Desliza desde el borde para volver y hacia abajo para actualizar.",
   },
 ];
 

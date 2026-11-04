@@ -8,6 +8,8 @@ import { isIOSApp } from "../lib/native-app";
 import { useNativeApp } from "../lib/use-native-app";
 import { useFairway } from "../lib/use-fairway";
 import { Parties } from "../components/parties";
+import { Discovery } from "../components/discovery";
+import { initialFilters } from "../lib/domain";
 import {
   NativeWelcome,
   NativeTour,
@@ -167,7 +169,7 @@ test("the center app action creates a story without navigating, while the other 
   }
 });
 
-test("quick actions keep game and score creation while the story action lives in the bottom bar", async () => {
+test("Discover's quick action is only Crear partida; scores moved to Mi perfil", async () => {
   const view = mount();
   const actions: string[] = [];
   try {
@@ -175,14 +177,17 @@ test("quick actions keep game and score creation while the story action lives in
       view.root.render(
         createElement(NativeQuickActions, {
           onCreate: () => actions.push("create"),
-          onScore: () => actions.push("score"),
         }),
       ),
     );
     assert.deepEqual(actions, []);
-    for (const button of view.container.querySelectorAll("button"))
-      await act(async () => button.click());
-    assert.deepEqual(actions, ["create", "score"]);
+    const buttons = view.container.querySelectorAll("button");
+    assert.deepEqual(
+      Array.from(buttons, (b) => b.textContent),
+      ["Crear partida"],
+    );
+    await act(async () => buttons[0].click());
+    assert.deepEqual(actions, ["create"]);
   } finally {
     await view.cleanup();
   }
@@ -291,5 +296,53 @@ test("website tour advances all six screens, focuses the next heading and suppor
     assert.equal(skipped, 1);
   } finally {
     await view.cleanup();
+  }
+});
+
+test("the app's Discover keeps only finding golfers; the website keeps its sections", async () => {
+  for (const compact of [true, false]) {
+    const view = mount();
+    function Example() {
+      const data = useFairway();
+      const noop = () => {};
+      return createElement(Discovery, {
+        compact,
+        data,
+        filters: initialFilters,
+        cityScope: "any",
+        onCityScopeChange: noop,
+        onFilters: noop,
+        onResetFilters: noop,
+        onProfile: noop,
+        onGame: noop,
+        onCreate: noop,
+        onShareProfile: noop,
+        onSetup: noop,
+        onNavigate: noop,
+        onCompatibility: noop,
+      });
+    }
+    try {
+      await act(async () => view.root.render(createElement(Example)));
+      const text = view.container.textContent || "";
+      for (const tab of ["Para ti", "Favoritos", "Mis matches"])
+        assert.ok(text.includes(tab), `${tab} stays`);
+      assert.ok(
+        view.container.querySelector('input[aria-label="Buscar golfista"]'),
+      );
+      for (const selector of [
+        ".discovery-party-promo",
+        ".discovery-footnote",
+        ".next-section-heading",
+        ".game-grid",
+      ])
+        assert.equal(
+          !!view.container.querySelector(selector),
+          !compact,
+          `${selector} ${compact ? "hidden in app" : "kept on web"}`,
+        );
+    } finally {
+      await view.cleanup();
+    }
   }
 });

@@ -1663,7 +1663,6 @@ export default function FairwayApp() {
                     setPartyDate(undefined);
                     setModal("create-party");
                   }}
-                  onScore={score}
                 />
               )}
               {page === "descubrir" && (
@@ -2110,6 +2109,10 @@ export default function FairwayApp() {
                       <div className="native-profile-actions">
                         <Button onClick={() => setModal("edit-profile")}>
                           Editar perfil
+                        </Button>
+                        <Button variant="outline" onClick={score}>
+                          <Plus size={17} aria-hidden="true" />
+                          Anotar score
                         </Button>
                         <Button
                           variant="outline"
@@ -2700,6 +2703,15 @@ export default function FairwayApp() {
       )}
       {modal === "filters" && (
         <Modal title="Encuentra tu tipo de golf" onClose={close}>
+          {nativeApp && (
+            <details className="native-compatibility-link">
+              <summary>
+                <ShieldCheck size={16} aria-hidden="true" />
+                ¿Cómo se calcula la compatibilidad?
+              </summary>
+              <CompatibilityExplainer />
+            </details>
+          )}
           <FilterForm
             filters={draftFilters}
             setFilters={setDraftFilters}
@@ -2727,28 +2739,7 @@ export default function FairwayApp() {
       )}
       {modal === "compatibility" && (
         <Modal title="Compatibilidad, sin misterio" onClose={close}>
-          <p className="form-intro">
-            Un cálculo determinista de 0 a 100, basado en lo que cada persona
-            declara.
-          </p>
-          <div className="compatibility-rules">
-            {[
-              ["Mismo club", "30 puntos"],
-              ["Al menos un día en común", "30 puntos"],
-              ["Misma modalidad (9 o 18 hoyos)", "20 puntos"],
-              ["Handicaps a 8 puntos o menos", "10 puntos"],
-              ["Mismo estilo de juego", "10 puntos"],
-            ].map(([a, b]) => (
-              <div className="list-row" key={a}>
-                <span>{a}</span>
-                <strong>{b}</strong>
-              </div>
-            ))}
-          </div>
-          <p className="muted">
-            Sin handicap declarado no se suman los 10 puntos de cercanía de
-            handicap. La compatibilidad no garantiza acceso al club.
-          </p>
+          <CompatibilityExplainer />
         </Modal>
       )}
       {modal === "profile" && selected && (
@@ -3019,5 +3010,36 @@ export default function FairwayApp() {
         </Modal>
       )}
     </div>
+  );
+}
+
+/** How compatibility is scored: shown in its own sheet and, in the iOS app,
+ * as a disclosure inside the filters sheet. */
+function CompatibilityExplainer() {
+  return (
+    <>
+      <p className="form-intro">
+        Un cálculo determinista de 0 a 100, basado en lo que cada persona
+        declara.
+      </p>
+      <div className="compatibility-rules">
+        {[
+          ["Mismo club", "30 puntos"],
+          ["Al menos un día en común", "30 puntos"],
+          ["Misma modalidad (9 o 18 hoyos)", "20 puntos"],
+          ["Handicaps a 8 puntos o menos", "10 puntos"],
+          ["Mismo estilo de juego", "10 puntos"],
+        ].map(([a, b]) => (
+          <div className="list-row" key={a}>
+            <span>{a}</span>
+            <strong>{b}</strong>
+          </div>
+        ))}
+      </div>
+      <p className="muted">
+        Sin handicap declarado no se suman los 10 puntos de cercanía de
+        handicap. La compatibilidad no garantiza acceso al club.
+      </p>
+    </>
   );
 }

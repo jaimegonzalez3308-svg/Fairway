@@ -155,13 +155,7 @@ export function NativeTabBar({
   );
 }
 
-export function NativeQuickActions({
-  onCreate,
-  onScore,
-}: {
-  onCreate: () => void;
-  onScore: () => void;
-}) {
+export function NativeQuickActions({ onCreate }: { onCreate: () => void }) {
   return (
     <nav className="native-quick-actions" aria-label="Acciones rápidas">
       <button onClick={onCreate}>
@@ -169,12 +163,6 @@ export function NativeQuickActions({
           <SidebarIcon name="partidas" />
         </span>
         <span>Crear partida</span>
-      </button>
-      <button onClick={onScore}>
-        <span className="native-action-icon">
-          <SidebarIcon name="scores" />
-        </span>
-        <span>Anotar score</span>
       </button>
     </nav>
   );

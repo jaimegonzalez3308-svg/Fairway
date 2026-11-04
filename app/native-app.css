@@ -3025,3 +3025,61 @@ html.native-ios .modal .button-row.native-sheet-action > .button {
   flex: 1 1 0;
   min-width: 0;
 }
+
+/* Discover is for finding golfers: one wide Crear partida above the deck.
+   Score entry lives in Mi perfil, next to Editar perfil. */
+html.native-ios .native-quick-actions {
+  grid-template-columns: minmax(0, 1fr);
+  margin-bottom: 18px;
+}
+html.native-ios .native-quick-actions button {
+  flex-direction: row;
+  gap: 10px;
+  min-height: 56px;
+  font-size: 15px;
+  font-weight: 600;
+}
+html.native-ios .native-profile-actions {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 48px;
+}
+html.native-ios .native-app .native-profile-actions .button {
+  gap: 6px;
+  padding-inline: 8px;
+}
+html.native-ios .native-compatibility-link {
+  margin: 0 0 12px;
+  border-bottom: 1px solid var(--nx-line);
+}
+html.native-ios .native-compatibility-link > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  color: var(--nx-green);
+  font-size: 14px;
+  cursor: pointer;
+  list-style: none;
+}
+html.native-ios .native-compatibility-link > summary::-webkit-details-marker {
+  display: none;
+}
+html.native-ios .native-compatibility-link > summary::after {
+  content: "+";
+  margin-left: auto;
+  font-size: 18px;
+}
+html.native-ios .native-compatibility-link[open] > summary::after {
+  content: "−";
+}
+html.native-ios .native-compatibility-link[open] {
+  padding-bottom: 12px;
+}
+html.native-ios[data-accessibility="true"] .native-profile-actions {
+  grid-template-columns: minmax(0, 1fr) 48px;
+}
+html.native-ios[data-accessibility="true"]
+  .native-profile-actions
+  > .button:nth-child(2) {
+  grid-column: 1 / -1;
+  grid-row: 2;
+}

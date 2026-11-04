@@ -349,74 +349,80 @@ export function Discovery({
           description="Guarda perfiles para encontrarlos aquí."
         />
       )}
-      <div className="discovery-footnote">
-        <ShieldCheck size={14} />
-        <span>
-          La compatibilidad se basa en club, disponibilidad, modalidad, handicap
-          y estilo de juego.
-        </span>
-        <button onClick={() => onCompatibility()}>¿Cómo funciona?</button>
-      </div>
-      <section className="golf-hero discovery-party-promo">
-        <div className="hero-image" />
-        <div className="hero-content">
-          <span className="hero-eyebrow">
-            <span className="live-dot" />
-            PARTIDAS ENTRE GOLFISTAS
-            {cityScope !== "any" ? ` · ${exploringCity}` : ""}
-          </span>
-          <h2>
-            ¿Te falta alguien
-            <br />
-            para completar el grupo?
-          </h2>
-          <p>Consulta las partidas y acuerda el horario en el chat.</p>
-          <button onClick={() => onNavigate("partidas")}>
-            Explorar partidas
-            <ArrowUpRight size={16} />
-          </button>
-        </div>
-        <div className="hero-stamp">
-          <CourseIcon part="fairway" size={26} />
-          <span>
-            GOOD GOLF.
-            <br />
-            GREAT COMPANY.
-          </span>
-        </div>
-      </section>
-      <div className="next-section-heading">
-        <div>
-          <span className="eyebrow">HAZ ESPACIO EN TU AGENDA</span>
-          <h2>El green te está esperando</h2>
-        </div>
-        <InlineLink onClick={() => onNavigate("partidas")}>
-          Ver todas las partidas
-        </InlineLink>
-      </div>
-      <div className="game-grid">
-        {upcomingGames.map((g) => (
-          <GameCard
-            key={g.id}
-            game={g}
-            club={clubName(g.club_id)}
-            onOpen={() => {
-              onGame(g);
-            }}
-          />
-        ))}
-      </div>
-      {!upcomingGames.length && (
-        <Empty
-          title="Sé quien proponga la próxima ronda"
-          description="Todavía no hay partidas abiertas con esta selección de ciudad. Publica un plan e invita a tu grupo."
-          action={
-            <div className="empty-actions">
-              <Button onClick={onCreate}>Crear una partida</Button>
-              <CommunityInvite />
+      {/* The app keeps Discover on finding golfers; parties live in Partidas
+          and the compatibility note in the filters sheet. */}
+      {!compact && (
+        <>
+          <div className="discovery-footnote">
+            <ShieldCheck size={14} />
+            <span>
+              La compatibilidad se basa en club, disponibilidad, modalidad,
+              handicap y estilo de juego.
+            </span>
+            <button onClick={() => onCompatibility()}>¿Cómo funciona?</button>
+          </div>
+          <section className="golf-hero discovery-party-promo">
+            <div className="hero-image" />
+            <div className="hero-content">
+              <span className="hero-eyebrow">
+                <span className="live-dot" />
+                PARTIDAS ENTRE GOLFISTAS
+                {cityScope !== "any" ? ` · ${exploringCity}` : ""}
+              </span>
+              <h2>
+                ¿Te falta alguien
+                <br />
+                para completar el grupo?
+              </h2>
+              <p>Consulta las partidas y acuerda el horario en el chat.</p>
+              <button onClick={() => onNavigate("partidas")}>
+                Explorar partidas
+                <ArrowUpRight size={16} />
+              </button>
             </div>
-          }
-        />
+            <div className="hero-stamp">
+              <CourseIcon part="fairway" size={26} />
+              <span>
+                GOOD GOLF.
+                <br />
+                GREAT COMPANY.
+              </span>
+            </div>
+          </section>
+          <div className="next-section-heading">
+            <div>
+              <span className="eyebrow">HAZ ESPACIO EN TU AGENDA</span>
+              <h2>El green te está esperando</h2>
+            </div>
+            <InlineLink onClick={() => onNavigate("partidas")}>
+              Ver todas las partidas
+            </InlineLink>
+          </div>
+          <div className="game-grid">
+            {upcomingGames.map((g) => (
+              <GameCard
+                key={g.id}
+                game={g}
+                club={clubName(g.club_id)}
+                onOpen={() => {
+                  onGame(g);
+                }}
+              />
+            ))}
+          </div>
+          {!upcomingGames.length && (
+            <Empty
+              title="Sé quien proponga la próxima ronda"
+              description="Todavía no hay partidas abiertas con esta selección de ciudad. Publica un plan e invita a tu grupo."
+              action={
+                <div className="empty-actions">
+                  <Button onClick={onCreate}>Crear una partida</Button>
+                  <CommunityInvite />
+                </div>
+              }
+            />
+          )}
+        </>
       )}
     </>
   );
