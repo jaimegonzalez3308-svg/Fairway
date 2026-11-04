@@ -1969,6 +1969,30 @@ h1 {
   font-size: 8px;
   color: #a0ad92;
 }
+/* Shared direct-chat identity: photo to the left of the person's name. */
+.chat-title > .chat-person-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.chat-title .chat-person-heading .avatar {
+  display: inline-flex;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  font-size: 16px;
+  color: var(--forest);
+}
+.chat-title .chat-person-heading .chat-person-name {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: inherit;
+  color: inherit;
+}
 .chat-messages {
   height: 405px;
   overflow: auto;
@@ -2000,6 +2024,21 @@ h1 {
   font-size: 8px;
   margin-top: 4px;
   color: #a9b898;
+}
+.chat-bubble .chat-message-meta {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+.chat-receipt {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.chat-receipt[data-state="seen"] {
+  font-weight: 700;
 }
 .chat-input {
   display: flex;

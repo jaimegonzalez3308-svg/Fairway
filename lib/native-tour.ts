@@ -1,5 +1,5 @@
-/** Steps of the short first-run tour in the iOS app. Each step points at a
- * bottom tab and opens it, so the golfer sees the screen being described. */
+/** Steps of the first-run iOS tour. Friends uses the header shortcut; the
+ * other destinations use bottom tabs. Creation opens only on a deliberate tap. */
 export const nativeTourSteps = [
   {
     tab: "descubrir",
@@ -14,7 +14,7 @@ export const nativeTourSteps = [
   {
     tab: "amigos",
     title: "Arma tu círculo",
-    text: "Busca a tus conocidos por nombre y acepta sus solicitudes de amistad.",
+    text: "Amigos está arriba, junto a las notificaciones. Busca a tus conocidos y acepta sus solicitudes. El + de abajo abre Crear historia.",
   },
   {
     tab: "mensajes",
@@ -43,7 +43,10 @@ export const websiteTourSteps = [
     title: "Comparte el juego",
     text: "Lee lo que comparte la comunidad y usa «Crear historia» para compartir una foto de tu ronda.",
   },
-  nativeTourSteps[2],
+  {
+    ...nativeTourSteps[2],
+    text: "Busca a tus conocidos por nombre y acepta sus solicitudes de amistad.",
+  },
   nativeTourSteps[3],
   {
     ...nativeTourSteps[4],

@@ -5,11 +5,13 @@ import {
   cloneElement,
   isValidElement,
   useId,
+  useEffect,
   useRef,
   useState,
   type ReactElement,
   type AriaAttributes,
 } from "react";
+import { createPortal } from "react-dom";
 import { X, Flag, ArrowUpRight, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSheetDrag } from "@/lib/use-native-feel";
@@ -21,6 +23,29 @@ export function Button({
   variant?: "primary" | "outline" | "ghost";
 }) {
   return <button className={cn("button", variant, className)} {...props} />;
+}
+/** A screen's main action. In the iOS app it moves to <body> so it can float
+ * above the tab bar, out of reach of the screen's slide-in transform. */
+export function ThumbAction({
+  className,
+  ...props
+}: React.ComponentProps<typeof Button>) {
+  const [host, setHost] = useState<HTMLElement | null>(null);
+  useEffect(() => {
+    const root = document.documentElement;
+    const sync = () =>
+      setHost(root.classList.contains("native-ios") ? document.body : null);
+    sync();
+    const Observer = window.MutationObserver;
+    if (!Observer) return;
+    const observer = new Observer(sync);
+    observer.observe(root, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
+  const button = (
+    <Button className={cn("native-thumb-action", className)} {...props} />
+  );
+  return host ? createPortal(button, host) : button;
 }
 export function Modal({
   title,

@@ -11,7 +11,7 @@ import {
   RefreshCw,
   Users,
 } from "lucide-react";
-import { Button, Empty, SectionHeading } from "./ui";
+import { Button, Empty, SectionHeading, ThumbAction } from "./ui";
 import { PartyMonthCalendar } from "./party-month-calendar";
 import type { FairwayData } from "@/lib/use-fairway";
 import type { Game } from "@/lib/domain";
@@ -134,10 +134,10 @@ export function Parties({
             : "Explora las parties del mes, elige un día y encuentra tu próxima ronda. También puedes organizar la tuya."
         }
         action={
-          <Button onClick={() => onCreate()}>
+          <ThumbAction onClick={() => onCreate()}>
             <CourseIcon part="tee" size={19} />
             Crear party
-          </Button>
+          </ThumbAction>
         }
       />
       {!calendar && !compact && (

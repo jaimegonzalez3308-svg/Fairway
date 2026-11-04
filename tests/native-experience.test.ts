@@ -114,16 +114,19 @@ test("the compact welcome keeps login, signup, public clubs and legal notices ac
   }
 });
 
-test("app tabs put friends one tap away, announce unread messages and requests, and select the destination", async () => {
+test("the center app action creates a story without navigating, while the other tabs retain their destinations", async () => {
   const view = mount();
   const destinations: string[] = [];
+  let created = 0;
   try {
     await act(async () =>
       view.root.render(
         createElement(NativeTabBar, {
-          page: "amigos",
+          page: "mensajes",
           unreadMessages: 3,
-          friendRequests: 2,
+          onCreateStory: () => {
+            created++;
+          },
           onNavigate: (page) => destinations.push(page),
         }),
       ),
@@ -132,28 +135,29 @@ test("app tabs put friends one tap away, announce unread messages and requests, 
     assert.equal(buttons.length, 5);
     assert.match(
       view.container.querySelector('[aria-current="page"]')?.textContent || "",
-      /Amigos$/,
+      /Mensajes$/,
     );
     assert.ok(
       view.container.querySelector('[aria-label="3 mensajes sin leer"]'),
     );
-    assert.ok(
-      view.container.querySelector('[aria-label="2 solicitudes de amistad"]'),
-    );
+    assert.equal(buttons[2].getAttribute("aria-label"), "Crear historia");
+    assert.equal(buttons[2].getAttribute("aria-haspopup"), "dialog");
+    assert.equal(buttons[2].getAttribute("aria-current"), null);
     for (const button of buttons) await act(async () => button.click());
     assert.deepEqual(destinations, [
       "descubrir",
       "partidas",
-      "amigos",
       "mensajes",
       "perfil",
     ]);
+    assert.equal(created, 1);
     await act(async () =>
       view.root.render(
         createElement(NativeTabBar, {
-          page: "amigos",
+          page: "mensajes",
           inert: true,
           onNavigate() {},
+          onCreateStory() {},
         }),
       ),
     );
@@ -163,7 +167,7 @@ test("app tabs put friends one tap away, announce unread messages and requests, 
   }
 });
 
-test("quick actions lead to creation, scores and friends without starting writes", async () => {
+test("quick actions keep game and score creation while the story action lives in the bottom bar", async () => {
   const view = mount();
   const actions: string[] = [];
   try {
@@ -172,14 +176,13 @@ test("quick actions lead to creation, scores and friends without starting writes
         createElement(NativeQuickActions, {
           onCreate: () => actions.push("create"),
           onScore: () => actions.push("score"),
-          onFriends: () => actions.push("friends"),
         }),
       ),
     );
     assert.deepEqual(actions, []);
     for (const button of view.container.querySelectorAll("button"))
       await act(async () => button.click());
-    assert.deepEqual(actions, ["create", "score", "friends"]);
+    assert.deepEqual(actions, ["create", "score"]);
   } finally {
     await view.cleanup();
   }

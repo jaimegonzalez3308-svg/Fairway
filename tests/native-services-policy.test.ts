@@ -43,6 +43,69 @@ test("native services enforce adult Apple onboarding and protect device registra
     await db.exec(`set role ${role}`);
   }
   await t.test(
+    "chat delivery receipts can only update the recipient's own membership",
+    async () => {
+      await db.exec("reset role");
+      const match = (
+        await db.query<{ id: string }>(
+          "insert into matches(user_a,user_b) values(least($1::uuid,$2::uuid),greatest($1::uuid,$2::uuid)) returning id",
+          [alice, bob],
+        )
+      ).rows[0].id;
+      const chat = (
+        await db.query<{ id: string }>(
+          "insert into conversations(match_id) values($1) returning id",
+          [match],
+        )
+      ).rows[0].id;
+      await db.query(
+        "insert into conversation_members(conversation_id,user_id) values($1,$2),($1,$3)",
+        [chat, alice, bob],
+      );
+      await as(bob);
+      assert.equal(
+        (
+          await db.query(
+            "update conversation_members set last_delivered_at=now() where conversation_id=$1 and user_id=$2 returning user_id",
+            [chat, bob],
+          )
+        ).rows.length,
+        1,
+      );
+      await as(alice);
+      assert.equal(
+        (
+          await db.query(
+            "select user_id from conversation_members where conversation_id=$1 and last_delivered_at is not null",
+            [chat],
+          )
+        ).rows.length,
+        1,
+      );
+      assert.equal(
+        (
+          await db.query(
+            "update conversation_members set last_delivered_at=now() where conversation_id=$1 and user_id=$2 returning user_id",
+            [chat, bob],
+          )
+        ).rows.length,
+        0,
+      );
+      await as(apple);
+      assert.equal(
+        (
+          await db.query(
+            "select * from conversation_members where conversation_id=$1",
+            [chat],
+          )
+        ).rows.length,
+        0,
+      );
+      await db.exec("reset role");
+      await db.query("delete from matches where id=$1", [match]);
+    },
+  );
+  await t.test(
     "Apple cannot read private data or skip age and consent",
     async () => {
       await as(apple);

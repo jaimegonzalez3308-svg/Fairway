@@ -10,7 +10,7 @@ import {
 } from "react";
 import { ArrowLeft, ArrowRight, Heart } from "lucide-react";
 import type { Profile } from "@/lib/domain";
-import { swipeChoice, type SwipeChoice } from "@/lib/swipe";
+import { swipeChoice, swipeThreshold, type SwipeChoice } from "@/lib/swipe";
 
 type Actions = { onLike: () => void; onPass: () => void; busy: boolean };
 type Gesture = {
@@ -129,7 +129,9 @@ export function SwipeDeck({
     if (choice && target?.id === start.profileId) void commit(target, choice);
   }
   const x = outgoing ? (outgoing.choice === "like" ? 1 : -1) * 720 : drag.x;
-  const progress = outgoing ? 1 : Math.min(1, Math.abs(drag.x) / 105);
+  const progress = outgoing
+    ? 1
+    : Math.min(1, Math.abs(drag.x) / swipeThreshold(gesture.current?.width ?? 440));
   const variables = {
     "--swipe-x": `${x}px`,
     "--swipe-y": `${outgoing ? 24 : drag.y * 0.12}px`,

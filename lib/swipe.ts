@@ -1,4 +1,10 @@
 export type SwipeChoice = "like" | "pass";
+
+/** A short, deliberate drag should work on both phone and desktop cards. */
+export function swipeThreshold(width: number) {
+  return Math.max(48, Math.min(72, width * 0.16));
+}
+
 export function swipeChoice(
   dx: number,
   dy: number,
@@ -9,7 +15,7 @@ export function swipeChoice(
     return null;
   const distance = Math.abs(dx);
   if (distance <= Math.abs(dy) * 1.25) return null;
-  const threshold = Math.max(72, Math.min(120, width * 0.27));
-  const flick = distance >= 48 && distance / Math.max(1, elapsedMs) >= 0.65;
+  const threshold = swipeThreshold(width);
+  const flick = distance >= 36 && distance / Math.max(1, elapsedMs) >= 0.5;
   return distance >= threshold || flick ? (dx > 0 ? "like" : "pass") : null;
 }

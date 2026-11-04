@@ -1,4 +1,6 @@
 "use client";
+import { messageReceipt, receiptLabels } from "@/lib/message-receipts";
+import { observeMessageVisibility } from "@/lib/message-visibility";
 import { Avatar, InfoItem } from "./member-primitives";
 import { Rounds } from "./round-history";
 import { FilterForm } from "./discovery-filters";
@@ -56,7 +58,7 @@ import {
   type Round,
 } from "@/lib/domain";
 import { cn, dateFormat, timeFormat } from "@/lib/utils";
-import { Button, Modal, Empty, SectionHeading } from "./ui";
+import { Button, Modal, Empty, SectionHeading, ThumbAction } from "./ui";
 import { useNativeShell } from "@/lib/use-native-shell";
 import { beat, prefersReducedMotion } from "@/lib/native-motion";
 import {
@@ -246,6 +248,9 @@ export default function FairwayApp() {
   const nativeApp = useNativeApp();
   const data = useFairway();
   const friends = useFriends(data);
+  const friendRequestCount = friends.relations.filter(
+    (relation) => relation.status === "pending" && relation.recipient_id === data.user?.id,
+  ).length;
   const [cityScope, setCityScope] = useState("mine");
   useEffect(() => setCityScope("mine"), [data.user?.id]);
   const ownCity = normalizeCity(data.me.city || DEFAULT_CITY);
@@ -746,13 +751,69 @@ export default function FairwayApp() {
     });
   }, [data.messages, activeChat]);
   useEffect(() => {
-    if (!activeChat || !supabase || !data.user) return;
-    void supabase
-      .from("conversation_members")
-      .update({ last_read_at: new Date().toISOString() })
-      .eq("conversation_id", activeChat)
-      .eq("user_id", data.user.id);
-  }, [activeChat, data.messages.length, data.user]);
+    if (
+      page !== "mensajes" ||
+      !activeChat ||
+      !supabase ||
+      !data.user ||
+      modal ||
+      mobileOpen
+    )
+      return;
+    const latest = data.messages
+      .filter(
+        (m) =>
+          m.conversation_id === activeChat && m.sender_id !== data.user!.id,
+      )
+      .reduce<(typeof data.messages)[number] | undefined>(
+        (last, m) =>
+          !last || Date.parse(m.created_at) > Date.parse(last.created_at)
+            ? m
+            : last,
+        undefined,
+      );
+    if (!latest) return;
+    const member = data.conversations
+      .find((c) => c.id === activeChat)
+      ?.conversation_members.find((m) => m.user_id === data.user!.id);
+    if (
+      !member ||
+      Date.parse(member.last_read_at) >= Date.parse(latest.created_at)
+    )
+      return;
+    const element = document.getElementById(`chat-message-${latest.id}`);
+    if (!element || typeof IntersectionObserver === "undefined") return;
+    let pending = false;
+    let disposed = false;
+    const markRead = () => {
+      if (disposed || pending) return;
+      pending = true;
+      void supabase!
+        .from("conversation_members")
+        .update({ last_read_at: latest.created_at })
+        .eq("conversation_id", activeChat)
+        .eq("user_id", data.user!.id)
+        .lt("last_read_at", latest.created_at)
+        .then(({ error }) => {
+          pending = false;
+          if (!disposed && !error) void data.refreshConversations();
+        });
+    };
+    const stop = observeMessageVisibility(element, markRead);
+    return () => {
+      disposed = true;
+      stop();
+    };
+  }, [
+    page,
+    activeChat,
+    data.messages,
+    data.conversations,
+    data.user?.id,
+    data.refreshConversations,
+    modal,
+    mobileOpen,
+  ]);
   const clubName = (id: string | null) =>
     data.clubs.find((c) => c.id === id)?.name || "Sin club";
   const allProfiles = [data.me, ...data.profiles];
@@ -891,6 +952,16 @@ export default function FairwayApp() {
     setActiveChat(id);
   }
   const currentChat = data.conversations.find((c) => c.id === activeChat);
+  const currentChatPeer =
+    currentChat && !currentChat.game_id
+      ? allProfiles.find(
+          (profile) =>
+            profile.id ===
+            currentChat.conversation_members.find(
+              (member) => member.user_id !== data.user?.id,
+            )?.user_id,
+        )
+      : undefined;
   // iOS app: an open chat takes the whole screen, like a messaging app.
   const chatFullscreen = nativeApp && page === "mensajes" && !!currentChat;
   useEffect(() => {
@@ -1390,6 +1461,22 @@ export default function FairwayApp() {
             )}
           </div>
           <div className="topbar-actions">
+            {nativeApp && (
+              <button
+                type="button"
+                className="icon-btn native-friends-shortcut"
+                aria-label={friendRequestCount > 0 ? `Amigos, ${friendRequestCount} ${friendRequestCount === 1 ? "solicitud" : "solicitudes"} de amistad` : "Amigos"}
+                aria-current={page === "amigos" ? "page" : undefined}
+                data-tour={tourStep !== null && nativeTourSteps[tourStep]?.tab === "amigos" ? "active" : undefined}
+                onClick={() => go("amigos")}
+              >
+                <SidebarIcon name="amigos" />
+                {friendRequestCount > 0 && <span className="native-friend-badge"
+                  aria-label={`${friendRequestCount} ${friendRequestCount === 1 ? "solicitud" : "solicitudes"} de amistad`}>
+                  {friendRequestCount > 99 ? "99+" : friendRequestCount}
+                </span>}
+              </button>
+            )}
             <button
               type="button"
               className="location city-location-button"
@@ -1577,8 +1664,6 @@ export default function FairwayApp() {
                     setModal("create-party");
                   }}
                   onScore={score}
-                  onFriends={() => go("amigos")}
-                  onStory={() => setModal("create-story")}
                 />
               )}
               {page === "descubrir" && (
@@ -1748,7 +1833,22 @@ export default function FairwayApp() {
                                 Conversaciones
                               </button>
                             )}
-                            <strong>{conversationName(currentChat)}</strong>
+                            {currentChat.game_id ? (
+                              <strong>{conversationName(currentChat)}</strong>
+                            ) : (
+                              <strong className="chat-person-heading">
+                                {currentChatPeer ? (
+                                  <Avatar profile={currentChatPeer} />
+                                ) : (
+                                  <span className="avatar" aria-hidden="true">
+                                    {conversationName(currentChat)[0]}
+                                  </span>
+                                )}
+                                <span className="chat-person-name">
+                                  {conversationName(currentChat)}
+                                </span>
+                              </strong>
+                            )}
                             {currentChatGame && (
                               <small className="party-chat-date">
                                 <CalendarDays size={13} />
@@ -1824,6 +1924,7 @@ export default function FairwayApp() {
                                     m.sender_id === data.user?.id && "own",
                                   )}
                                   key={m.id}
+                                  id={`chat-message-${m.id}`}
                                 >
                                   {currentChat.game_id && (
                                     <strong className="chat-sender-name">
@@ -1835,7 +1936,38 @@ export default function FairwayApp() {
                                     </strong>
                                   )}
                                   {m.body}
-                                  <small>{timeFormat(m.created_at)}</small>
+                                  <small className="chat-message-meta">
+                                    {timeFormat(m.created_at)}
+                                    {m.sender_id === data.user?.id && (
+                                      <span
+                                        className="chat-receipt"
+                                        data-state={messageReceipt(
+                                          m,
+                                          currentChat,
+                                        )}
+                                        title={
+                                          currentChat.game_id
+                                            ? "Estado de todos los demás participantes"
+                                            : undefined
+                                        }
+                                      >
+                                        {messageReceipt(m, currentChat) ===
+                                        "sent" ? (
+                                          <Check size={13} aria-hidden="true" />
+                                        ) : (
+                                          <CheckCheck
+                                            size={13}
+                                            aria-hidden="true"
+                                          />
+                                        )}
+                                        {
+                                          receiptLabels[
+                                            messageReceipt(m, currentChat)
+                                          ]
+                                        }
+                                      </span>
+                                    )}
+                                  </small>
                                 </div>
                               ))}
                             <div ref={chatEnd} />
@@ -1858,7 +1990,7 @@ export default function FairwayApp() {
                           >
                             <input
                               aria-label="Mensaje"
-                              placeholder="¿A qué hora nos vemos en el tee?"
+                              placeholder="Escribe un mensaje…"
                               maxLength={2000}
                               value={message}
                               onChange={(e) => setMessage(e.target.value)}
@@ -2124,10 +2256,10 @@ export default function FairwayApp() {
                     }
                     description="Guarda tus rondas, celebra tus mejores scores y sigue mejorando."
                     action={
-                      <Button onClick={score}>
+                      <ThumbAction onClick={score}>
                         <Plus size={17} />
                         Registrar score
-                      </Button>
+                      </ThumbAction>
                     }
                   />
                   <Rounds
@@ -2149,10 +2281,10 @@ export default function FairwayApp() {
                     }
                     description="El progreso está en los detalles. Descubre los tuyos."
                     action={
-                      <Button onClick={score}>
+                      <ThumbAction onClick={score}>
                         <Plus size={16} />
                         Registrar score
-                      </Button>
+                      </ThumbAction>
                     }
                   />
                   <Stats data={data} />
@@ -2254,12 +2386,12 @@ export default function FairwayApp() {
         <NativeTabBar
           page={page}
           onNavigate={go}
+          onCreateStory={() => {
+            if (!data.user) { requireAccount("comunidad"); return; }
+            nativeHaptic();
+            setModal("create-story");
+          }}
           unreadMessages={unreadMessages}
-          friendRequests={
-            friends.relations.filter(
-              (r) => r.status === "pending" && r.recipient_id === data.user?.id,
-            ).length
-          }
           inert={isMobile && mobileOpen}
           highlight={
             tourStep === null ? undefined : nativeTourSteps[tourStep]?.tab
@@ -2551,13 +2683,14 @@ export default function FairwayApp() {
       )}
       {modal === "score" && (
         <Modal
-          title={round ? "Editar scorecard" : "Registra una nueva ronda"}
+          title={nativeApp ? (round ? "Tu scorecard" : "Nueva ronda") : round ? "Editar scorecard" : "Registra una nueva ronda"}
           onClose={close}
           wide
         >
           <Scorecard
             data={data}
             round={round}
+            native={nativeApp}
             onDone={() => {
               close();
               go("scores");

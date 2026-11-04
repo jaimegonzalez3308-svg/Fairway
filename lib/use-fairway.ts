@@ -11,6 +11,7 @@ import {
 } from "./demo";
 import type { Profile, Club, Game, Round } from "./domain";
 import { authErrorMessage } from "./auth";
+import { incomingWatermarks } from "./message-receipts";
 import { NATIVE_RESUME } from "./native-support";
 import { isIOSApp, nativeBridge } from "./native-app";
 import { nativeOnline, NATIVE_NETWORK_CHANGED } from "./native-network";
@@ -45,11 +46,15 @@ export type Conversation = {
   id: string;
   match_id: string | null;
   game_id: string | null;
-  conversation_members: { user_id: string; last_read_at: string }[];
+  conversation_members: {
+    user_id: string;
+    last_read_at: string;
+    last_delivered_at?: string | null;
+  }[];
   game?: Pick<Game, "id" | "club_id" | "starts_at" | "holes" | "status"> | null;
 };
 const conversationSelect =
-  "*,conversation_members(user_id,last_read_at),game:games(id,club_id,starts_at,holes,status)";
+  "*,conversation_members(*),game:games(id,club_id,starts_at,holes,status)";
 export type Message = {
   id: string;
   conversation_id: string;
@@ -528,6 +533,45 @@ export function useFairway() {
     if (!result.error && currentUserId.current === userId)
       setConversations(result.data as unknown as Conversation[]);
   }, [user?.id]);
+  useEffect(() => {
+    const userId = user?.id;
+    if (!supabase || !userId) return;
+    let current = true;
+    const watermarks = incomingWatermarks(messages, userId);
+    const pending = conversations.flatMap((conversation) => {
+      const member = conversation.conversation_members.find(
+        (m) => m.user_id === userId,
+      );
+      const receivedAt = watermarks.get(conversation.id);
+      // Old databases remain usable until the receipts migration is applied.
+      if (
+        !member ||
+        !("last_delivered_at" in member) ||
+        !receivedAt ||
+        (member.last_delivered_at &&
+          Date.parse(member.last_delivered_at) >= Date.parse(receivedAt))
+      )
+        return [];
+      return [{ conversationId: conversation.id, receivedAt }];
+    });
+    if (!pending.length) return;
+    void Promise.all(
+      pending.map(async ({ conversationId, receivedAt }) => {
+        const result = await supabase!
+          .from("conversation_members")
+          .update({ last_delivered_at: receivedAt })
+          .eq("conversation_id", conversationId)
+          .eq("user_id", userId)
+          .or(`last_delivered_at.is.null,last_delivered_at.lt.${receivedAt}`);
+        return !result.error;
+      }),
+    ).then((saved) => {
+      if (current && saved.some(Boolean)) void refreshConversations();
+    });
+    return () => {
+      current = false;
+    };
+  }, [messages, conversations, user?.id, refreshConversations]);
   const partyChat = useCallback(
     async (gameId: string) => {
       const userId = user?.id;
@@ -582,6 +626,11 @@ export function useFairway() {
       )
       .on(
         "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "conversation_members" },
+        () => void refreshConversations(),
+      )
+      .on(
+        "postgres_changes",
         {
           event: "INSERT",
           schema: "public",
@@ -594,7 +643,7 @@ export function useFairway() {
     return () => {
       void supabase!.removeChannel(channel);
     };
-  }, [user, load]);
+  }, [user, load, refreshConversations]);
   async function changePhoto(file: File | null) {
     if (!supabase || !user)
       throw new Error("Inicia sesión para guardar tu fotografía.");
@@ -745,6 +794,7 @@ export function useFairway() {
     myReviews,
     refreshRatings,
     refreshGames,
+    refreshConversations,
     partyChat,
     run,
     changePhoto,

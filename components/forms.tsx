@@ -723,7 +723,7 @@ export function ProfileForm({
           {err}
         </p>
       )}
-      <Button disabled={busy || locating}>
+      <Button className="native-sheet-action" disabled={busy || locating}>
         {busy
           ? "Guardando…"
           : locating
@@ -945,7 +945,7 @@ export function GameForm({
         Fairway organiza compañeros. La reserva del tee time y la autorización
         de acceso se gestionan directamente con el club.
       </div>
-      <Button disabled={busy}>
+      <Button className="native-sheet-action" disabled={busy}>
         {busy
           ? "Publicando…"
           : joinMode === "open"
@@ -1027,7 +1027,7 @@ export function ReviewForm({
       <Field label="Comentario (opcional)">
         <textarea name="body" maxLength={1000} disabled={busy || !eligible} />
       </Field>
-      <Button disabled={busy || !eligible || !rating}>
+      <Button className="native-sheet-action" disabled={busy || !eligible || !rating}>
         {busy ? "Guardando…" : "Enviar calificación"}
       </Button>
     </form>

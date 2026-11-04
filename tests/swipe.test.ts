@@ -11,6 +11,15 @@ test("un arrastre horizontal suficiente decide en la dirección correcta", () =>
   assert.equal(swipeChoice(-130, 15, 440, 600), "pass");
   assert.equal(swipeChoice(80, 0, 280, 600), "like");
 });
+test("un arrastre corto deliberado funciona en móvil y escritorio sin sacar la tarjeta", () => {
+  for (const direction of [-1, 1]) {
+    const choice = direction > 0 ? "like" : "pass";
+    assert.equal(swipeChoice(direction * 48, 8, 280, 600), choice);
+    assert.equal(swipeChoice(direction * 60, 10, 360, 600), choice);
+    assert.equal(swipeChoice(direction * 72, 12, 600, 600), choice);
+    assert.equal(swipeChoice(direction * 40, 2, 360, 600), null);
+  }
+});
 test("taps, arrastres cortos y desplazamiento vertical no envían decisiones", () => {
   assert.equal(swipeChoice(0, 0, 440, 20), null);
   assert.equal(swipeChoice(30, 2, 440, 600), null);
@@ -25,6 +34,10 @@ test("un flick breve exige distancia mínima y velocidad, además de intención 
   assert.equal(swipeChoice(35, 0, 440, 20), null);
   assert.equal(swipeChoice(65, 3, 440, 400), null);
   assert.equal(swipeChoice(65, 100, 440, 50), null);
+  assert.equal(swipeChoice(40, 3, 440, 70), "like");
+  assert.equal(swipeChoice(-40, 3, 440, 70), "pass");
+  assert.equal(swipeChoice(40, 3, 440, 200), null);
+  assert.equal(swipeChoice(35, 2, 440, 20), null);
 });
 test("solo la primera tarjeta expone acciones; la siguiente es una vista decorativa", () => {
   let rendered = 0;

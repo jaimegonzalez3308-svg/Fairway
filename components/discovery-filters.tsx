@@ -122,7 +122,7 @@ export function FilterForm({
           {label}
         </label>
       ))}
-      <div className="button-row">
+      <div className="button-row native-sheet-action">
         <Button type="button" variant="outline" onClick={onReset}>
           <RotateCcw size={15} />
           Restablecer

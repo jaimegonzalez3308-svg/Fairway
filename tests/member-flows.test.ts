@@ -322,7 +322,7 @@ test("section navigation creates history entries and Back/Forward restores the v
   }
 });
 
-test("installed iOS opens the app shell and its friends tab preserves navigation history", async () => {
+test("installed iOS keeps friends in the header and the center story action preserves navigation history", async () => {
   const view = mount();
   Object.assign(view.dom.window, { Capacitor: { getPlatform: () => "ios" } });
   try {
@@ -339,8 +339,8 @@ test("installed iOS opens the app shell and its friends tab preserves navigation
     });
     const nav = view.container.querySelector(".native-tab-bar");
     assert.ok(nav);
-    const friendsTab = Array.from(nav.querySelectorAll("button")).find(
-      (b) => b.textContent === "Amigos",
+    const friendsTab = view.container.querySelector<HTMLButtonElement>(
+      ".native-friends-shortcut",
     );
     assert.ok(friendsTab);
     await click(friendsTab);
@@ -349,12 +349,24 @@ test("installed iOS opens the app shell and its friends tab preserves navigation
     assert.equal(
       view.container.querySelector(".native-screen-back"),
       null,
-      "Amigos is a top-level tab, not a pushed screen",
+      "Amigos remains a primary destination through its header shortcut",
     );
     assert.equal(
       view.container.querySelectorAll('.native-tab-bar [aria-current="page"]')
         .length,
-      1,
+      0,
+    );
+    assert.equal(friendsTab.getAttribute("aria-current"), "page");
+    const storyButton = nav.querySelector<HTMLButtonElement>(
+      '[aria-label="Crear historia"]',
+    );
+    assert.ok(storyButton);
+    const originalHash = view.dom.window.location.hash;
+    await click(storyButton);
+    assert.equal(
+      view.dom.window.location.hash,
+      originalHash,
+      "creation is an action, not a navigation destination",
     );
     assert.equal(view.container.querySelector(".mobile-nav"), null);
     const more = view.container.querySelector(
@@ -376,7 +388,7 @@ test("installed iOS opens the app shell and its friends tab preserves navigation
       view.container.querySelector("#fairway-sidebar")?.textContent || "",
       /Mis scores/,
     );
-    // Nothing in the menu repeats the tab bar.
+    // Nothing in the menu repeats a primary shortcut.
     const sidebar = view.container.querySelector("#fairway-sidebar")!;
     const labels = [...sidebar.querySelectorAll(".nav-item .nav-label")].map(
       (n) => n.textContent,
@@ -388,7 +400,7 @@ test("installed iOS opens the app shell and its friends tab preserves navigation
       "Mensajes",
       "Mi perfil",
     ])
-      assert.ok(!labels.includes(tab), `${tab} is only in the tab bar`);
+      assert.ok(!labels.includes(tab), `${tab} already has a primary shortcut`);
     assert.equal(sidebar.querySelector(".sidebar-user"), null);
     assert.equal(sidebar.querySelector("a.brand"), null);
     // Mensajes in the app shows the list without the website's intro copy.

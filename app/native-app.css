@@ -1,4 +1,359 @@
 /* Installed iOS app only. Browser layouts, including mobile Safari, stay unchanged. */
+/* A phone-sized scorebook: setup, one hole, then a compact review. */
+html.native-ios .native-round-entry {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: #193d2f;
+}
+html.native-ios .native-round-entry [hidden] {
+  display: none !important;
+}
+html.native-ios .native-round-entry :is(button, summary) {
+  min-height: 44px;
+  touch-action: manipulation;
+}
+html.native-ios .native-round-entry h3 {
+  margin: 20px 0 8px;
+  font-size: 1.4rem;
+  line-height: 1.25;
+  scroll-margin-top: 100px;
+}
+html.native-ios .native-round-entry h3:focus {
+  outline: none;
+}
+html.native-ios .native-round-entry p {
+  color: #52604f;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+html.native-ios .native-round-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  padding: 4px;
+  border-radius: var(--nx-radius-control);
+  background: #e8ecdf;
+}
+html.native-ios .native-round-steps button {
+  padding: 8px;
+  color: #52604f;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 650;
+}
+html.native-ios .native-round-steps [aria-current="step"] {
+  color: #fffdf3;
+  background: #193d2f;
+}
+html.native-ios :is(.native-round-setup, .native-round-review) {
+  display: grid;
+  gap: 16px;
+}
+html.native-ios .native-round-setup > p {
+  margin: -12px 0 0;
+}
+html.native-ios .native-round-setup .form-grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+}
+html.native-ios .native-round-info,
+html.native-ios .native-round-share {
+  font-size: 0.8125rem;
+  color: #52604f;
+}
+html.native-ios .native-round-progress {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0 8px;
+  margin: 4px 0 10px;
+  font-size: 0.8125rem;
+  color: #52604f;
+}
+html.native-ios .native-round-progress button {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  color: #193d2f;
+}
+html.native-ios .native-round-progress progress {
+  width: 100%;
+  height: 4px;
+  appearance: none;
+  accent-color: #193d2f;
+  border: 0;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #e0e6d6;
+}
+html.native-ios .native-round-progress progress::-webkit-progress-bar {
+  background: #e0e6d6;
+}
+html.native-ios .native-round-progress progress::-webkit-progress-value {
+  background: #193d2f;
+}
+html.native-ios .native-hole-entry {
+  padding: 16px;
+  border-radius: 16px;
+  background: #f0f1e5;
+}
+html.native-ios .native-hole-entry > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+html.native-ios .native-hole-entry h3 {
+  margin: 0;
+  font-size: 1.75rem;
+}
+html.native-ios .native-hole-entry h3 em {
+  font-family: Georgia, serif;
+  font-weight: 400;
+  font-size: 2.25rem;
+}
+html.native-ios .native-hole-entry header p {
+  margin: 3px 0 0;
+  font-size: 0.8125rem;
+}
+html.native-ios .native-hole-par {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+}
+html.native-ios .native-hole-par .field {
+  flex: 1;
+  min-width: 0;
+}
+html.native-ios .native-hole-par > span {
+  flex: 1;
+  padding-bottom: 8px;
+  color: #52604f;
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+html.native-ios .native-hole-score {
+  padding-top: 16px;
+  text-align: center;
+}
+html.native-ios .native-hole-score > label {
+  font-size: 0.9375rem;
+  font-weight: 650;
+}
+html.native-ios .native-hole-stepper {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) 48px;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 10px;
+}
+html.native-ios .native-hole-stepper button {
+  display: grid;
+  place-items: center;
+  height: 48px;
+  border: 1px solid var(--nx-line-strong);
+  border-radius: 50%;
+  color: #193d2f;
+  background: #fffbf2;
+}
+html.native-ios .modal .native-round-entry .native-hole-stepper input[type="number"] {
+  width: 100%;
+  min-width: 0;
+  height: 80px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #193d2f;
+  text-align: center;
+  font-size: 3.5rem;
+  font-weight: 550;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  appearance: textfield;
+}
+html.native-ios .native-hole-stepper input::-webkit-inner-spin-button {
+  appearance: none;
+}
+html.native-ios .native-hole-stepper input::placeholder {
+  color: #69755f;
+}
+html.native-ios .native-hole-quick {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+html.native-ios .native-hole-quick button {
+  border: 1px solid var(--nx-line-strong);
+  border-radius: var(--nx-radius-control);
+  color: #193d2f;
+  font-size: 1.0625rem;
+  font-weight: 650;
+  background: #fffbf2;
+}
+html.native-ios .native-hole-quick [aria-pressed="true"] {
+  border-color: #193d2f;
+  background: #193d2f;
+  color: #fffdf3;
+}
+html.native-ios .native-hole-score .native-hole-result {
+  min-height: 24px;
+  margin: 10px 0 0;
+  color: #3c5336;
+  font-size: 0.8125rem;
+}
+html.native-ios :is(.native-hole-details, .native-hole-jump) > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  list-style: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+html.native-ios :is(.native-hole-details, .native-hole-jump) > summary::-webkit-details-marker {
+  display: none;
+}
+html.native-ios :is(.native-hole-details, .native-hole-jump) > summary > svg {
+  margin-left: auto;
+}
+html.native-ios :is(.native-hole-details, .native-hole-jump)[open] > summary > svg {
+  transform: rotate(90deg);
+}
+html.native-ios .native-hole-details > summary > span {
+  color: #52604f;
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+html.native-ios .native-hole-details {
+  margin-top: 12px;
+  border-top: 1px solid var(--nx-line);
+}
+html.native-ios .native-hole-details .form-grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  padding: 8px 0;
+}
+html.native-ios .native-hole-jump {
+  margin: 8px 0;
+}
+html.native-ios .native-hole-jump > div {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 6px;
+  padding: 8px 0;
+}
+html.native-ios .native-hole-jump button {
+  position: relative;
+  border: 1px solid var(--nx-line-strong);
+  border-radius: 10px;
+  color: #193d2f;
+  font-size: 0.875rem;
+}
+html.native-ios .native-hole-jump button svg {
+  position: absolute;
+  right: 1px;
+  bottom: 1px;
+}
+html.native-ios .native-hole-jump [aria-current="step"] {
+  background: #193d2f;
+  color: #fffdf3;
+}
+html.native-ios .native-round-footer {
+  position: sticky;
+  bottom: -20px;
+  z-index: 1;
+  display: grid;
+  gap: 8px;
+  padding: 16px 0 calc(12px + env(safe-area-inset-bottom, 0px));
+  background: #fffbf2;
+}
+html.native-ios :is(.native-hole-navigation, .native-round-save) {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
+}
+html.native-ios .native-hole-skip {
+  grid-column: 1 / -1;
+  color: #52604f;
+  font-size: 0.8125rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+html.native-ios .native-round-totals {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 16px;
+  padding: 20px 0;
+  border-block: 1px solid var(--nx-line);
+}
+html.native-ios .native-round-totals div {
+  display: grid;
+  gap: 4px;
+}
+html.native-ios .native-round-totals strong {
+  color: #193d2f;
+  font-size: 2.5rem;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+html.native-ios .native-round-totals span {
+  color: #52604f;
+  font-size: 0.8125rem;
+}
+html.native-ios .native-round-nine h4 {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 10px;
+  font-size: 1rem;
+}
+html.native-ios .native-round-nine h4 span {
+  color: #52604f;
+  font-size: 0.8125rem;
+  font-weight: 400;
+}
+html.native-ios .native-round-review-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+html.native-ios .native-round-review-grid button {
+  display: grid;
+  gap: 4px;
+  padding: 12px 6px;
+  border: 1px solid var(--nx-line);
+  border-radius: var(--nx-radius-control);
+  text-align: center;
+  color: #193d2f;
+  background: #f0f1e5;
+}
+html.native-ios .native-round-review-grid :is(span, small) {
+  font-size: 0.75rem;
+}
+html.native-ios .native-round-review-grid strong {
+  font-size: 1.375rem;
+}
+html.native-ios .native-round-review-grid small {
+  color: #52604f;
+}
+html.native-ios .native-round-entry .native-round-error {
+  padding: 12px;
+  border-radius: var(--nx-radius-control);
+  background: #fae7dc;
+  color: #783921;
+}
+html.native-ios .native-round-pending {
+  padding: 12px;
+  border-radius: var(--nx-radius-control);
+  background: #f5ebbf;
+}
+@media (max-width: 360px) {
+  html.native-ios .native-hole-entry { padding: 16px 12px; }
+  html.native-ios .native-hole-jump > div { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
 html.native-ios {
   background: #f5f3ea;
   overscroll-behavior-y: none;
@@ -130,7 +485,7 @@ html.native-ios .native-primary {
 html.native-ios .native-secondary {
   background: #e8ecdf;
   color: #193d2f;
-  border-color: #c2c9b5;
+  border-color: var(--nx-line-strong);
 }
 html.native-ios .native-text-action {
   display: flex;
@@ -179,7 +534,7 @@ html.native-ios .native-app .topbar {
   padding: 0 14px;
   z-index: 20;
   background: #f5f3ea;
-  border-bottom: 1px solid #d8ddcf;
+  border-bottom: 1px solid var(--nx-line);
   backdrop-filter: none;
 }
 html.native-ios .native-app .breadcrumb {
@@ -245,7 +600,7 @@ html.native-ios .native-app .account-menu summary > .avatar {
   width: 34px;
   height: 34px;
   border: 2px solid #fffbf2;
-  box-shadow: 0 0 0 1px #c2c9b5;
+  box-shadow: 0 0 0 1px var(--nx-line-strong);
   color: #193d2f;
   font-weight: 650;
 }
@@ -347,7 +702,7 @@ html.native-ios .native-app .app-footer .legal-links a {
 }
 html.native-ios .native-quick-actions {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
   margin-bottom: 22px;
 }
@@ -359,8 +714,8 @@ html.native-ios .native-quick-actions button {
   gap: 8px;
   min-height: 48px;
   padding: 12px 4px;
-  border: 1px solid #d0d7c4;
-  border-radius: 18px;
+  border: 1px solid var(--nx-line);
+  border-radius: var(--nx-radius-control);
   background: #e8ecdf;
   color: #193d2f;
   font-size: 11px;
@@ -379,8 +734,8 @@ html.native-ios .native-app main[data-page="descubrir"] .section-heading h1 {
   font-size: 23px;
 }
 html.native-ios .native-filter-disclosure {
-  border: 1px solid #c2c9b5;
-  border-radius: 14px;
+  border: 1px solid var(--nx-line-strong);
+  border-radius: var(--nx-radius-control);
   background: #fffbf2;
   margin-bottom: 16px;
 }
@@ -446,7 +801,7 @@ html.native-ios .native-tab-bar {
   min-height: 72px;
   padding: 6px 8px 8px;
   background: #f5f3ea;
-  border-top: 1px solid #cfd6c5;
+  border-top: 1px solid var(--nx-line);
 }
 html.native-ios .native-tab-bar button {
   display: flex;
@@ -459,6 +814,43 @@ html.native-ios .native-tab-bar button {
   padding: 3px 0;
   color: #52604f;
   font-size: 10px;
+}
+html.native-ios .native-tab-bar .native-story-action .native-tab-icon {
+  width: 48px;
+  height: 38px;
+  border-radius: 12px;
+  background: #193d2f;
+  color: #fffdf3;
+}
+html.native-ios .native-tab-bar .native-story-action {
+  color: #193d2f;
+  font-weight: 650;
+}
+html.native-ios .native-friends-shortcut {
+  position: relative;
+  flex-shrink: 0;
+  border-radius: 12px;
+}
+html.native-ios .native-friends-shortcut > .sidebar-icon {
+  width: 25px;
+  height: 25px;
+}
+html.native-ios .native-friends-shortcut:is([aria-current="page"], [data-tour="active"]) {
+  background: #e8ecdf;
+  color: #193d2f;
+}
+html.native-ios .native-friend-badge {
+  position: absolute;
+  top: 0;
+  right: -2px;
+  min-width: 17px;
+  padding: 2px 4px;
+  border: 1px solid #f5f3ea;
+  border-radius: 10px;
+  color: #fffdf3;
+  background: #193d2f;
+  font-size: 10px;
+  line-height: 1.2;
 }
 html.native-ios .native-tab-icon {
   display: grid;
@@ -500,7 +892,7 @@ html.native-ios .modal {
   max-height: 96dvh;
   padding: 20px;
   border-radius: 24px 24px 0 0;
-  border: 1px solid #d0d7c4;
+  border: 1px solid var(--nx-line);
   background: #fffbf2;
 }
 html.native-ios .modal-heading {
@@ -545,7 +937,7 @@ html.native-ios .native-app .native-chat-open .chat-sidebar {
 }
 html.native-ios .native-app .chat-contact {
   min-height: 80px;
-  border-bottom: 1px solid #d8ddcf;
+  border-bottom: 1px solid var(--nx-line);
   padding: 16px 8px;
 }
 html.native-ios .native-app .chat-contact strong {
@@ -558,8 +950,8 @@ html.native-ios .native-app .native-chat-open .chat-main {
   display: flex;
   height: calc(100dvh - 220px);
   min-height: 300px;
-  border: 1px solid #d8ddcf;
-  border-radius: 18px;
+  border: 1px solid var(--nx-line);
+  border-radius: var(--nx-radius-card);
   overflow: hidden;
   background: #fffbf2;
 }
@@ -821,7 +1213,7 @@ html.native-ios .native-modal-back {
   flex: 0 0 44px;
   width: 44px;
   min-height: 44px;
-  border: 1px solid #d4d5c8;
+  border: 1px solid var(--nx-line);
   border-radius: 50%;
   background: transparent;
   color: #204a37;
@@ -939,7 +1331,7 @@ html.native-ios .native-connection {
   background: #f0e7cf;
   color: #4d4328;
   border: 1px solid #c9ba92;
-  border-radius: 14px;
+  border-radius: var(--nx-radius-control);
   font-size: 14px;
   line-height: 1.5;
 }
@@ -963,7 +1355,7 @@ html.native-ios .native-offline-panel > p {
   margin: 8px 0 14px;
 }
 html.native-ios .native-offline-panel {
-  border: 1px solid #cdd3c0;
+  border: 1px solid var(--nx-line);
   background: #f5f5ec;
   border-radius: 16px;
   padding: 16px;
@@ -976,7 +1368,7 @@ html.native-ios .native-offline-panel h3 {
   font-size: 17px;
 }
 html.native-ios .native-offline-panel article {
-  border-top: 1px solid #d6dacd;
+  border-top: 1px solid var(--nx-line);
   margin-top: 14px;
   padding-top: 12px;
 }
@@ -1013,7 +1405,7 @@ html.native-ios .native-read-action {
   padding: 12px;
 }
 html.native-ios .native-swipe-row {
-  border-bottom: 1px solid #e1e4d8;
+  border-bottom: 1px solid var(--nx-line);
 }
 html.native-ios .story-viewer :is(button, a):focus-visible {
   outline-color: #fff;
@@ -1058,7 +1450,7 @@ html.native-ios .native-quick-actions {
 html.native-ios .native-quick-actions button {
   min-height: 44px;
   padding: 8px 4px;
-  border-radius: 14px;
+  border-radius: var(--nx-radius-control);
   font-size: 12px;
   font-weight: 600;
 }
@@ -1081,7 +1473,7 @@ html.native-ios .native-app .native-discover-tabs button {
   gap: 6px;
   padding: 0 6px;
   border: 0;
-  border-radius: 12px;
+  border-radius: var(--nx-radius-control);
   color: #52604f;
   font-size: 13px;
   font-weight: 600;
@@ -1109,8 +1501,8 @@ html.native-ios .native-discover-tools > .search-input {
   grid-row: 1;
   min-height: 44px;
   padding: 0 12px;
-  border: 1px solid #c2c9b5;
-  border-radius: 14px;
+  border: 1px solid var(--nx-line-strong);
+  border-radius: var(--nx-radius-control);
   background: #fffbf2;
   color: #52604f;
 }
@@ -1169,7 +1561,7 @@ html.native-ios .native-app .native-filters-button {
   width: 44px;
   padding: 0;
   justify-content: center;
-  border-radius: 14px;
+  border-radius: var(--nx-radius-control);
 }
 html.native-ios .native-filters-button .filter-count {
   position: absolute;
@@ -1252,7 +1644,7 @@ html.native-ios .native-profile-dock {
   gap: 8px;
   margin: 18px -20px 0;
   padding: 12px 20px calc(12px + env(safe-area-inset-bottom, 0px));
-  border-top: 1px solid #e1e3d4;
+  border-top: 1px solid var(--nx-line);
   background: #fffbf2;
   box-shadow: 0 -10px 24px #193d2f12;
 }
@@ -1273,7 +1665,7 @@ html.native-ios
 }
 html.native-ios .modal .native-profile-dock .button {
   min-height: 48px;
-  border-radius: 14px;
+  border-radius: var(--nx-radius-control);
   border: 1px solid #193d2f;
   background: #193d2f;
   color: #fff;
@@ -1288,7 +1680,7 @@ html.native-ios
   > .button-row
   + .button-row
   .button {
-  border-color: #c2c9b5;
+  border-color: var(--nx-line-strong);
   background: #fffbf2;
   color: #193d2f;
 }
@@ -1325,7 +1717,7 @@ html.native-ios .native-app .friends-tabs::-webkit-scrollbar {
 html.native-ios .native-app .friends-tabs button {
   flex: 0 0 auto;
   padding: 0 16px;
-  border: 1px solid #c2c9b5;
+  border: 1px solid var(--nx-line-strong);
   border-radius: 999px;
   background: #fffbf2;
   color: #35513c;
@@ -1351,6 +1743,10 @@ html.native-ios {
   --nx-paper: #f5f3ea;
   --nx-card: #fffbf2;
   --nx-line: #d8ddcf;
+  --nx-line-strong: #c2c9b5;
+  --nx-radius-card: 16px;
+  --nx-radius-control: 14px;
+  --nx-radius-pill: 999px;
   --nx-blue: #174bcc;
   --nx-blue-wash: #e6ecfb;
   --nx-pencil: #ead06f;
@@ -1412,7 +1808,7 @@ html.native-ios .native-quick-actions button {
   gap: 5px;
   padding: 9px 4px;
   border: 1px solid var(--nx-line);
-  border-radius: 12px;
+  border-radius: var(--nx-radius-control);
   background: var(--nx-card);
   color: var(--nx-green);
 }
@@ -1441,7 +1837,7 @@ html.native-ios .native-filters-button .filter-count {
 
 /* The golfer card reads like a club photo with a paper scorecard below. */
 html.native-ios .native-app .swipe-card .golfer-card {
-  border: 1px solid #cdd2bf;
+  border: 1px solid var(--nx-line);
   box-shadow:
     0 1px 0 #fff inset,
     0 14px 30px #193d2f1c;
@@ -1586,16 +1982,16 @@ html.native-ios .modal:has(.full-profile-photo) h3::before {
 }
 html.native-ios .modal .info-grid {
   gap: 0;
-  border: 1px solid #cdd2bf;
+  border: 1px solid var(--nx-line);
   border-top: 4px solid var(--nx-blue);
   background: #fcfaf1 url("/images/paper-grain.svg") repeat;
 }
 html.native-ios .modal .info-grid > * {
   padding: 12px 14px;
-  border-bottom: 1px dashed #cdd2bf;
+  border-bottom: 1px dashed var(--nx-line);
 }
 html.native-ios .modal .info-grid > :nth-child(odd) {
-  border-right: 1px dashed #cdd2bf;
+  border-right: 1px dashed var(--nx-line);
 }
 html.native-ios .modal .info-grid > :nth-last-child(-n + 2) {
   border-bottom: 0;
@@ -1840,7 +2236,7 @@ html.native-ios .native-profile-stats {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   margin: 14px 0 12px;
   padding: 12px 0;
-  border-block: 1px solid #d8ddcf;
+  border-block: 1px solid var(--nx-line);
 }
 html.native-ios .native-profile-stats > div {
   display: flex;
@@ -1849,7 +2245,7 @@ html.native-ios .native-profile-stats > div {
   gap: 2px;
 }
 html.native-ios .native-profile-stats > div + div {
-  border-left: 1px solid #e1e3d4;
+  border-left: 1px solid var(--nx-line);
 }
 html.native-ios .native-profile-stats dd {
   margin: 0;
@@ -1872,7 +2268,7 @@ html.native-ios .native-profile-actions {
 html.native-ios .native-app .native-profile-actions .button {
   min-height: 46px;
   justify-content: center;
-  border-radius: 14px;
+  border-radius: var(--nx-radius-control);
   font-size: 15px;
   font-weight: 600;
 }
@@ -1886,7 +2282,7 @@ html.native-ios .native-app main[data-page="comunidad"] .post {
   margin: 0 -16px;
   padding: 16px;
   border: 0;
-  border-top: 1px solid #d8ddcf;
+  border-top: 1px solid var(--nx-line);
   border-radius: 0;
   background: #fffbf2;
   box-shadow: none;
@@ -2106,7 +2502,7 @@ html.native-ios.native-chat-fullscreen .native-app .chat-title {
   align-items: center;
   column-gap: 8px;
   padding: 6px 12px 10px;
-  border-bottom: 1px solid #d8ddcf;
+  border-bottom: 1px solid var(--nx-line);
   background: #f5f3ea url("/images/paper-grain.svg") repeat;
 }
 html.native-ios.native-chat-fullscreen .native-app .chat-title > * {
@@ -2136,7 +2532,7 @@ html.native-ios.native-chat-fullscreen .native-app .chat-messages {
   overscroll-behavior: contain;
 }
 html.native-ios.native-chat-fullscreen .native-app .chat-input {
-  border-top: 1px solid #d8ddcf;
+  border-top: 1px solid var(--nx-line);
   background: #fffbf2;
 }
 
@@ -2254,7 +2650,7 @@ html.native-ios .native-app .party-month-grid td.selected-day {
   height: auto;
   padding: 2px 0 6px;
   border: 0;
-  border-top: 1px solid #e1e3d4;
+  border-top: 1px solid var(--nx-line);
   background: none;
   box-shadow: none;
   vertical-align: top;
@@ -2532,4 +2928,100 @@ html.native-ios .native-putt svg {
   display: block;
   width: 88px;
   height: 38px;
+}
+
+/* One family of buttons, cards and borders on every app screen. Low
+   specificity (:where) so screen-specific looks above still win. */
+html.native-ios
+  :where(.native-app, .modal)
+  .button:not(.native-apple-signin, .danger-button) {
+  border-radius: var(--nx-radius-control);
+  font-weight: 600;
+}
+html.native-ios
+  :where(.native-app, .modal)
+  .button.primary:not(.native-apple-signin, .danger-button) {
+  border: 1px solid var(--nx-green);
+  background: var(--nx-green);
+  color: #fffdf3;
+}
+html.native-ios :where(.native-app, .modal) .button.outline:not(.danger-button) {
+  border: 1px solid var(--nx-line-strong);
+  background: var(--nx-card);
+  color: var(--nx-green);
+}
+html.native-ios :where(.native-app, .modal) .button.ghost {
+  color: var(--nx-green);
+}
+html.native-ios :where(.native-app, .modal) .button:disabled {
+  opacity: 0.55;
+}
+html.native-ios
+  .native-app
+  :where(.panel, .stat-card, .game-card, .party-card) {
+  border: 1px solid var(--nx-line);
+  border-radius: var(--nx-radius-card);
+  background-color: var(--nx-card);
+  box-shadow: none;
+}
+html.native-ios
+  :where(.native-app, .modal)
+  :where(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+  border-color: var(--nx-line-strong);
+  border-radius: var(--nx-radius-control);
+}
+
+/* Thumb reach: a screen's main action floats just above the tab bar.
+   ThumbAction portals it to <body>, so screen transforms never move it. */
+html.native-ios body > .native-thumb-action {
+  position: fixed;
+  right: 16px;
+  bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+  z-index: 34;
+  min-height: 52px;
+  padding: 0 20px;
+  border: 1px solid var(--nx-green);
+  border-radius: var(--nx-radius-pill);
+  background: var(--nx-green);
+  color: #fffdf3;
+  font-size: 15px;
+  font-weight: 600;
+  box-shadow: 0 10px 24px #193d2f33;
+}
+html.native-ios:has(body > .native-thumb-action) .native-app main {
+  padding-bottom: 168px;
+}
+html.native-ios:has(body > .native-thumb-action) .native-app .toast {
+  bottom: calc(148px + env(safe-area-inset-bottom, 0px));
+}
+html.native-ios.native-keyboard-open body > .native-thumb-action,
+html.native-ios:has(.native-tour) body > .native-thumb-action {
+  display: none;
+}
+
+/* Sheets: the submit stays under the thumb while the form scrolls. The
+   sheet reserves the home-indicator area and a real gap above the submit,
+   so at the end of the form the paper mask never covers a field. */
+html.native-ios .modal:has(.native-sheet-action) {
+  padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  scroll-padding-block: 84px 112px;
+}
+html.native-ios .modal .native-sheet-action {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  width: 100%;
+  margin-top: 28px;
+  box-shadow:
+    0 0 0 12px var(--nx-card),
+    0 56px 0 12px var(--nx-card),
+    0 -20px 16px 0 var(--nx-card);
+}
+html.native-ios .modal .button-row.native-sheet-action {
+  flex-wrap: nowrap;
+  background: var(--nx-card);
+}
+html.native-ios .modal .button-row.native-sheet-action > .button {
+  flex: 1 1 0;
+  min-width: 0;
 }

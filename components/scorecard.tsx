@@ -8,14 +8,17 @@ import type { FairwayData } from "@/lib/use-fairway";
 import { CourseIcon } from "./course-icon";
 import { isIOSApp, nativeBridge } from "@/lib/native-app";
 import { nativeOnline } from "@/lib/native-network";
+import { NativeRoundEntry } from "./native-round-entry";
 export function Scorecard({
   data,
   round,
   onDone,
+  native = false,
 }: {
   data: FairwayData;
   round?: Round;
   onDone: () => void;
+  native?: boolean;
 }) {
   const localId = useRef<string | null>(null);
   const saving = useRef(false);
@@ -149,20 +152,17 @@ export function Scorecard({
     saving.current = false;
     if (ok) onDone();
   }
-  return (
-    <form
-      id="score-form"
-      data-no-gestures
-      className="form"
-      onSubmit={(e) => e.preventDefault()}
-    >
-      <div className="notice">
-        <Flag size={17} />
-        Selecciona un tee configurado o captura los datos de tu tarjeta real. La
-        captura manual siempre queda marcada como no verificada.
-      </div>
+  const setup = (
+    <>
+      {!native && (
+        <div className="notice">
+          <Flag size={17} />
+          Selecciona un tee configurado o captura los datos de tu tarjeta real.
+          La captura manual siempre queda marcada como no verificada.
+        </div>
+      )}
       <div className="form-grid">
-        {isIOSApp(nativeBridge()) && !round && (
+        {!native && isIOSApp(nativeBridge()) && !round && (
           <p className="notice">
             Los borradores nuevos de este iPhone se guardan privados y se
             sincronizan al conectar. Finalizar o compartir una tarjeta requiere
@@ -322,229 +322,277 @@ export function Scorecard({
             ))}
         </select>
       </Field>
-      <p className="course-heading course-score-heading">
-        <CourseIcon part="green" size={24} /> Resumen de tu ronda
-      </p>
-      <div className="score-summary">
-        <div>
-          <span>Golpes</span>
-          <strong>{summary.total || "—"}</strong>
-        </div>
-        <div>
-          <span>Contra par</span>
-          <strong>
-            {summary.relative === null
-              ? "—"
-              : summary.relative > 0
-                ? "+" + summary.relative
-                : summary.relative}
-          </strong>
-        </div>
-        <div>
-          <span>Ida / vuelta</span>
-          <strong>
-            {summary.out} / {count === 18 ? summary.in : "—"}
-          </strong>
-        </div>
-        <div>
-          <span>Birdies / pars</span>
-          <strong>
-            {summary.birdies} / {summary.pars}
-          </strong>
-        </div>
-      </div>
-      <div className="score-navigation">
-        <h3>{nine === 0 ? "Ida · Hoyos 1–9" : "Vuelta · Hoyos 10–18"}</h3>
-        {count === 18 && (
-          <div>
-            <button
-              type="button"
-              className="icon-btn"
-              aria-label="Primeros 9"
-              onClick={() => setNine(0)}
-            >
-              <ChevronLeft size={18} />
-            </button>
-            <button
-              type="button"
-              className="icon-btn"
-              aria-label="Últimos 9"
-              onClick={() => setNine(1)}
-            >
-              <ChevronRight size={18} />
-            </button>
-          </div>
-        )}
-      </div>
-      <div
-        className="score-table-wrap"
-        role="region"
-        aria-label="Tarjeta de score, desplaza para ver todos los hoyos"
-        tabIndex={0}
-      >
-        <table className="score-table">
-          <caption className="sr-only">
-            {nine === 0 ? "Hoyos 1 al 9" : "Hoyos 10 al 18"}: par, golpes, putts
-            y resultado contra par.
-          </caption>
-          <thead>
-            <tr>
-              <th scope="col">Hoyo</th>
-              {scores.slice(nine * 9, nine * 9 + 9).map((h) => (
-                <th scope="col" key={h.hole}>
-                  {h.hole}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {[
-              ["par", "Par"],
-              ["index", "Índice"],
-              ["distance", "Distancia (m)"],
-              ["strokes", "Golpes"],
-              ["putts", "Putts"],
-            ].map(([key, label]) => (
-              <tr key={key}>
-                <th scope="row">{label}</th>
-                {scores.slice(nine * 9, nine * 9 + 9).map((h, j) => (
-                  <td
-                    key={h.hole}
-                    className={key === "strokes" ? holeColor(h) : ""}
-                  >
-                    <input
-                      aria-label={`${label}, hoyo ${h.hole}`}
-                      type="number"
-                      readOnly={
-                        !!teeId && ["par", "index", "distance"].includes(key)
-                      }
-                      min={key === "par" ? 3 : key === "putts" ? 0 : 1}
-                      max={
-                        key === "par"
-                          ? 6
-                          : key === "index"
-                            ? 18
-                            : key === "distance"
-                              ? 900
-                              : 30
-                      }
-                      value={
-                        h[key as keyof Hole] === null ||
-                        h[key as keyof Hole] === undefined
-                          ? ""
-                          : String(h[key as keyof Hole])
-                      }
-                      onChange={(e) =>
-                        change(
-                          nine * 9 + j,
-                          key as keyof Hole,
-                          e.target.value === "" ? null : Number(e.target.value),
-                        )
-                      }
-                    />
-                  </td>
-                ))}
-              </tr>
-            ))}
-            {[
-              ["fairway", "Fairway"],
-              ["gir", "Green en regulación"],
-            ].map(([key, label]) => (
-              <tr key={key}>
-                <th scope="row">{label}</th>
-                {scores.slice(nine * 9, nine * 9 + 9).map((h, j) => (
-                  <td key={h.hole}>
-                    <select
-                      aria-label={`${label}, hoyo ${h.hole}`}
-                      value={
-                        h[key as keyof Hole] == null
-                          ? ""
-                          : String(h[key as keyof Hole])
-                      }
-                      onChange={(e) =>
-                        change(
-                          nine * 9 + j,
-                          key as keyof Hole,
-                          e.target.value === ""
-                            ? null
-                            : e.target.value === "true",
-                        )
-                      }
-                    >
-                      <option value="">—</option>
-                      <option value="true">Sí</option>
-                      <option value="false">No</option>
-                    </select>
-                  </td>
-                ))}
-              </tr>
-            ))}
-            <tr>
-              <th scope="row">Contra par</th>
-              {scores.slice(nine * 9, nine * 9 + 9).map((h) => (
-                <td key={h.hole}>
-                  {h.par !== null && h.strokes !== null
-                    ? (h.strokes - h.par > 0 ? "+" : "") + (h.strokes - h.par)
-                    : "—"}
-                </td>
-              ))}
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div className="score-legend">
-        {[
-          ["eagle", "Eagle o mejor"],
-          ["birdie", "Birdie"],
-          ["neutral", "Par"],
-          ["bogey", "Bogey"],
-          ["double", "Doble o peor"],
-        ].map(([c, t]) => (
-          <span key={c}>
-            <i className={c} />
-            {t}
-          </span>
-        ))}
-      </div>
-      <Field label="Comentarios de la ronda">
-        <textarea
-          name="notes"
-          defaultValue={round?.notes}
-          rows={2}
-          maxLength={2000}
+      {native && (
+        <details className="native-round-info">
+          <summary>Sobre la captura y los borradores</summary>
+          <p>
+            La captura manual queda como no verificada. Los datos opcionales
+            vacíos no cuentan como cero.
+          </p>
+          {!round && (
+            <p>
+              Los borradores nuevos se guardan privados en este iPhone y se
+              sincronizan al conectar. Finalizar o compartir requiere conexión.
+            </p>
+          )}
+        </details>
+      )}
+    </>
+  );
+  const notes = (
+    <Field label="Comentarios de la ronda">
+      <textarea
+        name="notes"
+        defaultValue={round?.notes}
+        rows={2}
+        maxLength={2000}
+      />
+    </Field>
+  );
+  return (
+    <form
+      id="score-form"
+      data-no-gestures
+      className={native ? "form native-round-form" : "form"}
+      onSubmit={(e) => e.preventDefault()}
+    >
+      {native ? (
+        <NativeRoundEntry
+          scores={scores}
+          configured={!!teeId}
+          editing={!!round}
+          published={round?.status === "published"}
+          busy={busy}
+          setup={setup}
+          notes={notes}
+          onChange={change}
+          onSave={save}
         />
-      </Field>
-      <div className="button-row">
-        <Button
-          type="button"
-          variant="outline"
-          disabled={busy}
-          onClick={(e) => void save(e.currentTarget.form!, "draft")}
-        >
-          <Save size={16} />
-          Borrador
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          disabled={busy}
-          onClick={(e) => void save(e.currentTarget.form!, "finished")}
-        >
-          Finalizar
-        </Button>
-        <Button
-          type="button"
-          disabled={busy}
-          onClick={(e) => void save(e.currentTarget.form!, "published")}
-        >
-          <Send size={16} />
-          Publicar score
-        </Button>
-      </div>
-      <small>
-        El handicap declarado se mantiene separado de estos resultados. Los
-        datos opcionales vacíos no cuentan como cero.
-      </small>
+      ) : (
+        <>
+          {setup}
+          <p className="course-heading course-score-heading">
+            <CourseIcon part="green" size={24} /> Resumen de tu ronda
+          </p>
+          <div className="score-summary">
+            <div>
+              <span>Golpes</span>
+              <strong>{summary.total || "—"}</strong>
+            </div>
+            <div>
+              <span>Contra par</span>
+              <strong>
+                {summary.relative === null
+                  ? "—"
+                  : summary.relative > 0
+                    ? "+" + summary.relative
+                    : summary.relative}
+              </strong>
+            </div>
+            <div>
+              <span>Ida / vuelta</span>
+              <strong>
+                {summary.out} / {count === 18 ? summary.in : "—"}
+              </strong>
+            </div>
+            <div>
+              <span>Birdies / pars</span>
+              <strong>
+                {summary.birdies} / {summary.pars}
+              </strong>
+            </div>
+          </div>
+          <div className="score-navigation">
+            <h3>{nine === 0 ? "Ida · Hoyos 1–9" : "Vuelta · Hoyos 10–18"}</h3>
+            {count === 18 && (
+              <div>
+                <button
+                  type="button"
+                  className="icon-btn"
+                  aria-label="Primeros 9"
+                  onClick={() => setNine(0)}
+                >
+                  <ChevronLeft size={18} />
+                </button>
+                <button
+                  type="button"
+                  className="icon-btn"
+                  aria-label="Últimos 9"
+                  onClick={() => setNine(1)}
+                >
+                  <ChevronRight size={18} />
+                </button>
+              </div>
+            )}
+          </div>
+          <div
+            className="score-table-wrap"
+            role="region"
+            aria-label="Tarjeta de score, desplaza para ver todos los hoyos"
+            tabIndex={0}
+          >
+            <table className="score-table">
+              <caption className="sr-only">
+                {nine === 0 ? "Hoyos 1 al 9" : "Hoyos 10 al 18"}: par, golpes,
+                putts y resultado contra par.
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">Hoyo</th>
+                  {scores.slice(nine * 9, nine * 9 + 9).map((h) => (
+                    <th scope="col" key={h.hole}>
+                      {h.hole}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  ["par", "Par"],
+                  ["index", "Índice"],
+                  ["distance", "Distancia (m)"],
+                  ["strokes", "Golpes"],
+                  ["putts", "Putts"],
+                ].map(([key, label]) => (
+                  <tr key={key}>
+                    <th scope="row">{label}</th>
+                    {scores.slice(nine * 9, nine * 9 + 9).map((h, j) => (
+                      <td
+                        key={h.hole}
+                        className={key === "strokes" ? holeColor(h) : ""}
+                      >
+                        <input
+                          aria-label={`${label}, hoyo ${h.hole}`}
+                          type="number"
+                          readOnly={
+                            !!teeId &&
+                            ["par", "index", "distance"].includes(key)
+                          }
+                          min={key === "par" ? 3 : key === "putts" ? 0 : 1}
+                          max={
+                            key === "par"
+                              ? 6
+                              : key === "index"
+                                ? 18
+                                : key === "distance"
+                                  ? 900
+                                  : 30
+                          }
+                          value={
+                            h[key as keyof Hole] === null ||
+                            h[key as keyof Hole] === undefined
+                              ? ""
+                              : String(h[key as keyof Hole])
+                          }
+                          onChange={(e) =>
+                            change(
+                              nine * 9 + j,
+                              key as keyof Hole,
+                              e.target.value === ""
+                                ? null
+                                : Number(e.target.value),
+                            )
+                          }
+                        />
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+                {[
+                  ["fairway", "Fairway"],
+                  ["gir", "Green en regulación"],
+                ].map(([key, label]) => (
+                  <tr key={key}>
+                    <th scope="row">{label}</th>
+                    {scores.slice(nine * 9, nine * 9 + 9).map((h, j) => (
+                      <td key={h.hole}>
+                        <select
+                          aria-label={`${label}, hoyo ${h.hole}`}
+                          value={
+                            h[key as keyof Hole] == null
+                              ? ""
+                              : String(h[key as keyof Hole])
+                          }
+                          onChange={(e) =>
+                            change(
+                              nine * 9 + j,
+                              key as keyof Hole,
+                              e.target.value === ""
+                                ? null
+                                : e.target.value === "true",
+                            )
+                          }
+                        >
+                          <option value="">—</option>
+                          <option value="true">Sí</option>
+                          <option value="false">No</option>
+                        </select>
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+                <tr>
+                  <th scope="row">Contra par</th>
+                  {scores.slice(nine * 9, nine * 9 + 9).map((h) => (
+                    <td key={h.hole}>
+                      {h.par !== null && h.strokes !== null
+                        ? (h.strokes - h.par > 0 ? "+" : "") +
+                          (h.strokes - h.par)
+                        : "—"}
+                    </td>
+                  ))}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="score-legend">
+            {[
+              ["eagle", "Eagle o mejor"],
+              ["birdie", "Birdie"],
+              ["neutral", "Par"],
+              ["bogey", "Bogey"],
+              ["double", "Doble o peor"],
+            ].map(([c, t]) => (
+              <span key={c}>
+                <i className={c} />
+                {t}
+              </span>
+            ))}
+          </div>
+          {notes}
+          <div className="button-row">
+            <Button
+              type="button"
+              variant="outline"
+              disabled={busy}
+              onClick={(e) => void save(e.currentTarget.form!, "draft")}
+            >
+              <Save size={16} />
+              Borrador
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              disabled={busy}
+              onClick={(e) => void save(e.currentTarget.form!, "finished")}
+            >
+              Finalizar
+            </Button>
+            <Button
+              type="button"
+              disabled={busy}
+              onClick={(e) => void save(e.currentTarget.form!, "published")}
+            >
+              <Send size={16} />
+              Publicar score
+            </Button>
+          </div>
+          <small>
+            El handicap declarado se mantiene separado de estos resultados. Los
+            datos opcionales vacíos no cuentan como cero.
+          </small>
+        </>
+      )}
     </form>
   );
 }

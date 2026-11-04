@@ -6,14 +6,14 @@ import {
   UserRound,
   ArrowRight,
   MapPin,
-  Users,
-  Camera,
+  Plus,
 } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { nativeTourSteps } from "@/lib/native-tour";
 import { AccessibilityToggle } from "./accessibility-mode";
 import { LegalLinks } from "./legal-links";
 import { SidebarIcon } from "./sidebar-icon";
+import { StoryCreateIcon } from "./story-create-icon";
 
 export function NativeWelcome({
   onLogin,
@@ -91,7 +91,7 @@ export function NativeWelcome({
 export const nativeTabs = [
   { id: "descubrir", label: "Descubrir", icon: Compass },
   { id: "partidas", label: "Partidas", icon: Flag },
-  { id: "amigos", label: "Amigos", icon: Users },
+  { id: "create-story", label: "Crear", icon: Plus },
   { id: "mensajes", label: "Mensajes", icon: MessageCircle },
   { id: "perfil", label: "Mi perfil", icon: UserRound },
 ];
@@ -99,15 +99,15 @@ export const nativeTabs = [
 export function NativeTabBar({
   page,
   onNavigate,
+  onCreateStory,
   unreadMessages = 0,
-  friendRequests = 0,
   inert = false,
   highlight,
 }: {
   page: string;
   onNavigate: (page: string) => void;
+  onCreateStory: () => void;
   unreadMessages?: number;
-  friendRequests?: number;
   inert?: boolean;
   /** Tab pointed at by the first-run tour. */
   highlight?: string;
@@ -122,26 +122,29 @@ export function NativeTabBar({
         <button
           key={id}
           type="button"
-          aria-current={page === id ? "page" : undefined}
+          className={id === "create-story" ? "native-story-action" : undefined}
+          aria-label={id === "create-story" ? "Crear historia" : undefined}
+          aria-haspopup={id === "create-story" ? "dialog" : undefined}
+          aria-current={
+            id !== "create-story" && page === id ? "page" : undefined
+          }
           data-tour={highlight === id ? "active" : undefined}
-          onClick={() => onNavigate(id)}
+          onClick={() =>
+            id === "create-story" ? onCreateStory() : onNavigate(id)
+          }
         >
           <span className="native-tab-icon">
-            <SidebarIcon name={id} />
+            {id === "create-story" ? (
+              <StoryCreateIcon />
+            ) : (
+              <SidebarIcon name={id} />
+            )}
             {id === "mensajes" && unreadMessages > 0 && (
               <span
                 className="native-tab-badge"
                 aria-label={`${unreadMessages} mensajes sin leer`}
               >
                 {unreadMessages > 99 ? "99+" : unreadMessages}
-              </span>
-            )}
-            {id === "amigos" && friendRequests > 0 && (
-              <span
-                className="native-tab-badge"
-                aria-label={`${friendRequests} ${friendRequests === 1 ? "solicitud" : "solicitudes"} de amistad`}
-              >
-                {friendRequests > 99 ? "99+" : friendRequests}
               </span>
             )}
           </span>
@@ -155,13 +158,9 @@ export function NativeTabBar({
 export function NativeQuickActions({
   onCreate,
   onScore,
-  onFriends,
-  onStory,
 }: {
   onCreate: () => void;
   onScore: () => void;
-  onFriends: () => void;
-  onStory?: () => void;
 }) {
   return (
     <nav className="native-quick-actions" aria-label="Acciones rápidas">
@@ -176,16 +175,6 @@ export function NativeQuickActions({
           <SidebarIcon name="scores" />
         </span>
         <span>Anotar score</span>
-      </button>
-      <button onClick={onStory || onFriends}>
-        <span className="native-action-icon">
-          {onStory ? (
-            <Camera size={23} strokeWidth={1.6} aria-hidden="true" />
-          ) : (
-            <SidebarIcon name="amigos" />
-          )}
-        </span>
-        <span>{onStory ? "Crear historia" : "Mis amigos"}</span>
       </button>
     </nav>
   );

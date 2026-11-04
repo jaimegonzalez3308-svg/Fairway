@@ -6,7 +6,7 @@ import type { useFairway } from "@/lib/use-fairway";
 import { supabase } from "@/lib/supabase";
 import { gameMatchesCity } from "@/lib/cities";
 import { dateFormat, timeFormat } from "@/lib/utils";
-import { Button, Empty, Field, SectionHeading } from "./ui";
+import { Button, Empty, Field, SectionHeading, ThumbAction } from "./ui";
 import { CityFilter } from "./city-field";
 import { Avatar } from "./member-primitives";
 
@@ -57,10 +57,10 @@ export function Availability({
         title="¿Quién juega hoy?"
         description="Publica tu disponibilidad temporal y encuentra compañía."
         action={
-          <Button onClick={onCreate}>
+          <ThumbAction onClick={onCreate}>
             <Plus size={16} />
             Armar partida
-          </Button>
+          </ThumbAction>
         }
       />
       {onCityScopeChange && (
