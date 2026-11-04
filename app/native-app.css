@@ -236,9 +236,18 @@ html.native-ios .native-app .topbar-actions {
 }
 html.native-ios .native-app .topbar .location,
 html.native-ios .native-app .topbar-divider,
-html.native-ios .native-app .account-menu summary > span,
+/* Keep the avatar: it is the only visible part of the account button. */
+html.native-ios .native-app .account-menu summary > span:not(.avatar),
 html.native-ios .native-app .account-menu summary > svg {
   display: none;
+}
+html.native-ios .native-app .account-menu summary > .avatar {
+  width: 34px;
+  height: 34px;
+  border: 2px solid #fffbf2;
+  box-shadow: 0 0 0 1px #c2c9b5;
+  color: #193d2f;
+  font-weight: 650;
 }
 html.native-ios .native-app .topbar .icon-btn,
 html.native-ios .native-app .account-menu summary {
