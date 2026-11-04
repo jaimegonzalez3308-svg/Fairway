@@ -16,7 +16,7 @@ test("unknown categories stay as plain, non-navigating rows", () => {
   assert.equal(notificationDestination(""), null);
 });
 
-test("tapping a notification marks it read, closes the sheet and navigates", async () => {
+test("tapping a notification marks it read, closes the sheet, then navigates", async () => {
   const { readFileSync } = await import("node:fs");
   const source = readFileSync(
     new URL("../components/fairway-app.tsx", import.meta.url),
@@ -24,15 +24,18 @@ test("tapping a notification marks it read, closes the sheet and navigates", asy
   );
   assert.match(
     source,
-    /onClick=\{\(\) => \{\s*data\.markNotificationRead\(n\.id\);\s*setModal\(null\);\s*go\(destination\.page\);\s*\}\}/,
+    /void data\.markNotificationRead\(n\.id\);\s*setModal\(null\);[\s\S]{0,160}window\.setTimeout\(\(\) => go\(destination\.page\), 0\)/,
   );
   const hook = readFileSync(
     new URL("../lib/use-fairway.ts", import.meta.url),
     "utf8",
   );
-  // Only the read flag changes, and only on the member's own row.
+  const mark = hook.slice(hook.indexOf("markNotificationRead"));
+  // The update is awaited (actually sent), scoped to the member's own row,
+  // and rolled back if it fails.
   assert.match(
-    hook,
-    /\.update\(\{ read: true \}\)\s*\.eq\("id", id\)\s*\.eq\("user_id", user\.id\)/,
+    mark,
+    /const \{ error \} = await supabase\s*\.from\("notifications"\)\s*\.update\(\{ read: true \}\)\s*\.eq\("id", id\)\s*\.eq\("user_id", user\.id\)/,
   );
+  assert.match(mark, /if \(error\)\s*setNotifications[\s\S]{0,120}read: false/);
 });

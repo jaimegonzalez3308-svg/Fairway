@@ -801,16 +801,23 @@ export function useFairway() {
     decide,
     favorite,
     /** Marks one notification read, updating the badge immediately. */
-    markNotificationRead: (id: string) => {
+    markNotificationRead: async (id: string) => {
+      const before = notifications.find((n) => n.id === id);
+      if (!before || before.read) return;
       setNotifications((list) =>
         list.map((n) => (n.id === id ? { ...n, read: true } : n)),
       );
-      if (supabase && user)
-        void supabase
-          .from("notifications")
-          .update({ read: true })
-          .eq("id", id)
-          .eq("user_id", user.id);
+      if (!supabase || !user) return;
+      // Awaiting runs the query; a bare builder is never sent.
+      const { error } = await supabase
+        .from("notifications")
+        .update({ read: true })
+        .eq("id", id)
+        .eq("user_id", user.id);
+      if (error)
+        setNotifications((list) =>
+          list.map((n) => (n.id === id ? { ...n, read: false } : n)),
+        );
     },
     reload: () => user && load(user),
     refresh: async () => {

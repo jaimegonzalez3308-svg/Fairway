@@ -3081,9 +3081,11 @@ export default function FairwayApp() {
                     className={className}
                     key={n.id}
                     onClick={() => {
-                      data.markNotificationRead(n.id);
+                      void data.markNotificationRead(n.id);
                       setModal(null);
-                      go(destination.page);
+                      // Navigate after the sheet has returned focus, so the
+                      // new screen's heading keeps it.
+                      window.setTimeout(() => go(destination.page), 0);
                     }}
                   >
                     {content}
