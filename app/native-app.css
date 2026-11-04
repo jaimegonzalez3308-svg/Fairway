@@ -3370,3 +3370,157 @@ html.native-ios .native-app .party-card-when > span + span::before {
   margin: 0 8px;
   color: var(--nx-line-strong);
 }
+
+/* Clubs (iOS app): tall photo cards with the club's name set large over
+   the picture, glass chips on top, details below. The photo remains a
+   labelled illustration; each card uses a different crop of it. */
+html.native-ios .native-app .club-grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+}
+html.native-ios .native-app .club-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: 56px 84px auto auto auto auto auto;
+  padding: 0;
+  overflow: hidden;
+}
+html.native-ios .native-app .club-card .club-content {
+  display: contents;
+}
+html.native-ios .native-app .club-card .club-photo {
+  grid-row: 1 / 4;
+  grid-column: 1;
+  height: auto;
+  padding: 0;
+}
+html.native-ios .native-app .club-card .club-photo {
+  background-size: 170%;
+  background-position: 50% 60%;
+}
+html.native-ios .native-app .club-card:nth-child(3n + 2) .club-photo {
+  background-position: 8% 85%;
+}
+html.native-ios .native-app .club-card:nth-child(3n) .club-photo {
+  background-position: 95% 10%;
+}
+html.native-ios .native-app .club-card .club-photo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #0b1f1626 0%, transparent 30%, transparent 45%, #0b1f16d9 100%);
+}
+html.native-ios .native-app .club-card .club-photo::after {
+  top: 52px;
+  right: 16px;
+  bottom: auto;
+  font-size: 10px;
+}
+html.native-ios .native-app .club-card .club-photo-caption {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+/* Glass chips over the photo. */
+html.native-ios .native-app .club-card :is(.club-photo .badge, .club-content > .muted) {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  margin: 0;
+  padding: 0 12px;
+  border: 1px solid rgb(255 255 255 / 0.45);
+  border-radius: var(--nx-radius-pill);
+  background: rgb(255 255 255 / 0.2);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  backdrop-filter: blur(12px) saturate(140%);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  text-shadow: 0 1px 2px #0b1f1666;
+}
+html.native-ios .native-app .club-card .club-photo .badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 1;
+  display: block;
+  max-width: calc(50% - 21px);
+  overflow: hidden;
+  line-height: 26px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+html.native-ios .native-app .club-card .club-content > .muted {
+  grid-row: 1;
+  grid-column: 1;
+  z-index: 1;
+  align-self: center;
+  justify-self: start;
+  max-width: calc(50% - 21px);
+  margin-left: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* City and name sit on the photo, the name large like a cover title. */
+html.native-ios .native-app .club-card .club-content > .eyebrow {
+  grid-row: 2;
+  grid-column: 1;
+  z-index: 1;
+  align-self: end;
+  padding: 0 18px 4px;
+  color: rgb(255 255 255 / 0.85);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
+html.native-ios .native-app .club-card .club-content > h2 {
+  grid-row: 3;
+  grid-column: 1;
+  z-index: 1;
+  display: -webkit-box;
+  margin: 0;
+  padding: 0 18px 18px;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  color: #fff;
+  font-size: 30px;
+  font-weight: 650;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  text-shadow: 0 2px 12px #0b1f1680;
+}
+html.native-ios .native-app .club-card .club-content > p:not(.muted) {
+  display: -webkit-box;
+  margin: 14px 18px 0;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  color: #52604f;
+  font-size: 14px;
+  line-height: 1.5;
+}
+html.native-ios .native-app .club-card .club-content > .button {
+  justify-self: stretch;
+  margin: 14px 18px 0;
+}
+html.native-ios .native-app .club-card .club-content > details {
+  margin: 4px 18px 10px;
+  color: #52604f;
+  font-size: 14px;
+}
+html.native-ios .native-app .club-card .club-content > details > summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  html.native-ios .native-app .club-card :is(.club-photo .badge, .club-content > .muted) {
+    background: #0b1f16cc;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}

@@ -165,3 +165,27 @@ function native() {
     "utf8",
   ).replace(/\/\*[\s\S]*?\*\//g, "");
 }
+
+test("club cards become photo covers only in the app; the website keeps its layout", () => {
+  const globals = readFileSync(
+    new URL("../app/globals.css", import.meta.url),
+    "utf8",
+  );
+  const nativeCss = readFileSync(
+    new URL("../app/native-app.css", import.meta.url),
+    "utf8",
+  );
+  for (const app of [false, true]) {
+    const dom = new JSDOM(
+      `<html class="${app ? "native-ios" : ""}"><head><style>${globals}</style><style>${nativeCss}</style></head><body><div class="native-app"><div class="club-grid"><article class="panel club-card"><div class="club-photo"><span class="badge">Datos verificados</span><span class="club-photo-caption">Imagen ilustrativa · No representa este club</span></div><div class="club-content"><span class="eyebrow">LEÓN</span><h2>Club</h2><p class="muted">3 perfiles</p></div></article></div></div></body></html>`,
+      { virtualConsole: new VirtualConsole() },
+    );
+    const style = (s: string) =>
+      dom.window.getComputedStyle(dom.window.document.querySelector(s)!);
+    assert.equal(style(".club-content").display, app ? "contents" : "block");
+    assert.equal(style(".club-card").display, app ? "grid" : "block");
+    // The honest caption is never removed from the accessibility tree.
+    assert.notEqual(style(".club-photo-caption").display, "none");
+    dom.window.close();
+  }
+});
