@@ -3739,13 +3739,15 @@ html.native-ios .native-app main[data-page="perfil"] .tabs.spaced button::after 
 html.native-ios .native-app main[data-page="perfil"] .profile-info {
   padding: 4px 0 6px;
 }
+/* Section titles in Fairway's Georgia accent; rows stay in Inter. */
 html.native-ios .native-app main[data-page="perfil"] .profile-info > h3 {
-  margin: 14px 16px 6px;
-  color: #52604f;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  margin: 16px 16px 8px;
+  color: var(--nx-green);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  text-transform: none;
 }
 html.native-ios .native-app main[data-page="perfil"] .profile-info .info-grid {
   display: grid;
