@@ -298,7 +298,7 @@ export default function FairwayApp() {
     )
     .filter((p): p is Profile => !!p);
   // Computed each render so it follows the local date, not just new rounds.
-  const streak = nativeApp ? roundStreak(data.rounds) : null;
+  const streak = roundStreak(data.rounds);
   // iOS app: the golfer's profile sheet takes a wash from their photo.
   const profileTint = useImageTint(
     modal === "profile" ? selected?.photo : null,
@@ -2102,50 +2102,48 @@ export default function FairwayApp() {
                         </p>
                         <span className="badge">Membresía declarada</span>
                       </div>
-                      {nativeApp && (
-                        <ul
-                          className="native-profile-stats"
-                          aria-label="Tu resumen"
-                        >
-                          <li>
-                            <button type="button" onClick={() => go("scores")}>
-                              <strong>{data.rounds.length}</strong>
-                              <span>Rondas</span>
-                            </button>
-                          </li>
-                          <li>
-                            <button
-                              type="button"
-                              aria-haspopup="dialog"
-                              onClick={() => setModal("my-friends")}
-                            >
-                              <strong>{myFriends.length}</strong>
-                              <span>Amigos</span>
-                            </button>
-                          </li>
-                          <li>
-                            <strong>{data.me.handicap ?? "—"}</strong>
-                            <span>Handicap</span>
-                          </li>
-                        </ul>
-                      )}
+                      <ul
+                        className="native-profile-stats"
+                        aria-label="Tu resumen"
+                      >
+                        <li>
+                          <button type="button" onClick={() => go("scores")}>
+                            <strong>{data.rounds.length}</strong>
+                            <span>Rondas</span>
+                          </button>
+                        </li>
+                        <li>
+                          <button
+                            type="button"
+                            aria-haspopup="dialog"
+                            onClick={() => setModal("my-friends")}
+                          >
+                            <strong>{myFriends.length}</strong>
+                            <span>Amigos</span>
+                          </button>
+                        </li>
+                        <li>
+                          <strong>{data.me.handicap ?? "—"}</strong>
+                          <span>Handicap</span>
+                        </li>
+                      </ul>
                       <div className="profile-hcp">
                         <span>HANDICAP DECLARADO</span>
                         <strong>{data.me.handicap ?? "—"}</strong>
                       </div>
                     </div>
                   </div>
+                  {streak && (
+                    <p className="native-streak">
+                      <Flame size={20} aria-hidden="true" />
+                      <span>
+                        <strong>{streak.title}</strong>
+                        {streak.detail}
+                      </span>
+                    </p>
+                  )}
                   {nativeApp && (
                     <>
-                      {streak && (
-                        <p className="native-streak">
-                          <Flame size={20} aria-hidden="true" />
-                          <span>
-                            <strong>{streak.title}</strong>
-                            {streak.detail}
-                          </span>
-                        </p>
-                      )}
                       <div className="native-profile-actions">
                         <Button onClick={() => setModal("edit-profile")}>
                           Editar perfil
@@ -2899,7 +2897,7 @@ export default function FairwayApp() {
             <PlayerRating profile={withRating(selected, data.ratings)} />
             <p>Solo califican compañeros de partidas finalizadas.</p>
           </section>
-          {nativeApp && selected.id !== data.me.id && (
+          {selected.id !== data.me.id && (
             <GolferRounds
               key={selected.id}
               userId={selected.id}

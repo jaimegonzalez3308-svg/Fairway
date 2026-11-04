@@ -34,10 +34,10 @@ test("Mi perfil keeps stats in the profile card and links Amigos to a sheet", as
   );
   assert.match(source, /onClick=\{\(\) => setModal\("my-friends"\)\}/);
   assert.match(source, /modal === "my-friends"/);
-  // Only other golfers' sheets load rounds, and only in the app.
+  // Only other golfers' sheets load rounds, on the website and in the app.
   assert.match(
     source,
-    /nativeApp && selected\.id !== data\.me\.id && \(\s*<GolferRounds/,
+    /\{selected\.id !== data\.me\.id && \(\s*<GolferRounds/,
   );
 });
 

@@ -3193,9 +3193,6 @@ html.native-ios .native-photo-stack [data-crop="center"] {
 }
 
 /* Party cards: who is playing, as overlapping faces with a +N count. */
-.party-avatar-stack {
-  display: none;
-}
 html.native-ios .native-app .party-avatar-stack {
   display: inline-flex;
   flex-direction: row;

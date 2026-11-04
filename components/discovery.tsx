@@ -283,7 +283,11 @@ export function Discovery({
                 aria-pressed={tab === "Favoritos"}
               >
                 Favoritos
-                <Bookmark size={13} />
+                {favoriteCount > 0 ? (
+                  <span>{favoriteCount}</span>
+                ) : (
+                  <Bookmark size={13} />
+                )}
               </button>
               <button
                 onClick={() => {
@@ -354,7 +358,7 @@ export function Discovery({
               }}
               onCreate={onCreate}
               onShareProfile={data.user ? onShareProfile : undefined}
-              illustration={compact ? <PhotoStack /> : undefined}
+              illustration={<PhotoStack />}
             />
           }
         />

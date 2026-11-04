@@ -6758,3 +6758,247 @@ button.notification-row {
 .chat-bubble.own .chat-sender-name {
   color: #b3c69f;
 }
+
+/* Website adaptations of the app's profile, discovery and party details.
+   Scoped to the browser; the iOS app keeps its own rules in native-app.css. */
+html:not(.native-ios) .profile-cover-content .native-profile-stats {
+  display: flex;
+  align-self: center;
+  margin: 0 0 0 auto;
+  padding: 0;
+  list-style: none;
+}
+html:not(.native-ios) .native-profile-stats > li {
+  display: flex;
+}
+html:not(.native-ios) .native-profile-stats > li + li {
+  border-left: 1px solid var(--line);
+}
+html:not(.native-ios) .native-profile-stats > li > button,
+html:not(.native-ios) .native-profile-stats > li:not(:has(button)) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 92px;
+  min-height: 44px;
+  padding: 6px 14px;
+  color: var(--forest);
+}
+html:not(.native-ios) .native-profile-stats > li > button {
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+html:not(.native-ios) .native-profile-stats > li > button:hover {
+  background: #f0f4eb;
+}
+html:not(.native-ios) .native-profile-stats strong {
+  font-size: 24px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+html:not(.native-ios) .native-profile-stats span {
+  color: #7d8a78;
+  font-size: 9px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+/* The stats include Handicap, so the separate block steps aside. */
+html:not(.native-ios) .native-profile-stats + .profile-hcp {
+  display: none;
+}
+@media (max-width: 740px) {
+  html:not(.native-ios) .profile-cover-content .native-profile-stats {
+    flex-basis: 100%;
+    justify-content: space-around;
+    margin: 4px 0 0;
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+  }
+  html:not(.native-ios) .native-profile-stats > li > button,
+  html:not(.native-ios) .native-profile-stats > li:not(:has(button)) {
+    min-width: 0;
+  }
+}
+
+/* Your rhythm, one line under the profile card. */
+html:not(.native-ios) .native-streak {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0 0;
+  padding: 14px 18px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: #fff;
+  color: #6c7a66;
+  font-size: 11px;
+  line-height: 1.5;
+}
+html:not(.native-ios) .native-streak > svg {
+  flex-shrink: 0;
+  color: #b8752a;
+}
+html:not(.native-ios) .native-streak strong {
+  display: block;
+  color: var(--forest);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Mis amigos sheet. */
+html:not(.native-ios) .native-friend-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+html:not(.native-ios) .native-friend-list button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 56px;
+  padding: 8px 4px;
+  border-bottom: 1px solid var(--line);
+  color: var(--forest);
+  text-align: left;
+  cursor: pointer;
+}
+html:not(.native-ios) .native-friend-list button:hover {
+  background: #f7f9f2;
+}
+html:not(.native-ios) .native-friend-list button > span {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+html:not(.native-ios) .native-friend-list strong {
+  font-size: 13px;
+  font-weight: 500;
+}
+html:not(.native-ios) .native-friend-list small {
+  color: #7d8a78;
+  font-size: 10px;
+}
+
+/* Another golfer's recent rounds in their profile sheet. */
+html:not(.native-ios) .golfer-rounds {
+  margin-top: 22px;
+}
+html:not(.native-ios) .golfer-rounds h3 {
+  font-size: 15px;
+  font-weight: 500;
+}
+html:not(.native-ios) .golfer-rounds ul {
+  display: grid;
+  margin: 10px 0 0;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  list-style: none;
+}
+html:not(.native-ios) .golfer-rounds li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 14px;
+}
+html:not(.native-ios) .golfer-rounds li + li {
+  border-top: 1px solid var(--line);
+}
+html:not(.native-ios) .golfer-rounds li > span:first-child {
+  display: grid;
+  min-width: 0;
+}
+html:not(.native-ios) .golfer-rounds li strong {
+  color: var(--forest);
+  font-size: 12px;
+  font-weight: 500;
+}
+html:not(.native-ios) .golfer-rounds li small {
+  color: #7d8a78;
+  font-size: 10px;
+}
+html:not(.native-ios) .golfer-rounds .golfer-round-score {
+  display: grid;
+  justify-items: end;
+}
+html:not(.native-ios) .golfer-rounds li .golfer-round-score > strong {
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Empty deck: three fanned snapshots of the course. */
+html:not(.native-ios) .empty-icon:has(.native-photo-stack) {
+  padding: 0;
+  border-radius: 0;
+  background: none;
+}
+html:not(.native-ios) .native-photo-stack {
+  position: relative;
+  display: block;
+  width: 190px;
+  height: 150px;
+}
+html:not(.native-ios) .native-photo-stack img {
+  position: absolute;
+  top: 8px;
+  left: 42px;
+  width: 106px;
+  height: 138px;
+  object-fit: cover;
+  border: 4px solid #fff;
+  border-radius: 14px;
+  box-shadow: 0 10px 24px #16382b2b;
+}
+html:not(.native-ios) .native-photo-stack [data-crop="left"] {
+  object-position: 15% center;
+  transform: translateX(-36px) rotate(-10deg);
+}
+html:not(.native-ios) .native-photo-stack [data-crop="right"] {
+  object-position: 85% center;
+  transform: translateX(36px) rotate(9deg);
+}
+html:not(.native-ios) .native-photo-stack [data-crop="center"] {
+  top: 0;
+}
+
+/* Party cards: who is playing, as overlapping faces with a +N count. */
+html:not(.native-ios) .party-avatar-stack {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+}
+html:not(.native-ios) .party-avatar-stack:empty {
+  display: none;
+}
+html:not(.native-ios) .party-avatar-stack > * {
+  width: 26px;
+  height: 26px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+}
+html:not(.native-ios) .party-avatar-stack > * + * {
+  margin-left: -8px;
+}
+html:not(.native-ios) .party-avatar-more {
+  display: grid;
+  place-items: center;
+  background: #e6ecdf;
+  color: var(--forest);
+  font-size: 10px;
+  font-weight: 600;
+}
+/* Seat icons step aside visually but keep their spoken count. */
+html:not(.native-ios) .party-avatar-stack:not(:empty) + .party-seat-icons {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

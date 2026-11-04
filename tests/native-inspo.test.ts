@@ -39,7 +39,7 @@ test("the empty deck shows the stack only when given, keeping its actions", () =
   for (const html of [web, app]) assert.match(html, /Crear una partida/);
 });
 
-test("party avatar stacks: hidden on web, a row in the app, seat count still spoken", () => {
+test("party avatar stacks show as a row on web and in the app, seat count still spoken", () => {
   const globals = readFileSync(
     new URL("../app/globals.css", import.meta.url),
     "utf8",
@@ -58,16 +58,11 @@ test("party avatar stacks: hidden on web, a row in the app, seat count still spo
       dom.window.getComputedStyle(document.querySelector(selector)!);
     const stack = style(".party-avatar-stack");
     const seats = style(".party-seat-icons");
-    if (!app) {
-      assert.equal(stack.display, "none");
-      assert.notEqual(seats.position, "absolute");
-    } else {
-      assert.equal(stack.display, "inline-flex");
-      assert.equal(stack.flexDirection, "row");
-      // Visually hidden, not display:none, so VoiceOver keeps the label.
-      assert.equal(seats.position, "absolute");
-      assert.notEqual(seats.display, "none");
-    }
+    assert.equal(stack.display, "inline-flex");
+    assert.equal(stack.flexDirection, "row");
+    // Visually hidden, not display:none, so VoiceOver keeps the label.
+    assert.equal(seats.position, "absolute");
+    assert.notEqual(seats.display, "none");
     dom.window.close();
   }
 });

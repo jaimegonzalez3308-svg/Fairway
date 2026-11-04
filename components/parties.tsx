@@ -489,7 +489,7 @@ function PartyCard({
         <span className="party-card-format">{game.format}</span>
       </div>
       <div className="party-card-seats">
-        {/* iOS app: who is playing, as overlapping faces (hidden on web). */}
+        {/* Who is playing, as overlapping faces with a +N count. */}
         <div className="party-avatar-stack" aria-hidden="true">
           {players.slice(0, 3).map((player) => (
             <span className="party-small-avatar" key={player.id}>
