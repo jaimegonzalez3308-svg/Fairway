@@ -189,3 +189,16 @@ test("club cards become photo covers only in the app; the website keeps its layo
     dom.window.close();
   }
 });
+
+test("club chips use dark glass for contrast and access info keeps an expand cue", () => {
+  const css = native();
+  const chip = css.match(
+    /\.club-content > \.muted\) \{[^}]*background: rgb\(11 31 22 \/ ([\d.]+)\)/,
+  );
+  assert.ok(chip && Number(chip[1]) >= 0.65, "chip background alpha");
+  assert.match(css, /details > summary::after \{\s*content: "\+" \/ "";/);
+  assert.match(
+    css,
+    /details\[open\] > summary::after \{\s*content: "−" \/ "";/,
+  );
+});

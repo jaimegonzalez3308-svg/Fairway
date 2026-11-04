@@ -12,6 +12,7 @@ import dynamic from "next/dynamic";
 import { site } from "@/lib/site";
 import { useNativeApp } from "@/lib/use-native-app";
 import { useImageTint } from "@/lib/image-tint";
+import { GolferRounds } from "./golfer-rounds";
 import { roundStreak } from "@/lib/round-streak";
 import {
   Compass,
@@ -284,6 +285,17 @@ export default function FairwayApp() {
     [reviewTarget, setReviewTarget] = useState<Profile | null>(null),
     [busy, setBusy] = useState(false);
   // iOS app: your own rhythm, never compared with other members.
+  // Accepted friends with their profiles, for Mi perfil's Amigos sheet.
+  const myFriends = friends.relations
+    .filter((r) => r.status === "accepted")
+    .map((r) =>
+      friends.people.find(
+        (p) =>
+          p.id ===
+          (r.requester_id === data.user?.id ? r.recipient_id : r.requester_id),
+      ),
+    )
+    .filter((p): p is Profile => !!p);
   // Computed each render so it follows the local date, not just new rounds.
   const streak = nativeApp ? roundStreak(data.rounds) : null;
   // iOS app: the golfer's profile sheet takes a wash from their photo.
@@ -2088,6 +2100,33 @@ export default function FairwayApp() {
                         </p>
                         <span className="badge">Membresía declarada</span>
                       </div>
+                      {nativeApp && (
+                        <ul
+                          className="native-profile-stats"
+                          aria-label="Tu resumen"
+                        >
+                          <li>
+                            <button type="button" onClick={() => go("scores")}>
+                              <strong>{data.rounds.length}</strong>
+                              <span>Rondas</span>
+                            </button>
+                          </li>
+                          <li>
+                            <button
+                              type="button"
+                              aria-haspopup="dialog"
+                              onClick={() => setModal("my-friends")}
+                            >
+                              <strong>{myFriends.length}</strong>
+                              <span>Amigos</span>
+                            </button>
+                          </li>
+                          <li>
+                            <strong>{data.me.handicap ?? "—"}</strong>
+                            <span>Handicap</span>
+                          </li>
+                        </ul>
+                      )}
                       <div className="profile-hcp">
                         <span>HANDICAP DECLARADO</span>
                         <strong>{data.me.handicap ?? "—"}</strong>
@@ -2105,26 +2144,6 @@ export default function FairwayApp() {
                           </span>
                         </p>
                       )}
-                      <dl className="native-profile-stats">
-                        <div>
-                          <dt>Rondas</dt>
-                          <dd>{data.rounds.length}</dd>
-                        </div>
-                        <div>
-                          <dt>Amigos</dt>
-                          <dd>
-                            {
-                              friends.relations.filter(
-                                (r) => r.status === "accepted",
-                              ).length
-                            }
-                          </dd>
-                        </div>
-                        <div>
-                          <dt>Handicap</dt>
-                          <dd>{data.me.handicap ?? "—"}</dd>
-                        </div>
-                      </dl>
                       <div className="native-profile-actions">
                         <Button onClick={() => setModal("edit-profile")}>
                           Editar perfil
@@ -2756,6 +2775,44 @@ export default function FairwayApp() {
           />
         </Modal>
       )}
+      {modal === "my-friends" && (
+        <Modal title="Mis amigos" onClose={close}>
+          {myFriends.length ? (
+            <ul className="native-friend-list">
+              {myFriends.map((friend) => (
+                <li key={friend.id}>
+                  <button type="button" onClick={() => openProfile(friend)}>
+                    <Avatar profile={friend} />
+                    <span>
+                      <strong>{friend.name}</strong>
+                      <small>
+                        {clubName(friend.club_id)} · Handicap{" "}
+                        {friend.handicap ?? "—"}
+                      </small>
+                    </span>
+                    <ChevronRight size={18} aria-hidden="true" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <Empty
+              title="Todavía no tienes amigos en Fairway"
+              description="Busca a tus conocidos y envíales una solicitud."
+              action={
+                <Button
+                  onClick={() => {
+                    close();
+                    go("amigos");
+                  }}
+                >
+                  Buscar amigos
+                </Button>
+              }
+            />
+          )}
+        </Modal>
+      )}
       {modal === "compatibility" && (
         <Modal title="Compatibilidad, sin misterio" onClose={close}>
           <CompatibilityExplainer />
@@ -2821,6 +2878,13 @@ export default function FairwayApp() {
             <PlayerRating profile={withRating(selected, data.ratings)} />
             <p>Solo califican compañeros de partidas finalizadas.</p>
           </section>
+          {nativeApp && selected.id !== data.me.id && (
+            <GolferRounds
+              userId={selected.id}
+              name={selected.name}
+              clubs={data.clubs}
+            />
+          )}
           {(() => {
             const friendship = (
               <div className="button-row">

@@ -2234,33 +2234,53 @@ html.native-ios .native-app main[data-page="perfil"] > .section-heading {
   clip-path: inset(50%);
   white-space: nowrap;
 }
+/* Rondas, Amigos and Handicap live in the profile card, under the name.
+   Rondas and Amigos are buttons; Handicap is a plain figure. */
 html.native-ios .native-profile-stats {
   display: grid;
+  flex-basis: 100%;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin: 14px 0 12px;
-  padding: 12px 0;
-  border-block: 1px solid var(--nx-line);
+  margin: 4px 0 0;
+  padding: 10px 0 0;
+  border-top: 1px solid var(--nx-line);
+  list-style: none;
 }
-html.native-ios .native-profile-stats > div {
+html.native-ios .native-profile-stats > li {
   display: flex;
-  flex-direction: column-reverse;
-  align-items: center;
-  gap: 2px;
+  min-width: 0;
 }
-html.native-ios .native-profile-stats > div + div {
+html.native-ios .native-profile-stats > li + li {
   border-left: 1px solid var(--nx-line);
 }
-html.native-ios .native-profile-stats dd {
-  margin: 0;
-  color: #193d2f;
+html.native-ios .native-profile-stats > li > button,
+html.native-ios .native-profile-stats > li:not(:has(button)) {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 56px;
+  color: var(--nx-green);
+}
+html.native-ios .native-profile-stats > li > button {
+  border-radius: var(--nx-radius-control);
+}
+html.native-ios .native-profile-stats > li > button:active {
+  background: #e8ecdf;
+}
+html.native-ios .native-profile-stats strong {
   font-size: 22px;
   font-weight: 700;
   letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
 }
-html.native-ios .native-profile-stats dt {
+html.native-ios .native-profile-stats span {
   color: #52604f;
   font-size: 12px;
+}
+html.native-ios .native-profile-stats > li > button span::after {
+  content: " ›";
 }
 html.native-ios .native-profile-actions {
   display: grid;
@@ -3435,9 +3455,10 @@ html.native-ios .native-app .club-card :is(.club-photo .badge, .club-content > .
   min-height: 28px;
   margin: 0;
   padding: 0 12px;
-  border: 1px solid rgb(255 255 255 / 0.45);
+  border: 1px solid rgb(255 255 255 / 0.3);
   border-radius: var(--nx-radius-pill);
-  background: rgb(255 255 255 / 0.2);
+  /* Dark glass keeps white 12px text ≥4.5:1 even over a white sky. */
+  background: rgb(11 31 22 / 0.65);
   -webkit-backdrop-filter: blur(12px) saturate(140%);
   backdrop-filter: blur(12px) saturate(140%);
   color: #fff;
@@ -3520,6 +3541,18 @@ html.native-ios .native-app .club-card .club-content > details > summary {
   display: flex;
   align-items: center;
   min-height: 44px;
+  list-style: none;
+}
+html.native-ios .native-app .club-card .club-content > details > summary::-webkit-details-marker {
+  display: none;
+}
+html.native-ios .native-app .club-card .club-content > details > summary::after {
+  content: "+" / "";
+  margin-left: auto;
+  font-size: 18px;
+}
+html.native-ios .native-app .club-card .club-content > details[open] > summary::after {
+  content: "−" / "";
 }
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
   html.native-ios .native-app .club-card :is(.club-photo .badge, .club-content > .muted) {
@@ -3527,4 +3560,82 @@ html.native-ios .native-app .club-card .club-content > details > summary {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
+}
+
+/* Mis amigos sheet: one row per friend, opening their profile. */
+html.native-ios .native-friend-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+html.native-ios .native-friend-list button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 64px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--nx-line);
+  color: var(--nx-green);
+  text-align: left;
+}
+html.native-ios .native-friend-list button > span {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+html.native-ios .native-friend-list strong {
+  overflow: hidden;
+  font-size: 16px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+html.native-ios .native-friend-list small {
+  color: #52604f;
+  font-size: 13px;
+}
+
+/* A golfer's recent rounds in their profile sheet. */
+html.native-ios .golfer-rounds {
+  margin-top: 18px;
+}
+html.native-ios .golfer-rounds ul {
+  display: grid;
+  margin: 8px 0 0;
+  padding: 0;
+  border: 1px solid var(--nx-line);
+  border-radius: var(--nx-radius-card);
+  background: var(--nx-card);
+  list-style: none;
+}
+html.native-ios .golfer-rounds li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+}
+html.native-ios .golfer-rounds li + li {
+  border-top: 1px solid var(--nx-line);
+}
+html.native-ios .golfer-rounds li > span:first-child {
+  display: grid;
+  min-width: 0;
+}
+html.native-ios .golfer-rounds li strong {
+  color: var(--nx-green);
+  font-size: 15px;
+}
+html.native-ios .golfer-rounds li small {
+  color: #52604f;
+  font-size: 13px;
+}
+html.native-ios .golfer-round-score {
+  display: grid;
+  justify-items: end;
+}
+html.native-ios .golfer-rounds li .golfer-round-score > strong {
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
 }
