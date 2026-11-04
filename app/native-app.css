@@ -3353,3 +3353,20 @@ html.native-ios .native-streak strong {
   font-size: 15px;
   font-weight: 650;
 }
+
+/* Party cards: date, time and holes read as one quiet line with dots. */
+html.native-ios .native-app .party-card-when {
+  gap: 0;
+  margin: 6px 0 10px;
+  color: #52604f;
+  font-size: 13px;
+}
+html.native-ios .native-app .party-card-when > span > svg {
+  display: none;
+}
+html.native-ios .native-app .party-card-when > span + span::before {
+  content: "•";
+  content: "•" / "";
+  margin: 0 8px;
+  color: var(--nx-line-strong);
+}
