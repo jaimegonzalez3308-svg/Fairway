@@ -45,3 +45,14 @@ test("on the website the stats replace the separate handicap block", () => {
   );
   dom.window.close();
 });
+
+test("website adaptations keep small text at 4.5:1 and wrap stats before they crowd", () => {
+  const block = globals.slice(
+    globals.indexOf("/* Website adaptations of the app's"),
+  );
+  assert.doesNotMatch(block, /#7d8a78/);
+  assert.match(
+    block,
+    /@media \(max-width: 1100px\) \{\s*html:not\(\.native-ios\) \.profile-cover-content \{\s*flex-wrap: wrap;/,
+  );
+});

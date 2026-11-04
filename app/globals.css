@@ -6800,7 +6800,7 @@ html:not(.native-ios) .native-profile-stats strong {
   font-variant-numeric: tabular-nums;
 }
 html:not(.native-ios) .native-profile-stats span {
-  color: #7d8a78;
+  color: #5d6b58;
   font-size: 9px;
   letter-spacing: 1.2px;
   text-transform: uppercase;
@@ -6809,7 +6809,11 @@ html:not(.native-ios) .native-profile-stats span {
 html:not(.native-ios) .native-profile-stats + .profile-hcp {
   display: none;
 }
-@media (max-width: 740px) {
+/* Below wide desktops (sidebar + photo + name), stats take their own row. */
+@media (max-width: 1100px) {
+  html:not(.native-ios) .profile-cover-content {
+    flex-wrap: wrap;
+  }
   html:not(.native-ios) .profile-cover-content .native-profile-stats {
     flex-basis: 100%;
     justify-content: space-around;
@@ -6833,7 +6837,7 @@ html:not(.native-ios) .native-streak {
   border: 1px solid var(--line);
   border-radius: 13px;
   background: #fff;
-  color: #6c7a66;
+  color: #5d6b58;
   font-size: 11px;
   line-height: 1.5;
 }
@@ -6880,7 +6884,7 @@ html:not(.native-ios) .native-friend-list strong {
   font-weight: 500;
 }
 html:not(.native-ios) .native-friend-list small {
-  color: #7d8a78;
+  color: #5d6b58;
   font-size: 10px;
 }
 
@@ -6920,7 +6924,7 @@ html:not(.native-ios) .golfer-rounds li strong {
   font-weight: 500;
 }
 html:not(.native-ios) .golfer-rounds li small {
-  color: #7d8a78;
+  color: #5d6b58;
   font-size: 10px;
 }
 html:not(.native-ios) .golfer-rounds .golfer-round-score {
