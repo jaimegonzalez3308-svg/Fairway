@@ -355,11 +355,11 @@ html.native-ios .native-round-pending {
   html.native-ios .native-hole-jump > div { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 }
 html.native-ios {
-  background: #f5f3ea;
+  background: var(--nx-paper);
   overscroll-behavior-y: none;
 }
 html.native-ios body {
-  background: #f5f3ea;
+  background: var(--nx-paper);
 }
 html.native-ios .native-welcome {
   max-width: 540px;
@@ -533,7 +533,7 @@ html.native-ios .native-app .topbar {
   height: 64px;
   padding: 0 14px;
   z-index: 20;
-  background: #f5f3ea;
+  background: var(--nx-paper);
   border-bottom: 1px solid var(--nx-line);
   backdrop-filter: none;
 }
@@ -800,7 +800,7 @@ html.native-ios .native-tab-bar {
   grid-template-columns: repeat(5, minmax(0, 1fr));
   min-height: 72px;
   padding: 6px 8px 8px;
-  background: #f5f3ea;
+  background: var(--nx-paper);
   border-top: 1px solid var(--nx-line);
 }
 html.native-ios .native-tab-bar button {
@@ -845,7 +845,7 @@ html.native-ios .native-friend-badge {
   right: -2px;
   min-width: 17px;
   padding: 2px 4px;
-  border: 1px solid #f5f3ea;
+  border: 1px solid var(--nx-paper);
   border-radius: 10px;
   color: #fffdf3;
   background: #193d2f;
@@ -873,7 +873,7 @@ html.native-ios .native-tab-badge {
   top: -2px;
   min-width: 17px;
   padding: 2px 4px;
-  border: 1px solid #f5f3ea;
+  border: 1px solid var(--nx-paper);
   border-radius: 10px;
   background: #193d2f;
   color: white;
@@ -1232,7 +1232,7 @@ html.native-ios .native-onboarding {
   flex-direction: column;
   gap: 22px;
   padding: 20px 24px;
-  background: #f5f3ea;
+  background: var(--nx-paper);
 }
 html.native-ios .native-onboarding > header {
   display: flex;
@@ -1740,7 +1740,7 @@ html.native-ios .native-app .friends-tabs button.active .friend-count {
 html.native-ios {
   --nx-green: #193d2f;
   --nx-ink: #203c2f;
-  --nx-paper: #f5f3ea;
+  --nx-paper: #f7f1e3;
   --nx-card: #fffbf2;
   --nx-line: #d8ddcf;
   --nx-line-strong: #c2c9b5;
@@ -2443,14 +2443,14 @@ html.native-ios .post-like-burst {
 }
 html.native-ios .native-tab-bar [data-tour="active"] .native-tab-icon {
   box-shadow:
-    0 0 0 2px #f5f3ea,
+    0 0 0 2px var(--nx-paper),
     0 0 0 4px #ead06f;
   animation: native-tour-pulse 1.6s ease-in-out infinite;
 }
 @keyframes native-tour-pulse {
   50% {
     box-shadow:
-      0 0 0 2px #f5f3ea,
+      0 0 0 2px var(--nx-paper),
       0 0 0 7px #ead06f66;
   }
 }
@@ -2506,7 +2506,7 @@ html.native-ios.native-chat-fullscreen .native-app .chat-title {
   column-gap: 8px;
   padding: 6px 12px 10px;
   border-bottom: 1px solid var(--nx-line);
-  background: #f5f3ea url("/images/paper-grain.svg") repeat;
+  background: var(--nx-paper) url("/images/paper-grain.svg") repeat;
 }
 html.native-ios.native-chat-fullscreen .native-app .chat-title > * {
   grid-column: 2;
