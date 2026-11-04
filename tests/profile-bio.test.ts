@@ -10,8 +10,8 @@ test("la biografía vacía tiene una acción clara para su propietario y no inve
   const own = renderToStaticMarkup(
     createElement(ProfileBio, { bio: "", onEdit() {} }),
   );
-  assert.match(own, /Biografía/);
-  assert.match(own, /Añadir bio/);
+  assert.match(own, /Descripción/);
+  assert.match(own, /Añadir descripción/);
   assert.equal(
     renderToStaticMarkup(createElement(ProfileBio, { bio: "  " })),
     "",
@@ -20,7 +20,7 @@ test("la biografía vacía tiene una acción clara para su propietario y no inve
     renderToStaticMarkup(
       createElement(ProfileBio, { bio: "Me gustan los 9 hoyos", onEdit() {} }),
     ),
-    /Editar bio/,
+    /Editar descripción/,
   );
 });
 
@@ -35,7 +35,7 @@ test("la biografía muestra saltos de línea como texto y escapa HTML", () => {
     /Sábados, 9 hoyos\.\n&lt;script&gt;alert\(1\)&lt;\/script&gt;/,
   );
   assert.doesNotMatch(html, /<script>/);
-  assert.doesNotMatch(html, /Editar bio/);
+  assert.doesNotMatch(html, /Editar descripción/);
 });
 
 test("el editor mantiene el texto y expone su límite, contador y privacidad", () => {
@@ -52,7 +52,7 @@ test("el editor mantiene el texto y expone su límite, contador y privacidad", (
   assert.match(html, />Hola<\/textarea>/);
   assert.match(html, /4\/500 caracteres/);
   assert.match(html, /Visible para quienes puedan ver tu perfil/);
-  assert.match(html, /Guardar biografía/);
+  assert.match(html, /Guardar descripción/);
   assert.match(html, /Cancelar/);
 });
 

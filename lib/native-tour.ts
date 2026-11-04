@@ -24,7 +24,7 @@ export const nativeTourSteps = [
   {
     tab: "perfil",
     title: "Tu tarjeta de golfista",
-    text: "Edita tu foto, tu handicap y tu bio, y anota tus scores. Desliza desde el borde para volver y hacia abajo para actualizar.",
+    text: "Edita tu foto, tu handicap y tu descripción, y anota tus scores. Desliza desde el borde para volver y hacia abajo para actualizar.",
   },
 ];
 
@@ -50,7 +50,7 @@ export const websiteTourSteps = [
   nativeTourSteps[3],
   {
     ...nativeTourSteps[4],
-    text: "Edita tu foto, tu handicap y tu bio. Usa el menú de Fairway para volver a cualquiera de estas secciones.",
+    text: "Edita tu foto, tu handicap y tu descripción. Usa el menú de Fairway para volver a cualquiera de estas secciones.",
   },
 ];
 

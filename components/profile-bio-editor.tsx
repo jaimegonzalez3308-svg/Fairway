@@ -23,7 +23,7 @@ export function ProfileBioEditor({
         if (busy) return;
         const parsed = profileSchema.shape.bio.safeParse(bio.trim());
         if (!parsed.success) {
-          setError("Usa hasta 500 caracteres para tu biografía.");
+          setError("Usa hasta 500 caracteres para tu descripción.");
           return;
         }
         setError("");
@@ -32,17 +32,17 @@ export function ProfileBioEditor({
           const saved = await onSave(parsed.data);
           setBusy(false);
           if (saved) onDone();
-          else setError("No se pudo guardar la biografía. Inténtalo de nuevo.");
+          else setError("No se pudo guardar la descripción. Inténtalo de nuevo.");
         } catch {
           setBusy(false);
           setError(
-            "No se pudo guardar la biografía. Revisa tu conexión e inténtalo de nuevo.",
+            "No se pudo guardar la descripción. Revisa tu conexión e inténtalo de nuevo.",
           );
         }
       }}
     >
       <Field
-        label="Biografía (opcional)"
+        label="Descripción (opcional)"
         hint="Hasta 500 caracteres. Visible para quienes puedan ver tu perfil. Puedes dejarla vacía para eliminarla."
       >
         <textarea
@@ -68,7 +68,7 @@ export function ProfileBioEditor({
       )}
       <div className="button-row">
         <Button disabled={busy}>
-          {busy ? "Guardando…" : "Guardar biografía"}
+          {busy ? "Guardando…" : "Guardar descripción"}
         </Button>
         <Button type="button" variant="ghost" disabled={busy} onClick={onDone}>
           Cancelar

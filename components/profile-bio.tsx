@@ -21,11 +21,11 @@ export function ProfileBio({
       aria-labelledby={heading}
     >
       <div className="profile-bio-heading">
-        <h3 id={heading}>Biografía</h3>
+        <h3 id={heading}>Descripción</h3>
         {onEdit && (
           <Button type="button" variant="outline" onClick={onEdit}>
             <Pencil size={15} aria-hidden="true" />
-            {hasBio ? "Editar bio" : "Añadir bio"}
+            {hasBio ? "Editar descripción" : "Añadir descripción"}
           </Button>
         )}
       </div>

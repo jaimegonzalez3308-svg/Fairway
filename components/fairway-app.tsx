@@ -2682,7 +2682,7 @@ export default function FairwayApp() {
         </Modal>
       )}
       {modal === "edit-bio" && (
-        <Modal title="Tu biografía" onClose={close}>
+        <Modal title="Tu descripción" onClose={close}>
           <ProfileBioEditor
             initialBio={data.me.bio}
             onDone={close}
@@ -2695,7 +2695,7 @@ export default function FairwayApp() {
                     .eq("id", data.user!.id)
                     .select("id")
                     .single(),
-                "Biografía actualizada.",
+                "Descripción actualizada.",
               )
             }
           />

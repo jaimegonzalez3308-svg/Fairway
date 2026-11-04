@@ -620,7 +620,7 @@ export function ProfileForm({
         )}
       </div>
       <Field
-        label="Biografía (opcional)"
+        label="Descripción (opcional)"
         hint="Hasta 500 caracteres. Visible para quienes puedan ver tu perfil."
       >
         <textarea
