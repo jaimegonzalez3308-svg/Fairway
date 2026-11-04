@@ -58,3 +58,23 @@ test("tint styles only exist in the app and fall back to paper", () => {
   assert.match(css, /\.golfer-card\[style\*="--tint-soft"\] \.golfer-details/);
   assert.match(css, /\.modal\[style\*="--tint-soft"\] \{/);
 });
+
+test("signed URLs of the same photo share one cache entry", async () => {
+  const { tintCacheKey } = await import("../lib/image-tint");
+  assert.equal(
+    tintCacheKey(
+      "https://x.supabase.co/storage/v1/object/sign/profile-images/a.jpg?token=1",
+    ),
+    tintCacheKey(
+      "https://x.supabase.co/storage/v1/object/sign/profile-images/a.jpg?token=2",
+    ),
+  );
+  assert.notEqual(
+    tintCacheKey(
+      "https://x.supabase.co/storage/v1/object/sign/profile-images/a.jpg?token=1",
+    ),
+    tintCacheKey(
+      "https://x.supabase.co/storage/v1/object/sign/profile-images/b.jpg?token=1",
+    ),
+  );
+});

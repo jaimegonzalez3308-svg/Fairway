@@ -3288,6 +3288,10 @@ html.native-ios .native-tint-backdrop {
 .native-tint-backdrop {
   display: none;
 }
+/* Keep the wash above body's paper: -1 stays inside main's own layer. */
+html.native-ios .native-app main:has(> .native-tint-backdrop) {
+  isolation: isolate;
+}
 html.native-ios .native-tint-backdrop {
   display: block;
 }

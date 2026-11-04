@@ -67,11 +67,24 @@ export function tintPalette(rgb: Rgb) {
 }
 
 const cache = new Map<string, Promise<Rgb | null>>();
+const CACHE_LIMIT = 40;
+
+/** Signed Storage URLs change their token, not the picture: key by path. */
+export function tintCacheKey(src: string) {
+  try {
+    const url = new URL(src, "http://local");
+    return url.origin + url.pathname;
+  } catch {
+    return src;
+  }
+}
 
 /** Samples a photo on a 24×24 canvas. Uses its own CORS image request so
- * the visible <img> is untouched; any failure simply means "no tint". */
+ * the visible <img> is untouched; any failure simply means "no tint" and
+ * is not remembered, so the same photo is tried again next time. */
 export function loadImageTint(src: string): Promise<Rgb | null> {
-  const known = cache.get(src);
+  const key = tintCacheKey(src);
+  const known = cache.get(key);
   if (known) return known;
   const result = new Promise<Rgb | null>((resolve) => {
     const image = new Image();
@@ -92,7 +105,12 @@ export function loadImageTint(src: string): Promise<Rgb | null> {
     image.onerror = () => resolve(null);
     image.src = src;
   });
-  cache.set(src, result);
+  cache.set(key, result);
+  // Keep the newest few: drop the oldest entry beyond the limit.
+  if (cache.size > CACHE_LIMIT) cache.delete(cache.keys().next().value!);
+  void result.then((rgb) => {
+    if (!rgb && cache.get(key) === result) cache.delete(key);
+  });
   return result;
 }
 
