@@ -3639,3 +3639,65 @@ html.native-ios .golfer-rounds li .golfer-round-score > strong {
   font-size: 22px;
   font-variant-numeric: tabular-nums;
 }
+
+/* Mi perfil, tighter: a shorter cover, a smaller overlapping photo and
+   less air between name, stats, actions and cards. */
+html.native-ios .native-app main[data-page="perfil"] .profile-cover-photo {
+  height: 96px;
+}
+html.native-ios .native-app main[data-page="perfil"] .profile-cover-content {
+  align-items: flex-end;
+  gap: 2px 14px;
+  padding: 0 16px 12px;
+}
+html.native-ios .native-app main[data-page="perfil"] .profile-cover-content .avatar.large {
+  width: 72px;
+  height: 72px;
+  margin-top: -26px;
+  border-width: 3px;
+}
+html.native-ios .native-app main[data-page="perfil"] .profile-cover-content h2 {
+  margin: 8px 0 2px;
+  font-size: 22px;
+  line-height: 1.15;
+}
+html.native-ios .native-app main[data-page="perfil"] .profile-cover-content h2 > span {
+  margin-left: 6px;
+  font-size: 15px;
+}
+html.native-ios .native-app main[data-page="perfil"] .profile-cover-content p {
+  margin: 0;
+  font-size: 12px;
+}
+/* The declared-membership note stays in the profile details, not here. */
+html.native-ios .native-app main[data-page="perfil"] .profile-cover-content .badge {
+  display: none;
+}
+html.native-ios .native-app main[data-page="perfil"] .native-profile-stats {
+  margin-top: 10px;
+  padding-top: 6px;
+}
+html.native-ios .native-app main[data-page="perfil"] .native-profile-stats > li > button,
+html.native-ios .native-app main[data-page="perfil"] .native-profile-stats > li:not(:has(button)) {
+  min-height: 48px;
+}
+html.native-ios .native-app main[data-page="perfil"] .native-profile-stats strong {
+  font-size: 20px;
+}
+html.native-ios .native-app main[data-page="perfil"] .native-streak {
+  margin-top: 10px;
+  padding: 10px 12px;
+}
+html.native-ios .native-app main[data-page="perfil"] .native-profile-actions {
+  margin: 10px 0 12px;
+}
+html.native-ios .native-app main[data-page="perfil"] .native-profile-actions .button {
+  min-height: 44px;
+}
+html.native-ios .native-app main[data-page="perfil"] .panel {
+  margin-bottom: 12px;
+  padding: 16px;
+}
+html.native-ios .native-app main[data-page="perfil"] .profile-bio {
+  margin: 0 0 12px;
+}
