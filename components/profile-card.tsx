@@ -1,4 +1,5 @@
 "use client";
+import { beat } from "@/lib/native-motion";
 import {
   ArrowUpRight,
   Bookmark,
@@ -134,7 +135,10 @@ export function ProfileCard({
           <button
             disabled={disabled}
             className="like-button"
-            onClick={onLike}
+            onClick={(event) => {
+              beat(event.currentTarget);
+              onLike();
+            }}
             aria-label={`Dar like a ${p.name}`}
           >
             <Heart size={22} />

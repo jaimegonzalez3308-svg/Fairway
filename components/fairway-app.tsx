@@ -58,6 +58,7 @@ import {
 import { cn, dateFormat, timeFormat } from "@/lib/utils";
 import { Button, Modal, Empty, SectionHeading } from "./ui";
 import { useNativeShell } from "@/lib/use-native-shell";
+import { beat, prefersReducedMotion } from "@/lib/native-motion";
 import {
   useHideHeaderOnScroll,
   usePageTransition,
@@ -2689,9 +2690,13 @@ export default function FairwayApp() {
             const playActions = (
               <div className="button-row">
                 <Button
-                  onClick={() => {
+                  onClick={(event) => {
                     void data.decide(selected.id, "like");
-                    close();
+                    // App: let the heart beat before the sheet closes.
+                    if (nativeApp && !prefersReducedMotion()) {
+                      beat(event.currentTarget);
+                      setTimeout(close, 380);
+                    } else close();
                   }}
                 >
                   <Heart size={17} />

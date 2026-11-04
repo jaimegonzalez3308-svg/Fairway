@@ -2348,3 +2348,188 @@ html.native-ios .native-app .party-day-mobile-dots .more {
   font-weight: 700;
   line-height: 6px;
 }
+
+/* Microanimations (iOS app only). Short, springy and off with Reduce Motion. */
+@keyframes native-heart-beat {
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.35);
+  }
+  45% {
+    transform: scale(0.9);
+  }
+  65% {
+    transform: scale(1.14);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes native-tab-pop {
+  0% {
+    transform: scale(0.82) translateY(2px);
+  }
+  60% {
+    transform: scale(1.12) translateY(-1px);
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes native-toast-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 14px) scale(0.96);
+  }
+}
+/* Likes beat once when they turn on. */
+html.native-ios .native-app .post-actions .liked svg,
+html.native-ios .story-reaction.liked .story-reaction-heart svg {
+  fill: currentColor;
+  animation: native-heart-beat 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+html.native-ios .native-app .like-button.beat svg,
+html.native-ios .native-profile-dock .button.beat svg {
+  animation: native-heart-beat 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* The tab you land on pops. */
+html.native-ios .native-tab-bar [aria-current="page"] .native-tab-icon > * {
+  animation: native-tab-pop 320ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+/* Buttons give under the thumb. */
+html.native-ios
+  .native-app
+  :is(
+    .button,
+    .native-quick-actions button,
+    .native-profile-actions .button,
+    .pass-button,
+    .like-button,
+    .chat-contact
+  ),
+html.native-ios :is(.native-tab-bar button, .native-tour-next, .modal .button) {
+  transition: transform 140ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+html.native-ios
+  .native-app
+  :is(
+    .button,
+    .native-quick-actions button,
+    .native-profile-actions .button,
+    .pass-button,
+    .like-button,
+    .chat-contact
+  ):active,
+html.native-ios
+  :is(.native-tab-bar button, .native-tour-next, .modal .button):active {
+  transform: scale(0.96);
+}
+/* Toasts rise in instead of appearing. */
+html.native-ios .native-app .toast {
+  animation: native-toast-in 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Pull to refresh: a putt. Pulling rolls the ball toward the flag; once
+   far enough the flag waves; refreshing sinks the ball and repeats. */
+html.native-ios .native-refresh {
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+html.native-ios .native-putt {
+  display: none;
+}
+html.native-ios .native-refresh[data-pulling="true"] .native-putt,
+html.native-ios .native-refresh[data-refreshing="true"] .native-putt {
+  display: block;
+}
+html.native-ios .native-putt-cup {
+  fill: #193d2f;
+}
+html.native-ios .native-putt-pin {
+  stroke: #52604f;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+}
+html.native-ios .native-putt-flag {
+  fill: #c7a66a;
+  transform-box: fill-box;
+  transform-origin: left center;
+}
+html.native-ios .native-putt-ball {
+  transform-box: view-box;
+  transform: translateX(calc(var(--pull, 0) * 30px));
+}
+html.native-ios .native-putt-ball > circle:first-child {
+  fill: #fffdf6;
+  stroke: #1f2d22;
+  stroke-width: 1.3;
+}
+html.native-ios .native-putt-dimple {
+  fill: #c9cdbf;
+}
+html.native-ios .native-refresh[data-ready="true"] .native-putt-flag {
+  animation: native-flag-wave 600ms ease-in-out infinite alternate;
+}
+html.native-ios .native-refresh[data-refreshing="true"] .native-putt-ball {
+  animation: native-putt 1100ms cubic-bezier(0.45, 0, 0.3, 1) infinite;
+}
+@keyframes native-flag-wave {
+  from {
+    transform: skewY(-6deg) scaleX(0.92);
+  }
+  to {
+    transform: skewY(6deg) scaleX(1.05);
+  }
+}
+@keyframes native-putt {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  62% {
+    transform: translateX(40px);
+    opacity: 1;
+  }
+  78% {
+    transform: translate(41px, 6px) scale(0.7);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(41px, 6px) scale(0.7);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html.native-ios .native-app .post-actions .liked svg,
+  html.native-ios .story-reaction.liked .story-reaction-heart svg,
+  html.native-ios .native-app .like-button.beat svg,
+  html.native-ios .native-profile-dock .button.beat svg,
+  html.native-ios .native-tab-bar [aria-current="page"] .native-tab-icon > *,
+  html.native-ios .native-app .toast,
+  html.native-ios .native-refresh .native-putt-ball,
+  html.native-ios .native-refresh .native-putt-flag {
+    animation: none;
+  }
+  html.native-ios
+    .native-app
+    :is(
+      .button,
+      .native-quick-actions button,
+      .native-profile-actions .button,
+      .pass-button,
+      .like-button,
+      .chat-contact
+    ):active,
+  html.native-ios
+    :is(.native-tab-bar button, .native-tour-next, .modal .button):active {
+    transform: none;
+  }
+}
+html.native-ios .native-putt svg {
+  display: block;
+  width: 88px;
+  height: 38px;
+}

@@ -1,5 +1,11 @@
 "use client";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
 import {
   ArrowRight,
   CheckCheck,
@@ -210,12 +216,34 @@ export function NativeRefresh({
   refreshing: boolean;
   pull: number;
 }) {
+  // Pulling putts a ball toward the cup; refreshing drops it in.
+  const progress = Math.min(1, pull / 76);
   return (
     <div
       className="native-refresh"
       data-pulling={pull > 0}
       data-refreshing={refreshing}
+      data-ready={pull >= 76}
+      style={{ "--pull": progress } as CSSProperties}
     >
+      <span className="native-putt" aria-hidden="true">
+        <svg viewBox="0 0 64 28" width="64" height="28">
+          <ellipse
+            className="native-putt-cup"
+            cx="50"
+            cy="22"
+            rx="8"
+            ry="2.6"
+          />
+          <path className="native-putt-pin" d="M50 21V5" />
+          <path className="native-putt-flag" d="M50 5l9 3-9 3z" />
+          <g className="native-putt-ball">
+            <circle cx="9" cy="17" r="5" />
+            <circle className="native-putt-dimple" cx="7.5" cy="15.5" r=".9" />
+            <circle className="native-putt-dimple" cx="10.8" cy="18.2" r=".9" />
+          </g>
+        </svg>
+      </span>
       <button
         type="button"
         onClick={() => void refresh()}

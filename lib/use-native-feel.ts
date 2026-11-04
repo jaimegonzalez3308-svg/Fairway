@@ -103,7 +103,10 @@ export function usePageTransition(
     if (!motion) return;
     const frames =
       motion === "tab"
-        ? [{ opacity: 0.4 }, { opacity: 1 }]
+        ? [
+            { opacity: 0.35, transform: "translateY(6px)" },
+            { opacity: 1, transform: "none" },
+          ]
         : [
             {
               transform: `translateX(${motion === "forward" ? 28 : -28}px)`,
@@ -112,7 +115,7 @@ export function usePageTransition(
             { transform: "none", opacity: 1 },
           ];
     element.animate(frames, {
-      duration: motion === "tab" ? 150 : 220,
+      duration: motion === "tab" ? 180 : 240,
       easing: "cubic-bezier(0.22, 1, 0.36, 1)",
     });
     // primary is a stable list of page ids.
