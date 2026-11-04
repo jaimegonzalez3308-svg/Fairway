@@ -2117,3 +2117,199 @@ html.native-ios.native-chat-fullscreen .native-app .chat-input {
   border-top: 1px solid #d8ddcf;
   background: #fffbf2;
 }
+
+/* Partidas calendar (app only): a compact month like the iPhone Calendar.
+   No scorecard frame, borderless days, a dot per party, the selected day
+   filled in forest green and today marked in green text. */
+html.native-ios .native-app .party-month-panel {
+  padding: 4px 0 8px;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+html.native-ios .native-app .party-month-panel::before,
+html.native-ios .native-app .party-month-panel::after,
+html.native-ios .native-app .party-scorecard-brand,
+html.native-ios .native-app .party-month-toolbar .party-scorecard-label,
+html.native-ios .native-app .party-month-refresh,
+html.native-ios .native-app .party-scorecard-footer,
+html.native-ios .native-app .party-month-legend small {
+  display: none;
+}
+html.native-ios .native-app .party-month-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 2px 10px;
+  border: 0;
+  background: none;
+  text-align: left;
+}
+html.native-ios .native-app .party-scorecard-heading {
+  display: block;
+  text-align: left;
+}
+html.native-ios .native-app .party-month-toolbar h2 {
+  margin: 0;
+  color: #193d2f;
+  font-family: inherit;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  text-transform: none;
+}
+html.native-ios .native-app .party-month-toolbar h2::first-letter {
+  text-transform: uppercase;
+}
+html.native-ios .native-app .party-scorecard-heading p {
+  margin: 2px 0 0;
+  color: #52604f;
+  font-size: 13px;
+}
+html.native-ios .native-app .party-month-navigation {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin: 0;
+}
+html.native-ios .native-app .party-month-today {
+  min-height: 44px;
+  padding: 0 10px;
+  border: 0;
+  background: none;
+  color: #193d2f;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+}
+html.native-ios .native-app .party-month-arrow {
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: #193d2f;
+}
+html.native-ios .native-app .party-month-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 0 0 6px;
+  padding: 0 2px;
+  border: 0;
+  font-size: 12px;
+  color: #52604f;
+}
+html.native-ios .native-app .party-month-legend > span {
+  font-size: 12px;
+}
+html.native-ios .native-app .party-month-grid {
+  border: 0;
+  border-collapse: collapse;
+  table-layout: fixed;
+  background: none;
+}
+html.native-ios .native-app .party-month-grid th {
+  padding: 6px 0 8px;
+  border: 0;
+  background: none;
+  color: #66735f;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+html.native-ios .native-app .party-month-grid th abbr {
+  text-decoration: none;
+}
+html.native-ios .native-app .party-month-grid td,
+html.native-ios .native-app .party-month-grid td:nth-child(n + 6),
+html.native-ios .native-app .party-month-grid td.outside-month,
+html.native-ios .native-app .party-month-grid td.selected-day {
+  height: auto;
+  padding: 2px 0 6px;
+  border: 0;
+  border-top: 1px solid #e1e3d4;
+  background: none;
+  box-shadow: none;
+  vertical-align: top;
+}
+html.native-ios .native-app .party-day-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  width: 100%;
+  min-height: 44px;
+  padding: 4px 0 0;
+  border: 0;
+  background: none;
+}
+html.native-ios .native-app .party-day-number,
+html.native-ios .native-app .selected-day .party-day-number,
+html.native-ios .native-app .party-month-grid .today .party-day-number {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: #193d2f;
+  font-family: inherit;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  transform: none;
+}
+html.native-ios
+  .native-app
+  .party-month-grid
+  td:nth-child(n + 6):not(.selected-day):not(.today):not(.outside-month)
+  .party-day-number {
+  color: #52604f;
+}
+html.native-ios .native-app .outside-month .party-day-number {
+  color: #66735f;
+  font-weight: 400;
+}
+html.native-ios .native-app .party-month-grid .today .party-day-number {
+  color: #2f7d4f;
+  font-weight: 700;
+}
+html.native-ios .native-app .party-month-grid .selected-day .party-day-number {
+  background: #193d2f;
+  color: #fffbf2;
+  font-weight: 700;
+}
+html.native-ios .native-app .party-day-total,
+html.native-ios .native-app .party-day-events {
+  display: none;
+}
+html.native-ios .native-app .party-day-mobile-dots {
+  display: flex;
+  justify-content: center;
+  gap: 3px;
+  min-height: 6px;
+  padding: 0;
+}
+html.native-ios .native-app .party-day-mobile-dots i {
+  width: 6px;
+  height: 6px;
+}
+/* More than three parties: a small plus after the dots (app only). */
+.party-day-mobile-dots .more {
+  display: none;
+}
+html.native-ios .native-app .party-day-mobile-dots .more {
+  display: block;
+  margin-left: 1px;
+  color: #52604f;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 6px;
+}
