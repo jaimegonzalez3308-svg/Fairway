@@ -7,7 +7,7 @@ import { FilterForm } from "./discovery-filters";
 import { Availability } from "./availability";
 import { Gallery } from "./profile-gallery";
 import { LegalLinks } from "./legal-links";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { site } from "@/lib/site";
 import { useNativeApp } from "@/lib/use-native-app";
@@ -284,10 +284,8 @@ export default function FairwayApp() {
     [reviewTarget, setReviewTarget] = useState<Profile | null>(null),
     [busy, setBusy] = useState(false);
   // iOS app: your own rhythm, never compared with other members.
-  const streak = useMemo(
-    () => (nativeApp ? roundStreak(data.rounds) : null),
-    [nativeApp, data.rounds],
-  );
+  // Computed each render so it follows the local date, not just new rounds.
+  const streak = nativeApp ? roundStreak(data.rounds) : null;
   // iOS app: the golfer's profile sheet takes a wash from their photo.
   const profileTint = useImageTint(
     modal === "profile" ? selected?.photo : null,

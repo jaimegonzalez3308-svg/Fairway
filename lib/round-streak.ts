@@ -17,6 +17,13 @@ function weekStart(day: Date) {
   return monday.getTime();
 }
 
+/** The Monday a week earlier, by calendar date (safe across DST). */
+function previousWeek(monday: number) {
+  const previous = new Date(monday);
+  previous.setDate(previous.getDate() - 7);
+  return weekStart(previous);
+}
+
 /** A short, honest note about the member's own rhythm: consecutive weeks
  * with a finished round, or how long since the last one. Drafts and future
  * dates do not count. Nothing is compared with other members. */
@@ -29,18 +36,16 @@ export function roundStreak(rounds: Round[], now = new Date()) {
   if (!played.length) return null;
   const weeks = new Set(played.map(weekStart));
   const thisWeek = weekStart(today);
-  const lastWeek = thisWeek - 7 * DAY;
+  const lastWeek = previousWeek(thisWeek);
   // The streak may still be alive if only this week is missing so far.
   let cursor = weeks.has(thisWeek) ? thisWeek : lastWeek;
   let streak = 0;
   while (weeks.has(cursor)) {
     streak += 1;
-    // Step back a week by calendar date, safe across daylight saving.
-    const previous = new Date(cursor);
-    previous.setDate(previous.getDate() - 7);
-    cursor = weekStart(previous);
+    cursor = previousWeek(cursor);
   }
   const latest = Math.max(...played.map((day) => day.getTime()));
+  // Rounding absorbs the 23/25-hour days around DST changes.
   const daysAgo = Math.round((today.getTime() - latest) / DAY);
   const playedThisWeek = weeks.has(thisWeek);
   if (streak >= 2)

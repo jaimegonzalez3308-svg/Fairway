@@ -109,6 +109,10 @@ export function Discovery({
       ownCity,
     ],
   );
+  // Only favourites whose profiles are still visible to you.
+  const favoriteCount = data.profiles.filter((p) =>
+    data.favorites.includes(p.id),
+  ).length;
   // iOS app: the screen takes a soft wash of the golfer on top of the deck.
   const topTint = useImageTint(
     compact && tab === "Para ti" ? visible[0]?.photo : null,
@@ -185,8 +189,8 @@ export function Discovery({
               aria-pressed={tab === "Favoritos"}
             >
               Favoritos
-              {data.favorites.length > 0 ? (
-                <span>{data.favorites.length}</span>
+              {favoriteCount > 0 ? (
+                <span>{favoriteCount}</span>
               ) : (
                 <Bookmark size={13} />
               )}
