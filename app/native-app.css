@@ -3838,7 +3838,8 @@ html.native-ios .native-app main[data-page="comunidad"] .story-circle:has(.story
   position: absolute;
   z-index: 1;
   inset: 0;
-  background: linear-gradient(180deg, #0b1f1633 0%, transparent 35%, transparent 55%, #0b1f16cc 100%);
+  /* Dark enough under the name (bottom third) for white 11–13px text. */
+  background: linear-gradient(180deg, #0b1f1640 0%, transparent 28%, #0b1f16a6 56%, #0b1f16e6 74%, #0b1f16f2 100%);
 }
 /* The face sits in the top corner of a photo tile. */
 html.native-ios .native-app main[data-page="comunidad"] .story-circle:has(.story-tile-photo) .story-ring {

@@ -75,18 +75,36 @@ export function Stories({ data }: { data: FairwayData }) {
     userId,
   );
   // iOS app: tall story tiles show each person's latest photo. One batch
-  // of short-lived signed URLs; the viewer still signs its own full image.
+  // of signed URLs that never outlive the earliest story they show, renewed
+  // shortly before they lapse. The viewer still signs its own full image.
   const [thumbs, setThumbs] = useState<Record<string, string>>({});
-  const thumbPaths = native
-    ? groups.map((g) => g.items[g.items.length - 1]?.media_path).filter(Boolean)
+  const [thumbTick, setThumbTick] = useState(0);
+  const thumbStories = native
+    ? groups
+        .map((g) => g.items[g.items.length - 1])
+        .filter(
+          (s): s is Story =>
+            !!s?.media_path && new Date(s.expires_at).getTime() > Date.now(),
+        )
     : [];
-  const thumbKey = thumbPaths.join("|");
+  const thumbKey = thumbStories.map((s) => s.media_path).join("|");
+  const thumbExpiry = thumbStories.length
+    ? Math.min(...thumbStories.map((s) => new Date(s.expires_at).getTime()))
+    : 0;
   useEffect(() => {
-    if (!supabase || !thumbKey) return;
+    if (!supabase || !thumbKey) {
+      setThumbs({});
+      return;
+    }
+    const seconds = Math.min(
+      300,
+      Math.floor((thumbExpiry - Date.now()) / 1000),
+    );
+    if (seconds < 5) return;
     let current = true;
     void supabase.storage
       .from("story-images")
-      .createSignedUrls(thumbKey.split("|"), 300)
+      .createSignedUrls(thumbKey.split("|"), seconds)
       .then(({ data: signed }) => {
         if (!current || !signed) return;
         const next: Record<string, string> = {};
@@ -94,10 +112,16 @@ export function Stories({ data }: { data: FairwayData }) {
           if (item.path && item.signedUrl) next[item.path] = item.signedUrl;
         setThumbs(next);
       });
+    // Renew a little before the batch lapses (or drop it at expiry).
+    const renew = window.setTimeout(
+      () => setThumbTick((tick) => tick + 1),
+      Math.max(1, seconds - 15) * 1000,
+    );
     return () => {
       current = false;
+      window.clearTimeout(renew);
     };
-  }, [thumbKey]);
+  }, [thumbKey, thumbExpiry, thumbTick]);
   function mute(authorId: string) {
     if (!userId || authorId === userId) return;
     const next = [...muted, authorId];

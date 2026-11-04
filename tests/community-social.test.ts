@@ -17,8 +17,13 @@ const nativeCss = readFileSync(
 );
 
 test("story tiles sign thumbnails in one batch, only in the app, decoratively", () => {
-  assert.match(stories, /const thumbPaths = native\s*\?/);
-  assert.match(stories, /\.createSignedUrls\(thumbKey\.split\("\|"\), 300\)/);
+  assert.match(stories, /const thumbStories = native\s*\?/);
+  assert.match(stories, /\.createSignedUrls\(thumbKey\.split\("\|"\), seconds\)/);
+  // Never signed past the earliest shown story's expiry, never > 5 minutes,
+  // expired stories excluded, and renewed before the batch lapses.
+  assert.match(stories, /Math\.min\(\s*300,\s*Math\.floor\(\(thumbExpiry - Date\.now\(\)\) \/ 1000\),?\s*\)/);
+  assert.match(stories, /new Date\(s\.expires_at\)\.getTime\(\) > Date\.now\(\)/);
+  assert.match(stories, /setThumbTick\(\(tick\) => tick \+ 1\)/);
   assert.match(
     stories,
     /className="story-tile-photo"[\s\S]{0,200}alt=""\s*aria-hidden="true"/,
