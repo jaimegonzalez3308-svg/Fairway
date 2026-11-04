@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { headerShouldHide, pageMotion } from "../lib/use-native-feel";
 import {
   nativeTourSteps,
+  websiteTourSteps,
   nativeTourKey,
   shouldStartTour,
 } from "../lib/native-tour";
@@ -57,5 +58,19 @@ test("the tour starts only for a signed-in first open on Descubrir", () => {
   );
   assert.equal(shouldStartTour({ ...base, seen: true }), false, "already seen");
   assert.equal(shouldStartTour({ ...base, busy: true }), false, "sheet open");
-  assert.equal(shouldStartTour({ ...base, native: false }), false, "website");
+  assert.equal(shouldStartTour({ ...base, native: false }), true, "website");
+});
+
+test("website tour includes Community and keeps completion separate from iOS", () => {
+  assert.deepEqual(
+    websiteTourSteps.map((step) => step.tab),
+    ["descubrir", "partidas", "comunidad", "amigos", "mensajes", "perfil"],
+  );
+  assert.notEqual(nativeTourKey("a", false), nativeTourKey("a", true));
+  assert.notEqual(nativeTourKey("a", false), nativeTourKey("b", false));
+  assert.ok(
+    !websiteTourSteps.some((step) =>
+      /borde|actualizar|Desliza/.test(step.text),
+    ),
+  );
 });

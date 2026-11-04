@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { act, createElement } from "react";
+import { act, createElement, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
 import { JSDOM } from "jsdom";
@@ -10,9 +10,12 @@ import { useFairway } from "../lib/use-fairway";
 import { Parties } from "../components/parties";
 import {
   NativeWelcome,
+  NativeTour,
   NativeTabBar,
   NativeQuickActions,
 } from "../components/native-experience";
+
+import { websiteTourSteps } from "../lib/native-tour";
 
 function mount(platform?: string) {
   const dom = new JSDOM("<div id='root'></div>", { url: "http://127.0.0.1/" });
@@ -233,5 +236,57 @@ test("the app starts with a round list while the website retains its calendar de
     } finally {
       await view.cleanup();
     }
+  }
+});
+
+test("website tour advances all six screens, focuses the next heading and supports skip", async () => {
+  const view = mount();
+  let completed = 0;
+  let skipped = 0;
+  function Example() {
+    const [step, setStep] = useState(0);
+    return createElement(NativeTour, {
+      website: true,
+      steps: websiteTourSteps,
+      step,
+      onNext: () =>
+        step === websiteTourSteps.length - 1 ? completed++ : setStep(step + 1),
+      onSkip: () => {
+        skipped++;
+      },
+    });
+  }
+  try {
+    await act(async () => view.root.render(createElement(Example)));
+    assert.ok(view.container.querySelector(".website-tour"));
+    assert.notEqual(
+      view.dom.window.document.activeElement,
+      view.container.querySelector("h2"),
+    );
+    for (const [i, step] of websiteTourSteps.entries()) {
+      assert.equal(view.container.querySelector("h2")?.textContent, step.title);
+      assert.match(
+        view.container.querySelector(".native-tour-count")!.textContent!,
+        new RegExp(`${i + 1} de 6`),
+      );
+      if (i)
+        assert.equal(
+          view.dom.window.document.activeElement,
+          view.container.querySelector("h2"),
+        );
+      const next =
+        view.container.querySelector<HTMLButtonElement>(".native-tour-next")!;
+      assert.match(next.textContent!, i === 5 ? /Empezar/ : /Siguiente/);
+      await act(async () => next.click());
+    }
+    assert.equal(completed, 1);
+    await act(async () =>
+      view.container
+        .querySelector<HTMLButtonElement>(".native-tour-skip")!
+        .click(),
+    );
+    assert.equal(skipped, 1);
+  } finally {
+    await view.cleanup();
   }
 });

@@ -194,16 +194,20 @@ export function NativeQuickActions({
 /** A short first-run tour shown once after signing in. It sits above the
  * tab bar and points at each tab; it never blocks the screen behind it. */
 export function NativeTour({
+  steps = nativeTourSteps,
+  website = false,
   step,
   onNext,
   onSkip,
 }: {
+  steps?: typeof nativeTourSteps;
+  website?: boolean;
   step: number;
   onNext: () => void;
   onSkip: () => void;
 }) {
-  const item = nativeTourSteps[step];
-  const last = step === nativeTourSteps.length - 1;
+  const item = steps[step];
+  const last = step === steps.length - 1;
   const heading = useRef<HTMLHeadingElement>(null);
   const firstStep = useRef(step);
   useEffect(() => {
@@ -214,12 +218,12 @@ export function NativeTour({
   if (!item) return null;
   return (
     <section
-      className="native-tour"
+      className={website ? "native-tour website-tour" : "native-tour"}
       aria-labelledby="native-tour-title"
       aria-live="polite"
     >
       <p className="native-tour-count">
-        {step + 1} de {nativeTourSteps.length}
+        {step + 1} de {steps.length}
       </p>
       <h2 id="native-tour-title" ref={heading} tabIndex={-1}>
         {item.title}
@@ -230,7 +234,7 @@ export function NativeTour({
           Saltar
         </button>
         <div className="native-tour-dots" aria-hidden="true">
-          {nativeTourSteps.map((s, i) => (
+          {steps.map((s, i) => (
             <span key={s.tab} data-active={i === step} />
           ))}
         </div>

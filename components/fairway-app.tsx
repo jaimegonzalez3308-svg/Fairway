@@ -65,6 +65,7 @@ import {
 import {
   nativeTourKey,
   nativeTourSteps,
+  websiteTourSteps,
   shouldStartTour,
 } from "@/lib/native-tour";
 import { nativeHaptic, NativeDevice } from "@/lib/native-device";
@@ -310,7 +311,8 @@ export default function FairwayApp() {
   // Inner screens keep their Back control visible while scrolling.
   useHideHeaderOnScroll(nativeApp && nativePrimaryPages.includes(page), page);
   usePageTransition(nativeApp, page, nativePrimaryPages, mainContentRef);
-  // A short tour, once per account, the first time the app opens signed in.
+  const tourSteps = nativeApp ? nativeTourSteps : websiteTourSteps;
+  // Each platform remembers its own first signed-in tour per account.
   const [tourStep, setTourStep] = useState<number | null>(null);
   const tourOwner = data.user?.id || "";
   // A different account never inherits someone else's tour step.
@@ -325,7 +327,8 @@ export default function FairwayApp() {
     let seen = true;
     try {
       seen =
-        !tourOwner || localStorage.getItem(nativeTourKey(tourOwner)) === "done";
+        !tourOwner ||
+        localStorage.getItem(nativeTourKey(tourOwner, nativeApp)) === "done";
     } catch {
       /* Without storage the tour stays off rather than repeating. */
     }
@@ -354,7 +357,7 @@ export default function FairwayApp() {
   ]);
   const endTour = (finished: boolean) => {
     try {
-      localStorage.setItem(nativeTourKey(tourOwner), "done");
+      localStorage.setItem(nativeTourKey(tourOwner, nativeApp), "done");
     } catch {
       /* The tour may show again; no account data is stored. */
     }
@@ -363,11 +366,11 @@ export default function FairwayApp() {
   };
   const nextTourStep = () => {
     if (tourStep === null) return;
-    nativeHaptic();
+    if (nativeApp) nativeHaptic();
     const next = tourStep + 1;
-    if (next >= nativeTourSteps.length) return endTour(true);
+    if (next >= tourSteps.length) return endTour(true);
     setTourStep(next);
-    go(nativeTourSteps[next].tab);
+    go(tourSteps[next].tab);
     // Keep focus on the tour card rather than the new screen.
     focusNextPage.current = false;
   };
@@ -2232,11 +2235,15 @@ export default function FairwayApp() {
           </footer>
         </main>
       </div>
-      {nativeApp &&
+      {data.user &&
         tourStep !== null &&
         !modal &&
-        page === nativeTourSteps[tourStep]?.tab && (
+        !mobileOpen &&
+        !data.needsGoogleProfile &&
+        page === tourSteps[tourStep]?.tab && (
           <NativeTour
+            steps={tourSteps}
+            website={!nativeApp}
             step={tourStep}
             onNext={nextTourStep}
             onSkip={() => endTour(false)}

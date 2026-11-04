@@ -28,10 +28,32 @@ export const nativeTourSteps = [
   },
 ];
 
+/** Browser instructions use the existing sidebar/mobile navigation. */
+export const websiteTourSteps = [
+  {
+    ...nativeTourSteps[0],
+    text: "Explora golfistas y toca el corazón si te gustaría jugar con alguien. «Ver perfil» te cuenta más.",
+  },
+  {
+    ...nativeTourSteps[1],
+    text: "Consulta el calendario o la lista de partidas abiertas. Usa «Crear partida» para organizar la tuya.",
+  },
+  {
+    tab: "comunidad",
+    title: "Comparte el juego",
+    text: "Lee lo que comparte la comunidad y usa «Crear historia» para compartir una foto de tu ronda.",
+  },
+  nativeTourSteps[2],
+  nativeTourSteps[3],
+  {
+    ...nativeTourSteps[4],
+    text: "Edita tu foto, tu handicap y tu bio. Usa el menú de Fairway para volver a cualquiera de estas secciones.",
+  },
+];
+
 /** Start only for a signed-in account on its first open, on the default
  * Descubrir screen (never over a deep link) and with nothing else open. */
 export function shouldStartTour({
-  native,
   loading,
   userId,
   page,
@@ -45,10 +67,8 @@ export function shouldStartTour({
   busy: boolean;
   seen: boolean;
 }) {
-  return (
-    native && !loading && !!userId && page === "descubrir" && !busy && !seen
-  );
+  return !loading && !!userId && page === "descubrir" && !busy && !seen;
 }
 
-export const nativeTourKey = (userId: string) =>
-  `fairway.native-tour.v1:${userId}`;
+export const nativeTourKey = (userId: string, native = true) =>
+  `fairway.${native ? "native" : "website"}-tour.v1:${userId}`;
