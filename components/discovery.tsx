@@ -32,7 +32,7 @@ import { CourseIcon } from "./course-icon";
 import { ProfileCard } from "./profile-card";
 import { GameCard } from "./game-card";
 import { CommunityInvite } from "./community-invite";
-import { DiscoveryEmpty } from "./discovery-empty";
+import { DiscoveryEmpty, PhotoStack } from "./discovery-empty";
 const SwipeDeck = dynamic(
   () => import("./swipe-deck").then((m) => m.SwipeDeck),
   {
@@ -323,6 +323,7 @@ export function Discovery({
               }}
               onCreate={onCreate}
               onShareProfile={data.user ? onShareProfile : undefined}
+              illustration={compact ? <PhotoStack /> : undefined}
             />
           }
         />

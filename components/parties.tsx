@@ -434,6 +434,15 @@ function PartyCard({
   const member = game.participants?.find((p) => p.user_id === data.user?.id);
   const upcoming = gameIsUpcoming(game);
   const direct = game.join_mode === "open";
+  const people = [data.me, ...data.profiles];
+  const players = (game.participants || [])
+    .filter(
+      (p, i, all) =>
+        p.status === "confirmed" &&
+        all.findIndex((other) => other.user_id === p.user_id) === i,
+    )
+    .map((p) => people.find((profile) => profile.id === p.user_id))
+    .filter((profile): profile is (typeof people)[number] => !!profile);
   return (
     <article className={`party-card panel ${!remaining ? "is-full" : ""}`}>
       <div className="party-card-heading">
@@ -480,6 +489,21 @@ function PartyCard({
         <span className="party-card-format">{game.format}</span>
       </div>
       <div className="party-card-seats">
+        {/* iOS app: who is playing, as overlapping faces (hidden on web). */}
+        <div className="party-avatar-stack" aria-hidden="true">
+          {players.slice(0, 3).map((player) => (
+            <span className="party-small-avatar" key={player.id}>
+              {player.photo ? (
+                <img src={player.photo} alt="" />
+              ) : (
+                player.name.charAt(0)
+              )}
+            </span>
+          ))}
+          {players.length > 3 && (
+            <span className="party-avatar-more">+{players.length - 3}</span>
+          )}
+        </div>
         <div
           className="party-seat-icons"
           aria-label={`${confirmed} de ${game.capacity} jugadores confirmados`}

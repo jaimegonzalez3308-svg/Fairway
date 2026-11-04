@@ -3083,3 +3083,127 @@ html.native-ios[data-accessibility="true"]
   grid-column: 1 / -1;
   grid-row: 2;
 }
+
+/* Floating bottom bar: a capsule lifted off the edges with a soft shadow,
+   keeping the five destinations and the center Crear action. Its top sits
+   below the 84px line that toasts, the tour and the floating action use. */
+html.native-ios .native-tab-bar {
+  left: 12px;
+  right: 12px;
+  bottom: 10px;
+  min-height: 64px;
+  padding: 5px 6px;
+  border: 1px solid var(--nx-line);
+  border-radius: 30px;
+  background: var(--nx-card);
+  box-shadow:
+    0 10px 28px #193d2f24,
+    0 1px 3px #193d2f14;
+}
+html.native-ios .native-tab-bar button {
+  min-height: 52px;
+  border-radius: 24px;
+}
+html.native-ios .native-tab-icon {
+  height: 28px;
+}
+@media (prefers-contrast: more) {
+  html.native-ios .native-tab-bar {
+    border-color: var(--nx-green);
+    box-shadow: none;
+  }
+}
+
+/* Header shortcuts as round paper buttons, like the avatar beside them. */
+html.native-ios .native-app .topbar :is(.native-friends-shortcut, .notification-button) {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border: 1px solid var(--nx-line);
+  border-radius: 50%;
+  background: var(--nx-card);
+  box-shadow: 0 2px 6px #193d2f14;
+}
+html.native-ios
+  .native-app
+  .topbar
+  .native-friends-shortcut:is([aria-current="page"], [data-tour="active"]) {
+  border-color: var(--nx-green);
+  background: #e8ecdf;
+}
+
+/* Discover's empty deck: three fanned snapshots of the course. */
+html.native-ios .empty-icon:has(.native-photo-stack) {
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  margin-bottom: 22px;
+}
+html.native-ios .native-photo-stack {
+  position: relative;
+  display: block;
+  width: 210px;
+  height: 172px;
+}
+html.native-ios .native-photo-stack img {
+  position: absolute;
+  top: 8px;
+  left: 45px;
+  width: 120px;
+  height: 156px;
+  object-fit: cover;
+  border: 4px solid var(--nx-card);
+  border-radius: 18px;
+  box-shadow: 0 10px 24px #193d2f2e;
+}
+html.native-ios .native-photo-stack [data-crop="left"] {
+  object-position: 15% center;
+  transform: translateX(-38px) rotate(-10deg);
+}
+html.native-ios .native-photo-stack [data-crop="right"] {
+  object-position: 85% center;
+  transform: translateX(38px) rotate(9deg);
+}
+html.native-ios .native-photo-stack [data-crop="center"] {
+  top: 0;
+  object-position: center;
+}
+
+/* Party cards: who is playing, as overlapping faces with a +N count. */
+.party-avatar-stack {
+  display: none;
+}
+html.native-ios .native-app .party-avatar-stack {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+}
+html.native-ios .native-app .party-avatar-stack:empty {
+  display: none;
+}
+html.native-ios .native-app .party-avatar-stack > * {
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--nx-card);
+  border-radius: 50%;
+}
+html.native-ios .native-app .party-avatar-stack > * + * {
+  margin-left: -9px;
+}
+html.native-ios .native-app .party-avatar-more {
+  display: grid;
+  place-items: center;
+  background: #e8ecdf;
+  color: var(--nx-green);
+  font-size: 11px;
+  font-weight: 650;
+}
+/* The seat icons step aside visually but keep their spoken count. */
+html.native-ios .native-app .party-avatar-stack:not(:empty) + .party-seat-icons {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

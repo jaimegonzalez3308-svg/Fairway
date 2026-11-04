@@ -9,15 +9,18 @@ export function DiscoveryEmpty({
   onReset,
   onCreate,
   onShareProfile,
+  illustration,
 }: {
   hasProfiles: boolean;
   exhausted: boolean;
   onReset: () => void;
   onCreate: () => void;
   onShareProfile?: () => void;
+  illustration?: React.ReactNode;
 }) {
   return (
     <Empty
+      icon={illustration}
       title={
         !hasProfiles
           ? "Tu comunidad empieza con una invitación"
@@ -53,5 +56,26 @@ export function DiscoveryEmpty({
         </div>
       }
     />
+  );
+}
+
+/** iOS app: three fanned crops of the course photo, like a stack of
+ * scorecard snapshots. Decorative only. */
+export function PhotoStack() {
+  return (
+    <span className="native-photo-stack" aria-hidden="true">
+      {["left", "right", "center"].map((crop) => (
+        <img
+          key={crop}
+          src="/images/fairway-aerial-640.webp"
+          alt=""
+          width={120}
+          height={156}
+          loading="lazy"
+          decoding="async"
+          data-crop={crop}
+        />
+      ))}
+    </span>
   );
 }
