@@ -46,3 +46,14 @@ test("the arrow turns when open and respects Reduce Motion", () => {
     /prefers-reduced-motion: reduce\) \{\s*\.post-actions \.replies-chevron \{\s*transition: none;/,
   );
 });
+
+test("folded replies still wrap long text", () => {
+  const css = readFileSync(
+    new URL("../app/globals.css", import.meta.url),
+    "utf8",
+  );
+  assert.match(
+    css,
+    /\.post-replies > \.comment \{\s*white-space: pre-wrap;\s*overflow-wrap: anywhere;/,
+  );
+});

@@ -2174,6 +2174,11 @@ h1 {
 .post-replies[hidden] {
   display: none;
 }
+/* Folded replies keep the wrapping they had as direct children of .post. */
+.post-replies > .comment {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
 @media (prefers-reduced-motion: reduce) {
   .post-actions .replies-chevron {
     transition: none;
