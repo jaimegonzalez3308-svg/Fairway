@@ -800,6 +800,18 @@ export function useFairway() {
     changePhoto,
     decide,
     favorite,
+    /** Marks one notification read, updating the badge immediately. */
+    markNotificationRead: (id: string) => {
+      setNotifications((list) =>
+        list.map((n) => (n.id === id ? { ...n, read: true } : n)),
+      );
+      if (supabase && user)
+        void supabase
+          .from("notifications")
+          .update({ read: true })
+          .eq("id", id)
+          .eq("user_id", user.id);
+    },
     reload: () => user && load(user),
     refresh: async () => {
       if (user) return load(user, true);

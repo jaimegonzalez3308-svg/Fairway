@@ -13,6 +13,7 @@ import { site } from "@/lib/site";
 import { useNativeApp } from "@/lib/use-native-app";
 import { useImageTint } from "@/lib/image-tint";
 import { GolferRounds } from "./golfer-rounds";
+import { notificationDestination } from "@/lib/notification-routes";
 import { roundStreak } from "@/lib/round-streak";
 import {
   Compass,
@@ -3052,18 +3053,47 @@ export default function FairwayApp() {
                 <CheckCheck size={16} />
                 Marcar todas como leídas
               </Button>
-              {data.notifications.map((n) => (
-                <div
-                  className={cn("notification-row", !n.read && "unread")}
-                  key={n.id}
-                >
-                  <Bell size={18} />
-                  <div>
-                    <strong>{n.title}</strong>
-                    <small>{dateFormat(n.created_at)}</small>
+              {data.notifications.map((n) => {
+                const destination = notificationDestination(n.category);
+                const content = (
+                  <>
+                    <Bell size={18} aria-hidden="true" />
+                    <div>
+                      <strong>{n.title}</strong>
+                      <small>
+                        {dateFormat(n.created_at)}
+                        {destination && ` · ${destination.label}`}
+                      </small>
+                    </div>
+                    {destination && (
+                      <ChevronRight size={18} aria-hidden="true" />
+                    )}
+                  </>
+                );
+                const className = cn(
+                  "notification-row",
+                  !n.read && "unread",
+                  destination && "notification-link",
+                );
+                return destination ? (
+                  <button
+                    type="button"
+                    className={className}
+                    key={n.id}
+                    onClick={() => {
+                      data.markNotificationRead(n.id);
+                      setModal(null);
+                      go(destination.page);
+                    }}
+                  >
+                    {content}
+                  </button>
+                ) : (
+                  <div className={className} key={n.id}>
+                    {content}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </>
           ) : (
             <Empty

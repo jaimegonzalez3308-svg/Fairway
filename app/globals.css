@@ -2257,6 +2257,22 @@ h1 {
   font-size: 8px;
   margin-top: 7px;
 }
+/* Notifications that lead somewhere are full-width buttons. */
+button.notification-row {
+  width: 100%;
+  min-height: 44px;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.notification-row > div {
+  flex: 1;
+  min-width: 0;
+}
+.notification-link > svg:last-child {
+  flex-shrink: 0;
+  color: #96aa81;
+}
 .availability-form {
   display: flex;
   align-items: flex-end;
