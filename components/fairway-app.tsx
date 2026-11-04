@@ -308,6 +308,7 @@ export default function FairwayApp() {
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const mainContentRef = useRef<HTMLElement>(null);
   const focusNextPage = useRef(false);
+  const leavingNotifications = useRef(false);
   const sidebarVisible = isMobile ? mobileOpen : !sidebarCollapsed;
   const nativePrimaryPages = [
     "descubrir",
@@ -3036,7 +3037,15 @@ export default function FairwayApp() {
         </Modal>
       )}
       {modal === "notifications" && (
-        <Modal title="Tus notificaciones" onClose={close}>
+        <Modal
+          title="Tus notificaciones"
+          onClose={close}
+          shouldReturnFocus={() => {
+            const leaving = leavingNotifications.current;
+            leavingNotifications.current = false;
+            return !leaving;
+          }}
+        >
           {data.notifications.length ? (
             <>
               <Button
@@ -3082,10 +3091,10 @@ export default function FairwayApp() {
                     key={n.id}
                     onClick={() => {
                       void data.markNotificationRead(n.id);
-                      setModal(null);
-                      // Navigate after the sheet has returned focus, so the
-                      // new screen's heading keeps it.
-                      window.setTimeout(() => go(destination.page), 0);
+                      // The destination screen takes focus; the sheet must
+                      // not hand it back to the bell when it unmounts.
+                      leavingNotifications.current = true;
+                      go(destination.page);
                     }}
                   >
                     {content}

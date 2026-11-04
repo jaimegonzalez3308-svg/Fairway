@@ -54,6 +54,7 @@ export function Modal({
   wide = false,
   soft = false,
   style,
+  shouldReturnFocus,
 }: {
   title: string;
   children: React.ReactNode;
@@ -62,6 +63,9 @@ export function Modal({
   soft?: boolean;
   /** CSS variables for the sheet, e.g. a photo tint. */
   style?: React.CSSProperties;
+  /** Read when the sheet closes: false leaves focus where navigation put
+   * it instead of returning it to the control that opened the sheet. */
+  shouldReturnFocus?: () => boolean;
 }) {
   const returnFocus = useRef(
     typeof document !== "undefined" &&
@@ -97,6 +101,7 @@ export function Modal({
           }}
           onCloseAutoFocus={(event) => {
             event.preventDefault();
+            if (shouldReturnFocus && !shouldReturnFocus()) return;
             // Another dialog may have replaced this one while its chunk loaded.
             if (
               Array.from(document.querySelectorAll('[role="dialog"]')).some(

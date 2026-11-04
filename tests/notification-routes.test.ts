@@ -24,7 +24,7 @@ test("tapping a notification marks it read, closes the sheet, then navigates", a
   );
   assert.match(
     source,
-    /void data\.markNotificationRead\(n\.id\);\s*setModal\(null\);[\s\S]{0,160}window\.setTimeout\(\(\) => go\(destination\.page\), 0\)/,
+    /void data\.markNotificationRead\(n\.id\);[\s\S]{0,300}leavingNotifications\.current = true;\s*go\(destination\.page\);/,
   );
   const hook = readFileSync(
     new URL("../lib/use-fairway.ts", import.meta.url),
