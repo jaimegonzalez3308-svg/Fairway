@@ -12,6 +12,7 @@ import {
   Pencil,
 } from "lucide-react";
 import { Button } from "./ui";
+import { PartyFaces, partyPlayers } from "./party-faces";
 import type { Game } from "@/lib/domain";
 import type { FairwayData } from "@/lib/use-fairway";
 import {
@@ -407,6 +408,10 @@ export function PartyMonthCalendar({
                       Organiza {own ? "tu cuenta" : host?.name || "Golfista"} ·{" "}
                       {game.format}
                     </small>
+                    <PartyFaces
+                      className="party-agenda-people"
+                      players={partyPlayers(game, [data.me, ...data.profiles])}
+                    />
                   </div>
                   <button
                     className="party-agenda-action"

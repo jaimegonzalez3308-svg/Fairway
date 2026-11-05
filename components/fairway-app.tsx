@@ -2347,6 +2347,7 @@ export default function FairwayApp() {
               )}
               {page === "amigos" && (
                 <Friends
+                  compact={nativeApp}
                   data={data}
                   friends={friends}
                   onProfile={openProfile}

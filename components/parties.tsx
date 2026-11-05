@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import { Button, Empty, SectionHeading, ThumbAction } from "./ui";
 import { PartyMonthCalendar } from "./party-month-calendar";
+import { PartyFaces, partyPlayers } from "./party-faces";
+import { PartyWeekStrip } from "./party-week-strip";
 import type { FairwayData } from "@/lib/use-fairway";
 import type { Game } from "@/lib/domain";
 import { canRatePlayer } from "@/lib/ratings";
@@ -104,17 +106,21 @@ export function Parties({
       ),
     )
     .sort((a, b) => b.starts_at.localeCompare(a.starts_at));
-  const visible = (tab === "mine" ? data.games.filter(mine) : upcoming)
-    .filter(
-      (g) =>
-        (!club || g.club_id === club) &&
-        (tab === "mine" ||
-          gameMatchesCity(g, data.clubs, cityScope, data.me.city)) &&
-        matchesPartyPeriod(g, period, date, now) &&
-        (tab === "mine" ||
-          !openOnly ||
-          (g.status === "open" && gameSeats(g).remaining > 0)),
-    )
+  // Every filter except the date, so the app's week strip can count days.
+  const undated = (tab === "mine" ? data.games.filter(mine) : upcoming).filter(
+    (g) =>
+      (!club || g.club_id === club) &&
+      (tab === "mine" ||
+        gameMatchesCity(g, data.clubs, cityScope, data.me.city)) &&
+      (tab === "mine" ||
+        !openOnly ||
+        (g.status === "open" && gameSeats(g).remaining > 0)),
+  );
+  const thisWeek = upcoming.filter((g) =>
+    matchesPartyPeriod(g, "week", "", now),
+  );
+  const visible = undated
+    .filter((g) => matchesPartyPeriod(g, period, date, now))
     .sort((a, b) => {
       if (tab === "mine") {
         const future =
@@ -375,6 +381,36 @@ export function Parties({
         />
       ) : (
         <>
+          {compact && (
+            <PartyWeekStrip
+              games={undated.filter((g) => gameIsUpcoming(g, now))}
+              now={now}
+              selected={period === "date" ? date : ""}
+              onSelect={(day) => {
+                if (day) {
+                  setDate(day);
+                  setPeriod("date");
+                } else setPeriod("all");
+              }}
+              stats={[
+                {
+                  label: "Hoy",
+                  value: undated.filter((g) =>
+                    matchesPartyPeriod(g, "today", "", now),
+                  ).length,
+                },
+                {
+                  label: "Mis planes",
+                  value: thisWeek.filter(mine).length,
+                },
+                {
+                  label: "Organizas",
+                  value: thisWeek.filter((g) => g.host_id === data.user?.id)
+                    .length,
+                },
+              ]}
+            />
+          )}
           <div className="party-results-heading">
             <strong>
               {visible.length} {visible.length === 1 ? "plan" : "planes"}
@@ -434,15 +470,7 @@ function PartyCard({
   const member = game.participants?.find((p) => p.user_id === data.user?.id);
   const upcoming = gameIsUpcoming(game);
   const direct = game.join_mode === "open";
-  const people = [data.me, ...data.profiles];
-  const players = (game.participants || [])
-    .filter(
-      (p, i, all) =>
-        p.status === "confirmed" &&
-        all.findIndex((other) => other.user_id === p.user_id) === i,
-    )
-    .map((p) => people.find((profile) => profile.id === p.user_id))
-    .filter((profile): profile is (typeof people)[number] => !!profile);
+  const players = partyPlayers(game, [data.me, ...data.profiles]);
   return (
     <article className={`party-card panel ${!remaining ? "is-full" : ""}`}>
       <div className="party-card-heading">
@@ -489,21 +517,7 @@ function PartyCard({
         <span className="party-card-format">{game.format}</span>
       </div>
       <div className="party-card-seats">
-        {/* Who is playing, as overlapping faces with a +N count. */}
-        <div className="party-avatar-stack" aria-hidden="true">
-          {players.slice(0, 3).map((player) => (
-            <span className="party-small-avatar" key={player.id}>
-              {player.photo ? (
-                <img src={player.photo} alt="" />
-              ) : (
-                player.name.charAt(0)
-              )}
-            </span>
-          ))}
-          {players.length > 3 && (
-            <span className="party-avatar-more">+{players.length - 3}</span>
-          )}
-        </div>
+        <PartyFaces players={players} />
         <div
           className="party-seat-icons"
           aria-label={`${confirmed} de ${game.capacity} jugadores confirmados`}

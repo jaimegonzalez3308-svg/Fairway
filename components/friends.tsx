@@ -129,10 +129,12 @@ export function Friends({
   data,
   friends,
   onProfile,
+  compact = false,
 }: {
   data: FairwayData;
   friends: FriendsData;
   onProfile: (p: Profile) => void;
+  compact?: boolean;
 }) {
   const [tab, setTab] = useState("Buscar personas"),
     [query, setQuery] = useState(""),
@@ -140,6 +142,13 @@ export function Friends({
     [searching, setSearching] = useState(false),
     [searchError, setSearchError] = useState("");
   const generation = useRef(0);
+  const searchInput = useRef<HTMLInputElement>(null);
+  const [focusSearch, setFocusSearch] = useState(false);
+  useEffect(() => {
+    if (!focusSearch) return;
+    searchInput.current?.focus();
+    setFocusSearch(false);
+  }, [focusSearch, tab]);
   useEffect(() => {
     const version = ++generation.current;
     setResults([]);
@@ -216,6 +225,18 @@ export function Friends({
           </Button>
         }
       />
+      {compact && (
+        <FriendsBento
+          me={data.me}
+          userId={data.user?.id || ""}
+          friends={friends}
+          incoming={incoming}
+          onTab={(next) => {
+            setTab(next);
+            if (next === "Buscar personas") setFocusSearch(true);
+          }}
+        />
+      )}
       <div className="panel friends-intro">
         <span className="friends-intro-icon">
           <Users size={25} />
@@ -259,6 +280,7 @@ export function Friends({
           <div>
             <Search size={19} />
             <input
+              ref={searchInput}
               id="friend-name"
               type="search"
               placeholder="Escribe al menos 2 letras…"
@@ -377,5 +399,94 @@ export function Friends({
         </>
       )}
     </>
+  );
+}
+
+type Relation = FriendsData["relations"][number];
+
+/** App-only friends hub: your circle with your photo, a way to find people,
+ * and who is waiting for an answer. Each tile opens the matching tab below. */
+function FriendsBento({
+  me,
+  userId,
+  friends,
+  incoming,
+  onTab,
+}: {
+  me: Profile;
+  userId: string;
+  friends: FriendsData;
+  incoming: Relation[];
+  onTab: (tab: string) => void;
+}) {
+  const other = (r: Relation) =>
+    friends.people.find(
+      (p) => p.id === (r.requester_id === userId ? r.recipient_id : r.requester_id),
+    );
+  const accepted = friends.relations.filter((r) => r.status === "accepted");
+  const circle = accepted
+    .map(other)
+    .filter((p): p is Profile => !!p)
+    .slice(0, 2);
+  const waiting = incoming.map(other).filter((p): p is Profile => !!p);
+  const first = waiting[0]?.name.split(" ")[0];
+  const face = (p: Profile) => (
+    <span className="friends-bento-face" key={p.id}>
+      {p.photo ? <img src={p.photo} alt="" /> : p.name.charAt(0)}
+    </span>
+  );
+  return (
+    <div className="friends-bento">
+      <button
+        type="button"
+        className="friends-bento-tile friends-bento-circle"
+        onClick={() => onTab("Mis amigos")}
+        aria-label={
+          friends.loading
+            ? "Mis amigos"
+            : `Mis amigos: ${accepted.length}`
+        }
+      >
+        {me.photo && <img className="friends-bento-photo" src={me.photo} alt="" />}
+        <span className="friends-bento-name">{me.name.split(" ")[0] || "Tu círculo"}</span>
+        <span className="friends-bento-count" aria-hidden="true">
+          <small>Amigos</small>
+          <strong>{friends.loading ? "…" : accepted.length}</strong>
+        </span>
+      </button>
+      <button
+        type="button"
+        className="friends-bento-tile friends-bento-search"
+        onClick={() => onTab("Buscar personas")}
+      >
+        <span className="friends-bento-title">Busca y suma amigos</span>
+        <span className="friends-bento-faces" aria-hidden="true">
+          <span className="friends-bento-plus">
+            <UserPlus size={20} />
+          </span>
+          {circle.map(face)}
+        </span>
+      </button>
+      {waiting.length > 0 && (
+        <button
+          type="button"
+          className="friends-bento-tile friends-bento-requests"
+          onClick={() => onTab("Solicitudes recibidas")}
+        >
+          <span className="friends-bento-faces" aria-hidden="true">
+            {waiting.slice(0, 3).map(face)}
+          </span>
+          <span>
+            <strong>
+              {waiting.length === 1
+                ? `${first} te envió una solicitud`
+                : `${first} y ${waiting.length - 1} más te enviaron solicitud`}
+            </strong>
+            <small>Responder solicitudes</small>
+          </span>
+          <ArrowUpRight size={18} aria-hidden="true" />
+        </button>
+      )}
+    </div>
   );
 }

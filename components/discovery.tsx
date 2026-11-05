@@ -34,6 +34,7 @@ import { GameCard } from "./game-card";
 import { CommunityInvite } from "./community-invite";
 import { DiscoveryEmpty, PhotoStack } from "./discovery-empty";
 import { useImageTint } from "@/lib/image-tint";
+import { greeting } from "@/lib/greeting";
 const SwipeDeck = dynamic(
   () => import("./swipe-deck").then((m) => m.SwipeDeck),
   {
@@ -162,6 +163,10 @@ export function Discovery({
       )}
       {compact ? (
         <div className="native-discover-head">
+          <p className="native-greeting">
+            {greeting()}
+            {data.me.name ? `, ${data.me.name.split(" ")[0]}` : ""}
+          </p>
           <h1 className="native-discover-title">
             {tab === "Para ti" && visible.length > 0 ? (
               <>

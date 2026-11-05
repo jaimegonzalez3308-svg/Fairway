@@ -7006,3 +7006,8 @@ html:not(.native-ios) .party-avatar-stack:not(:empty) + .party-seat-icons {
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+/* Faces in the calendar's day agenda belong to the app only. */
+html:not(.native-ios) .party-agenda-people {
+  display: none;
+}

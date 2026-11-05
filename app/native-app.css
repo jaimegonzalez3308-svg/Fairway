@@ -2768,6 +2768,475 @@ html.native-ios .native-app .party-day-mobile-dots .more {
   line-height: 6px;
 }
 
+/* Partidas week at a glance (app only): a forest card with this week's
+   count, a few personal numbers and a strip of seven days. Today wears a
+   ring, the chosen day is filled paper and a lime dot marks days with play. */
+html.native-ios .native-app .native-party-week {
+  margin: 4px 0 16px;
+  padding: 16px 12px 10px;
+  border-radius: var(--nx-radius-card);
+  background:
+    radial-gradient(120% 90% at 100% 0%, rgb(217 233 164 / 0.16), transparent 60%),
+    var(--nx-green);
+  color: var(--nx-card);
+}
+html.native-ios .native-app .native-party-week-summary {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 4px 14px;
+}
+html.native-ios .native-app .native-party-week-total {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: end;
+  column-gap: 6px;
+}
+html.native-ios .native-app .native-party-week-total > span {
+  grid-column: 1 / -1;
+  color: rgb(255 251 242 / 0.82);
+  font-size: 13px;
+}
+html.native-ios .native-app .native-party-week-total strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 48px;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+html.native-ios .native-app .native-party-week-total small {
+  padding-bottom: 6px;
+  color: rgb(255 251 242 / 0.82);
+  font-size: 14px;
+}
+html.native-ios .native-app .native-party-week-summary ul {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+html.native-ios .native-app .native-party-week-summary li {
+  display: grid;
+  justify-items: center;
+  min-width: 58px;
+  padding: 0 6px;
+}
+html.native-ios .native-app .native-party-week-summary li + li {
+  border-left: 1px solid rgb(255 251 242 / 0.22);
+}
+html.native-ios .native-app .native-party-week-summary li strong {
+  font-size: 20px;
+  font-weight: 650;
+  line-height: 1.2;
+}
+html.native-ios .native-app .native-party-week-summary li span {
+  color: rgb(255 251 242 / 0.82);
+  font-size: 11px;
+  white-space: nowrap;
+}
+/* Each day keeps a 44pt target; on the narrowest phones the strip scrolls. */
+html.native-ios .native-app .native-party-week-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(44px, 1fr));
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-top: 1px solid rgb(255 251 242 / 0.18);
+  padding-top: 8px;
+}
+html.native-ios .native-app .native-party-week-days button {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  min-width: 44px;
+  min-height: 64px;
+  padding: 2px 0 4px;
+  border: 0;
+  background: none;
+  color: var(--nx-card);
+  font-family: inherit;
+}
+html.native-ios .native-app .native-party-week-days button > span {
+  color: rgb(255 251 242 / 0.78);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+html.native-ios .native-app .native-party-week-days strong {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1.5px solid transparent;
+  border-radius: 50%;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+html.native-ios .native-app .native-party-week-days .is-today strong {
+  border-color: rgb(255 251 242 / 0.75);
+}
+html.native-ios .native-app .native-party-week-days [aria-pressed="true"] strong {
+  border-color: var(--nx-card);
+  background: var(--nx-card);
+  color: var(--nx-green);
+}
+html.native-ios .native-app .native-party-week-days i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+html.native-ios .native-app .native-party-week-days i.has-games {
+  background: var(--nx-lime);
+}
+@media (prefers-reduced-motion: reduce) {
+  html.native-ios .native-app .native-party-week-days strong {
+    transition: none;
+  }
+}
+/* Large text: the counts stack under the total instead of squeezing. */
+html.native-ios[data-accessibility="true"] .native-app .native-party-week-summary {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Day agenda under the month (app only): a timeline, the time in a column
+   and each party as a soft card tinted by its state (green with places,
+   pencil when full, grey when past), with who is playing and the action
+   folded into the card's foot. Creating sits in a round + button. */
+html.native-ios .native-app .party-day-agenda {
+  margin-top: 18px;
+}
+html.native-ios .native-app .party-day-agenda-heading {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+html.native-ios .native-app .party-day-agenda-heading .eyebrow {
+  display: none;
+}
+html.native-ios .native-app .party-day-agenda-heading h3 {
+  margin: 0;
+  color: var(--nx-green);
+  font-size: 21px;
+  text-transform: none;
+}
+html.native-ios .native-app .party-day-agenda-heading h3::first-letter {
+  text-transform: uppercase;
+}
+html.native-ios .native-app .party-day-agenda-heading p {
+  margin-top: 2px;
+  color: #52604f;
+  font-size: 13px;
+}
+html.native-ios .native-app .party-day-agenda-heading .button {
+  flex-shrink: 0;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--nx-green);
+  color: var(--nx-card);
+}
+html.native-ios .native-app .party-day-agenda-heading .button svg {
+  width: 20px;
+  height: 20px;
+}
+/* The label stays for VoiceOver. */
+html.native-ios .native-app .party-day-agenda-heading .button span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+html.native-ios .native-app .party-day-agenda-list {
+  gap: 10px;
+}
+html.native-ios .native-app .party-day-agenda-card {
+  --agenda-tint: var(--nx-lime-wash);
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 0 10px;
+  align-items: stretch;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+html.native-ios .native-app .party-day-agenda-card:has(.party-agenda-status.full) {
+  --agenda-tint: var(--nx-pencil-wash);
+}
+html.native-ios
+  .native-app
+  .party-day-agenda-card:has(.party-agenda-status:is(.past, .closed)) {
+  --agenda-tint: #ecebe3;
+}
+html.native-ios .native-app .party-agenda-time {
+  grid-row: 1 / span 2;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 2px;
+  min-width: 0;
+  padding-top: 12px;
+  border-top: 1px dashed var(--nx-line-strong);
+  color: #52604f;
+}
+html.native-ios .native-app .party-agenda-time svg {
+  display: none;
+}
+html.native-ios .native-app .party-agenda-time strong {
+  font-family: inherit;
+  color: var(--nx-green);
+  font-size: 14px;
+  font-weight: 650;
+  white-space: normal;
+}
+html.native-ios .native-app .party-agenda-time small {
+  font-size: 11px;
+}
+html.native-ios .native-app .party-agenda-info {
+  padding: 12px 14px 10px;
+  border: 0;
+  border-radius: var(--nx-radius-card) var(--nx-radius-card) 0 0;
+  background: var(--agenda-tint);
+}
+html.native-ios .native-app .party-agenda-tags {
+  gap: 8px;
+  margin-bottom: 6px;
+  color: #52604f;
+  font-size: 11px;
+}
+html.native-ios .native-app .party-agenda-status {
+  border-radius: var(--nx-radius-pill);
+  padding: 3px 8px;
+  background: rgb(255 251 242 / 0.8);
+  color: var(--nx-green);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+html.native-ios .native-app .party-agenda-info h4 {
+  color: var(--nx-green);
+  font-size: 17px;
+  font-weight: 650;
+}
+html.native-ios .native-app .party-agenda-info p {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  margin-top: 4px;
+  color: #3f4d3d;
+  font-size: 13px;
+  line-height: 1.45;
+}
+html.native-ios .native-app .party-agenda-info > small {
+  margin-top: 6px;
+  color: #52604f;
+  font-size: 12px;
+}
+html.native-ios .native-app .party-agenda-people {
+  margin-top: 8px;
+}
+html.native-ios .native-app .party-agenda-people > * {
+  border-color: var(--agenda-tint);
+}
+html.native-ios .native-app .party-agenda-action {
+  grid-column: 2;
+  justify-content: space-between;
+  width: auto;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-top: 1px solid rgb(25 61 47 / 0.1);
+  border-radius: 0 0 var(--nx-radius-card) var(--nx-radius-card);
+  background: var(--agenda-tint);
+  color: var(--nx-green);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+}
+html.native-ios .native-app .party-day-empty {
+  padding: 18px 16px;
+  border-radius: var(--nx-radius-card);
+}
+html.native-ios .native-app .party-day-empty strong {
+  font-size: 15px;
+}
+html.native-ios .native-app .party-day-empty p {
+  color: #52604f;
+  font-size: 13px;
+}
+
+/* Discover greeting (app only): a quiet line above the count headline. */
+html.native-ios .native-app .native-greeting {
+  margin: 0 0 -6px;
+  color: #52604f;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Amigos hub (app only): two tiles side by side (your circle over your own
+   photo, and finding people with a + and a few friendly faces), then a wide
+   tile for requests waiting for you. Each opens the matching tab. */
+html.native-ios .native-app .friends-bento {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0 0 16px;
+}
+html.native-ios .native-app .friends-bento-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+  min-height: 144px;
+  padding: 14px;
+  overflow: hidden;
+  border: 1px solid var(--nx-line);
+  border-radius: var(--nx-radius-card);
+  background: var(--nx-card);
+  color: var(--nx-green);
+  font-family: inherit;
+  text-align: left;
+}
+html.native-ios .native-app .friends-bento-circle {
+  border-color: transparent;
+  background: var(--nx-green);
+  color: var(--nx-card);
+}
+html.native-ios .native-app .friends-bento-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* A dark wash keeps the white name and count readable on any photo. */
+html.native-ios .native-app .friends-bento-circle::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgb(13 33 25 / 0.82),
+    rgb(13 33 25 / 0.7) 45%,
+    rgb(13 33 25 / 0.88)
+  );
+}
+html.native-ios .native-app .friends-bento-circle > span {
+  position: relative;
+  z-index: 1;
+}
+html.native-ios .native-app .friends-bento-name {
+  overflow: hidden;
+  font-size: 18px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+html.native-ios .native-app .friends-bento-count {
+  display: grid;
+  line-height: 1;
+}
+html.native-ios .native-app .friends-bento-count small {
+  color: inherit;
+  font-size: 13px;
+  font-weight: 600;
+}
+html.native-ios .native-app .friends-bento-count strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 42px;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+}
+html.native-ios .native-app .friends-bento-title {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 19px;
+  font-style: italic;
+  line-height: 1.2;
+}
+html.native-ios .native-app .friends-bento-faces {
+  display: flex;
+  align-items: center;
+}
+html.native-ios .native-app .friends-bento-faces > * {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  border: 2px solid var(--nx-card);
+  border-radius: 50%;
+  background: var(--nx-lime-wash);
+  color: var(--nx-green);
+  font-weight: 700;
+}
+html.native-ios .native-app .friends-bento-faces > * + * {
+  margin-left: -10px;
+}
+html.native-ios .native-app .friends-bento-faces img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+html.native-ios .native-app .friends-bento-plus {
+  background: var(--nx-green);
+  color: var(--nx-card);
+}
+html.native-ios .native-app .friends-bento-requests {
+  grid-column: 1 / -1;
+  flex-direction: row;
+  align-items: center;
+  min-height: 72px;
+  background: var(--nx-pencil-wash);
+  border-color: transparent;
+}
+html.native-ios .native-app .friends-bento-requests .friends-bento-faces > * {
+  width: 34px;
+  height: 34px;
+  border-color: var(--nx-pencil-wash);
+}
+html.native-ios .native-app .friends-bento-requests > span:nth-child(2) {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  gap: 2px;
+}
+html.native-ios .native-app .friends-bento-requests strong {
+  font-size: 15px;
+  overflow-wrap: anywhere;
+}
+html.native-ios .native-app .friends-bento-requests small {
+  color: #52604f;
+  font-size: 13px;
+}
+html.native-ios .native-app .friends-bento-tile:active {
+  transform: scale(0.98);
+}
+html.native-ios .native-app .friends-bento-tile {
+  transition: transform 140ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  html.native-ios .native-app .friends-bento-tile {
+    transition: none;
+  }
+}
+html.native-ios[data-accessibility="true"] .native-app .friends-bento {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 /* Microanimations (iOS app only). Short, springy and off with Reduce Motion. */
 @keyframes native-heart-beat {
   0% {
