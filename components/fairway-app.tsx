@@ -90,6 +90,11 @@ import { sharedProfileId } from "@/lib/profile-share";
 import { sharedGameId, sectionUrl } from "@/lib/game-share";
 
 import { golfDate } from "@/lib/parties";
+import {
+  gameTemplate,
+  repeatInvitees,
+  type GameTemplate,
+} from "@/lib/party-repeat";
 import { SidebarIcon } from "./sidebar-icon";
 import { useIllustratedSidebarIcons } from "@/lib/appearance";
 import { PlayerRating } from "./player-rating";
@@ -273,6 +278,11 @@ export default function FairwayApp() {
     [selected, setSelected] = useState<Profile | null>(null),
     [game, setGame] = useState<Game | null>(null),
     [partyDate, setPartyDate] = useState<string | undefined>(),
+    // "Repetir la próxima semana": the party to copy and who played it.
+    [repeatPlan, setRepeatPlan] = useState<{
+      template: GameTemplate;
+      invitees: Profile[];
+    } | null>(null),
     [partyCalendarDate, setPartyCalendarDate] = useState(() => golfDate()),
     [round, setRound] = useState<Round | undefined>(),
     [filters, setFilters] = useState<Filters>(initialFilters),
@@ -338,6 +348,11 @@ export default function FairwayApp() {
     if (nativeApp && nativePrimaryPages.includes(page))
       nativeParentPage.current = page;
   }, [page, nativeApp]);
+  // Browser Back or another sheet can dismiss "Repite la partida" without
+  // close(): never let its settings or invitations reach a later new party.
+  useEffect(() => {
+    if (modal !== "create-game") setRepeatPlan(null);
+  }, [modal]);
   // Inner screens keep their Back control visible while scrolling.
   useHideHeaderOnScroll(nativeApp && nativePrimaryPages.includes(page), page);
   usePageTransition(nativeApp, page, nativePrimaryPages, mainContentRef);
@@ -894,6 +909,7 @@ export default function FairwayApp() {
     setModal(null);
     setSelected(null);
     setReviewTarget(null);
+    setRepeatPlan(null);
   }
   function openGame(next: Game) {
     const url = new URL(location.href);
@@ -2374,7 +2390,10 @@ export default function FairwayApp() {
                   cityScope={cityScope}
                   onCityScopeChange={setCityScope}
                   openProfile={openProfile}
-                  onCreate={() => setModal("create-game")}
+                  onCreate={() => {
+                    setRepeatPlan(null);
+                    setModal("create-game");
+                  }}
                 />
               )}
               {page === "ajustes" && (
@@ -2705,13 +2724,21 @@ export default function FairwayApp() {
           title={
             modal === "create-party"
               ? "Arma tu próxima party"
-              : "Arma tu próxima partida"
+              : repeatPlan
+                ? "Repite la partida"
+                : "Arma tu próxima partida"
           }
           onClose={close}
         >
           <GameForm
             party={modal === "create-party"}
             initialDate={modal === "create-party" ? partyDate : undefined}
+            template={
+              modal === "create-game" ? repeatPlan?.template : undefined
+            }
+            invitees={
+              modal === "create-game" ? repeatPlan?.invitees : undefined
+            }
             data={data}
             onDone={async (date, gameId) => {
               setPartyCalendarDate(date);
@@ -3015,6 +3042,19 @@ export default function FairwayApp() {
           onReview={(target) => {
             setReviewTarget(target);
             setModal("review");
+          }}
+          friends={myFriends}
+          onRepeat={(source) => {
+            const plan = {
+              template: gameTemplate(source),
+              invitees: repeatInvitees(source, data.user?.id, [
+                ...myFriends,
+                ...data.profiles,
+              ]),
+            };
+            close();
+            setRepeatPlan(plan);
+            setModal("create-game");
           }}
         />
       )}

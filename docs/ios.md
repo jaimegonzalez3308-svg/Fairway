@@ -26,6 +26,14 @@ Para un iPhone físico, selecciona tu equipo en **Signing & Capabilities** de Xc
 
 El proyecto nativo se conserva en Git; los archivos web copiados, los builds y el estado personal de Xcode se ignoran. No edites `ios/App/CapApp-SPM/Package.swift` manualmente: Capacitor lo actualiza al sincronizar plugins.
 
+## Simulador detenido en una pantalla negra
+
+En Xcode 27.2/iOS Simulator 27.2 se observó una sesión de lanzamiento atascada: SpringBoard conservaba como activo un proceso de Fairway que ya había terminado. Detener Run y reiniciar el dispositivo simulado, sin borrar sus datos, permitió abrir de nuevo la app. Espera a que iOS termine de iniciar antes de volver a pulsar Run.
+
+El arranque desde Xcode también mostró una demora prolongada con Thread Performance Checker: una muestra del proceso estaba generando backtraces en `TPC issue queue` / `libRPAC.dylib`. El esquema compartido `ios/App/App.xcodeproj/xcshareddata/xcschemes/App.xcscheme` desactiva ese diagnóstico para Run mediante `disablePerformanceAntipatternChecker="YES"`. Conserva LLDB y Main Thread Checker; Profile y Archive usan Release. En este entorno, dos ciclos consecutivos de detener y ejecutar desde Xcode llegaron a Descubrir con la sesión conservada. Es una solución de desarrollo para este entorno, no una medición del rendimiento de un iPhone físico. Para investigar advertencias de rendimiento, se puede reactivar expresamente en **Product → Scheme → Edit Scheme → Run → Diagnostics → Thread Performance Checker** ([documentación de Apple](https://developer.apple.com/documentation/xcode/diagnosing-performance-issues-early)).
+
+Si reaparece una sesión de lanzamiento atascada, detén Run en Xcode y reinicia únicamente ese simulador. Desde la terminal, `xcrun simctl list devices booted` muestra su identificador; usa `xcrun simctl shutdown <UDID>`, después `xcrun simctl boot <UDID>` y `xcrun simctl bootstatus <UDID> -b`. No hace falta borrar el contenido del dispositivo ni desinstalar Fairway. Abrir la app instalada directamente sirve para distinguir un problema del depurador de un fallo de la app.
+
 ## Historias con cámara
 
 Desde **Descubrir → Crear historia** o **Comunidad → Crear historia**, pulsa **Tomar foto** o **Elegir de Fotos**. La app abre la interfaz nativa de iOS y solicita permisos cuando corresponde. También conserva **Elegir un archivo**. Revisa la vista previa, añade un texto opcional, elige miembros o amigos y pulsa **Compartir historia**. Puedes volver a tomar la foto; cancelar o fallar conserva la última vista previa válida. No se publica al capturar ni se guarda automáticamente una copia en Fotos.

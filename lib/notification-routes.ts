@@ -10,5 +10,5 @@ const destinations: Record<string, { page: string; label: string }> = {
 };
 
 export function notificationDestination(category: string) {
-  return destinations[category] ?? null;
+  return Object.hasOwn(destinations, category) ? destinations[category] : null;
 }

@@ -1,13 +1,17 @@
 "use client";
-import { Check, Flag, Info, Star, X } from "lucide-react";
+import { useRef, useState } from "react";
+import { Check, Flag, Info, Repeat, Star, UserPlus, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import type { Game, Profile } from "@/lib/domain";
 import type { FairwayData } from "@/lib/use-fairway";
 import { canRatePlayer, reviewForPlayer, reviewValue } from "@/lib/ratings";
 import { dateFormat, timeFormat } from "@/lib/utils";
+import { gameIsUpcoming, gameSeats } from "@/lib/parties";
+import { canRepeatGame, inviteCandidates } from "@/lib/party-repeat";
 import { Button, Field, Modal } from "./ui";
 import { statusLabel } from "./member-primitives";
 import { GameJoinActions } from "./game-join-actions";
+import { GameInvitations } from "./game-invitations";
 import { GameShareLink } from "./share-link";
 
 export function GameDetails({
@@ -17,6 +21,8 @@ export function GameDetails({
   onClose,
   onChat,
   onReview,
+  friends = [],
+  onRepeat,
 }: {
   game: Game;
   clubName: string;
@@ -24,8 +30,26 @@ export function GameDetails({
   onClose: () => void;
   onChat: (id: string) => void;
   onReview: (profile: Profile) => void;
+  /** Accepted friends, listed first when inviting. */
+  friends?: Profile[];
+  /** Opens a new party prefilled from this one, one week later. */
+  onRepeat?: (game: Game) => void;
 }) {
-  const allProfiles = [data.me, ...data.profiles];
+  const inviteRef = useRef<HTMLSelectElement>(null);
+  const [invitesSent, setInvitesSent] = useState(0);
+  const allProfiles = [data.me, ...data.profiles, ...friends];
+  const host = currentGame.host_id === data.user?.id;
+  const missing =
+    host && currentGame.status === "open" && gameIsUpcoming(currentGame)
+      ? gameSeats(currentGame).remaining
+      : 0;
+  const candidates = inviteCandidates(
+    currentGame,
+    data.user?.id,
+    friends,
+    data.profiles,
+  );
+  const canInvite = candidates.friends.length + candidates.others.length > 0;
   return (
     <Modal title="Nos vemos en el tee" onClose={onClose}>
       <div className="game-detail-hero">
@@ -51,6 +75,30 @@ export function GameDetails({
         <Info size={17} />
         {currentGame.access_conditions}
       </div>
+      {missing > 0 && (
+        <div className="notice party-open-spot" role="status">
+          <UserPlus size={17} aria-hidden="true" />
+          <div>
+            <strong>
+              {missing === 1
+                ? "Falta 1 jugador."
+                : `Faltan ${missing} jugadores.`}
+            </strong>{" "}
+            Invita a alguien de tu grupo o comparte el enlace de la partida.
+          </div>
+          {canInvite && (
+            <Button
+              variant="outline"
+              onClick={() => {
+                inviteRef.current?.scrollIntoView({ block: "center" });
+                inviteRef.current?.focus();
+              }}
+            >
+              Invitar a alguien
+            </Button>
+          )}
+        </div>
+      )}
       <GameJoinActions
         key={currentGame.id}
         game={currentGame}
@@ -72,12 +120,21 @@ export function GameDetails({
       {currentGame.host_id === data.user?.id &&
       ["open", "full"].includes(currentGame.status) ? (
         <>
+          {gameIsUpcoming(currentGame) && (
+            <GameInvitations
+              gameId={currentGame.id}
+              userId={data.user!.id}
+              participants={currentGame.participants}
+              profiles={allProfiles}
+              refresh={invitesSent}
+            />
+          )}
           <form
             className="form"
             onSubmit={async (e) => {
               e.preventDefault();
               const fd = new FormData(e.currentTarget);
-              await data.run(
+              const ok = await data.run(
                 () =>
                   supabase!.rpc("invite_to_game", {
                     g: currentGame.id,
@@ -85,18 +142,41 @@ export function GameDetails({
                   }),
                 "Invitación enviada. La persona debe aceptarla y confirmar acceso.",
               );
+              if (ok) setInvitesSent((n) => n + 1);
             }}
           >
-            <Field label="Invitar a un golfista">
-              <select name="invitee" required>
-                {data.profiles.map((p) => (
-                  <option value={p.id} key={p.id}>
-                    {p.name}
-                  </option>
-                ))}
-              </select>
-            </Field>
-            <Button variant="outline">Enviar invitación</Button>
+            {canInvite ? (
+              <>
+                <Field label="Invitar a un golfista">
+                  <select name="invitee" required ref={inviteRef}>
+                    {candidates.friends.length > 0 && (
+                      <optgroup label="Tus amigos">
+                        {candidates.friends.map((p) => (
+                          <option value={p.id} key={p.id}>
+                            {p.name}
+                          </option>
+                        ))}
+                      </optgroup>
+                    )}
+                    {candidates.others.length > 0 && (
+                      <optgroup label="Otros golfistas">
+                        {candidates.others.map((p) => (
+                          <option value={p.id} key={p.id}>
+                            {p.name}
+                          </option>
+                        ))}
+                      </optgroup>
+                    )}
+                  </select>
+                </Field>
+                <Button variant="outline">Enviar invitación</Button>
+              </>
+            ) : (
+              <p className="party-invite-empty">
+                No hay más golfistas para invitar por ahora. Comparte el enlace
+                de la partida.
+              </p>
+            )}
           </form>
           <h3>Solicitudes pendientes</h3>
           {currentGame.participants
@@ -177,6 +257,21 @@ export function GameDetails({
         </>
       ) : null}
 
+      {onRepeat && canRepeatGame(currentGame, data.user?.id) && (
+        <div className="party-repeat">
+          <div>
+            <strong>¿Otra vez la próxima semana?</strong>
+            <p>
+              Crea la misma partida siete días después y, si quieres, invita al
+              mismo grupo.
+            </p>
+          </div>
+          <Button variant="outline" onClick={() => onRepeat(currentGame)}>
+            <Repeat size={16} aria-hidden="true" />
+            Repetir la próxima semana
+          </Button>
+        </div>
+      )}
       {currentGame.status === "finished" &&
         currentGame.participants?.some(
           (p) => p.user_id === data.user?.id && p.status === "confirmed",

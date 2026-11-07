@@ -6687,6 +6687,59 @@ button.notification-row {
   margin-top: 4px;
   font-size: 12px;
 }
+/* Weekly group: an open spot to fill and next week's repeat. */
+.party-open-spot {
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 16px;
+}
+.party-open-spot > div {
+  flex: 1 1 180px;
+}
+.party-open-spot strong {
+  color: #5d7b47;
+  font-weight: 500;
+}
+.party-open-spot .button {
+  min-height: 44px;
+  font-size: 12px;
+}
+.party-repeat {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 22px;
+  padding: 16px 18px;
+  border: 1px dashed #d6dfca;
+  border-radius: 12px;
+}
+.party-repeat > div {
+  flex: 1 1 200px;
+}
+.party-repeat strong {
+  font-size: 14px;
+  font-weight: 500;
+}
+.modal .party-repeat p {
+  margin: 4px 0 0;
+  font-size: 11px;
+  line-height: 1.7;
+  color: #6f7f62;
+}
+.party-repeat .button {
+  min-height: 44px;
+  font-size: 12px;
+}
+.party-repeat-invite {
+  font-size: 11px;
+  color: #5f6f53;
+  padding-top: 4px;
+}
+.party-invite-empty {
+  font-size: 11px;
+  color: #6f7f62;
+}
 .party-chat-avatar {
   color: #6e8f51;
   background: #e5edd9;

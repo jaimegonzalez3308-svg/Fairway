@@ -12,8 +12,8 @@ test("each notification category opens the section where you act on it", () => {
 });
 
 test("unknown categories stay as plain, non-navigating rows", () => {
-  assert.equal(notificationDestination("system"), null);
-  assert.equal(notificationDestination(""), null);
+  for (const category of ["system", "", "toString", "constructor", "__proto__"])
+    assert.equal(notificationDestination(category), null, category);
 });
 
 test("tapping a notification marks it read, closes the sheet, then navigates", async () => {

@@ -27,6 +27,11 @@ import { profileSchema } from "@/lib/profile-validation";
 import type { FairwayData } from "@/lib/use-fairway";
 import { authErrorMessage, authRedirectUrl } from "@/lib/auth";
 import { golfDate, golfDateAfter } from "@/lib/parties";
+import {
+  inviteGroup,
+  inviteGroupMessage,
+  type GameTemplate,
+} from "@/lib/party-repeat";
 import { PasswordResetRequest } from "./password-recovery";
 import { StarRatingInput } from "./player-rating";
 import { canRatePlayer, ratingColumns } from "@/lib/ratings";
@@ -738,18 +743,47 @@ export function GameForm({
   onDone,
   party = false,
   initialDate,
+  template,
+  invitees = [],
+  client = supabase,
 }: {
   data: FairwayData;
   onDone: (date: string, gameId: string) => void | Promise<void>;
   initialDate?: string;
   party?: boolean;
+  /** Prefills every field from a previous party ("Repetir la próxima semana"). */
+  template?: GameTemplate;
+  /** Players from that party; invited after publishing only if the box stays checked. */
+  invitees?: Profile[];
+  /** Supabase client; tests pass one with a mocked network. */
+  client?: typeof supabase;
 }) {
   const [busy, setBusy] = useState(false);
   const [joinMode, setJoinMode] = useState(
-    party && data.partiesAvailable ? "open" : "request",
+    template
+      ? template.join_mode === "open" && data.partiesAvailable
+        ? "open"
+        : "request"
+      : party && data.partiesAvailable
+        ? "open"
+        : "request",
   );
-  const [date, setDate] = useState(initialDate || golfDateAfter(7));
-  const [privacy, setPrivacy] = useState("public");
+  const [date, setDate] = useState(
+    template?.date || initialDate || golfDateAfter(7),
+  );
+  const [privacy, setPrivacy] = useState(template?.privacy || "public");
+  const [inviteChecked, setInviteChecked] = useState(invitees.length > 0);
+  const mounted = useRef(true);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+  const option = (value: string | number | undefined, choices: string[]) =>
+    value !== undefined && choices.includes(String(value))
+      ? String(value)
+      : undefined;
   return (
     <form
       className="form"
@@ -766,9 +800,14 @@ export function GameForm({
         }
         setBusy(true);
         const gameId = crypto.randomUUID();
+        const inviting = inviteChecked && invitees.length > 0;
+        const published =
+          joinMode === "open"
+            ? "Party publicada con su chat privado. Quienes se unan entrarán al grupo."
+            : "Partida publicada con su chat privado. Los jugadores entrarán al aprobar su solicitud.";
         const ok = await data.run(
           () =>
-            supabase!.from("games").insert({
+            client!.from("games").insert({
               id: gameId,
               host_id: data.user!.id,
               club_id: f.get("club"),
@@ -782,12 +821,25 @@ export function GameForm({
               description: f.get("description"),
               access_conditions: f.get("access"),
             }),
-          joinMode === "open"
-            ? "Party publicada con su chat privado. Quienes se unan entrarán al grupo."
-            : "Partida publicada con su chat privado. Los jugadores entrarán al aprobar su solicitud.",
+          inviting ? undefined : published,
         );
+        if (!ok) {
+          setBusy(false);
+          return;
+        }
+        if (inviting) {
+          const result = await inviteGroup(
+            (name, args) => client!.rpc(name, args),
+            gameId,
+            invitees,
+          );
+          data.notify(inviteGroupMessage(result));
+        }
+        // The sheet may have been dismissed (or replaced by another form)
+        // while publishing: never close or navigate away from what is open now.
+        if (!mounted.current) return;
         setBusy(false);
-        if (ok) await onDone(date, gameId);
+        await onDone(date, gameId);
       }}
     >
       <div className="party-form-intro">
@@ -844,7 +896,7 @@ export function GameForm({
         </p>
       )}
       <Field label="Club / campo">
-        <select name="club" required>
+        <select name="club" required defaultValue={template?.club_id}>
           {data.clubs.map((c) => (
             <option key={c.id} value={c.id}>
               {c.name}
@@ -865,23 +917,42 @@ export function GameForm({
           />
         </Field>
         <Field label="Hora (León)">
-          <input name="time" type="time" defaultValue="08:00" required />
+          <input
+            name="time"
+            type="time"
+            defaultValue={template?.time || "08:00"}
+            required
+          />
         </Field>
         <Field label="Hoyos">
-          <select name="holes">
+          <select
+            name="holes"
+            defaultValue={option(template?.holes, ["18", "9"])}
+          >
             <option>18</option>
             <option>9</option>
           </select>
         </Field>
         <Field label="Jugadores totales (incluyéndote)">
-          <select name="capacity">
+          <select
+            name="capacity"
+            defaultValue={option(template?.capacity, ["4", "3", "2"])}
+          >
             <option>4</option>
             <option>3</option>
             <option>2</option>
           </select>
         </Field>
         <Field label="Formato">
-          <select name="format">
+          <select
+            name="format"
+            defaultValue={option(template?.format, [
+              "Casual",
+              "Stroke play",
+              "Match play",
+              "Scramble",
+            ])}
+          >
             <option>Casual</option>
             <option>Stroke play</option>
             <option>Match play</option>
@@ -889,7 +960,10 @@ export function GameForm({
           </select>
         </Field>
         <Field label="Tipo">
-          <select name="kind">
+          <select
+            name="kind"
+            defaultValue={option(template?.kind, ["social", "competitivo"])}
+          >
             <option value="social">Social</option>
             <option value="competitivo">Competitiva</option>
           </select>
@@ -927,6 +1001,7 @@ export function GameForm({
       <Field label="Descripción">
         <textarea
           name="description"
+          defaultValue={template?.description}
           placeholder="Por ejemplo: ronda relajada el próximo sábado, todos los niveles son bienvenidos."
           required
           maxLength={1000}
@@ -938,9 +1013,27 @@ export function GameForm({
           name="access"
           required
           rows={2}
-          defaultValue="Cada jugador debe contar con acceso válido o invitación autorizada por el club."
+          defaultValue={
+            template?.access_conditions ||
+            "Cada jugador debe contar con acceso válido o invitación autorizada por el club."
+          }
         />
       </Field>
+      {invitees.length > 0 && (
+        <label className="party-access-check party-repeat-invite">
+          <input
+            type="checkbox"
+            checked={inviteChecked}
+            disabled={busy}
+            onChange={(e) => setInviteChecked(e.target.checked)}
+          />
+          <span>
+            Invitar a los mismos jugadores:{" "}
+            {invitees.map((p) => p.name).join(", ")}. Cada quien confirma su
+            lugar; invitar no reserva el tee time.
+          </span>
+        </label>
+      )}
       <div className="notice">
         Fairway organiza compañeros. La reserva del tee time y la autorización
         de acceso se gestionan directamente con el club.
