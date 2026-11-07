@@ -6697,7 +6697,7 @@ button.notification-row {
   flex: 1 1 180px;
 }
 .party-open-spot strong {
-  color: #5d7b47;
+  color: var(--ink);
   font-weight: 500;
 }
 .party-open-spot .button {
@@ -6711,8 +6711,10 @@ button.notification-row {
   gap: 12px;
   margin-top: 22px;
   padding: 16px 18px;
-  border: 1px dashed #d6dfca;
-  border-radius: 12px;
+  /* Same dashed "create" box as the story upload and empty seats. */
+  border: 1px dashed #c8d3bf;
+  border-radius: 11px;
+  background: #f0f3e9;
 }
 .party-repeat > div {
   flex: 1 1 200px;
@@ -6725,7 +6727,7 @@ button.notification-row {
   margin: 4px 0 0;
   font-size: 11px;
   line-height: 1.7;
-  color: #6f7f62;
+  color: #5d6b58;
 }
 .party-repeat .button {
   min-height: 44px;
@@ -6733,12 +6735,16 @@ button.notification-row {
 }
 .party-repeat-invite {
   font-size: 11px;
-  color: #5f6f53;
+  color: #5d6b58;
   padding-top: 4px;
 }
-.party-invite-empty {
+.party-invite-empty,
+.modal .party-invite-empty {
   font-size: 11px;
-  color: #6f7f62;
+  color: #5d6b58;
+}
+.party-invited {
+  margin-bottom: 18px;
 }
 .party-chat-avatar {
   color: #6e8f51;

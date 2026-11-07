@@ -3462,6 +3462,13 @@ html.native-ios
   border-color: var(--nx-line-strong);
   border-radius: var(--nx-radius-control);
 }
+/* Weekly group: "Repetir la próxima semana" keeps its dashed create look
+   in the app's card radius and paper. */
+html.native-ios .modal :where(.party-repeat) {
+  border: 1px dashed var(--nx-line-strong);
+  border-radius: var(--nx-radius-card);
+  background: var(--nx-card);
+}
 
 /* Thumb reach: a screen's main action floats just above the tab bar.
    ThumbAction portals it to <body>, so screen transforms never move it. */

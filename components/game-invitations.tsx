@@ -75,7 +75,10 @@ export function GameInvitations({
   const rows = invitationStatuses(loaded.invitations, participants, profiles);
   if (!rows.length) return null;
   return (
-    <section aria-labelledby={`invited-${gameId}`}>
+    <section
+      className="party-invited"
+      aria-labelledby={`invited-${gameId}`}
+    >
       <h3 id={`invited-${gameId}`}>Invitados</h3>
       <p className="party-invite-empty">{invitationSummary(rows)}</p>
       {rows.map((row) => (
