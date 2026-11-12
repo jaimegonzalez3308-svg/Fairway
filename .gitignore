@@ -6,3 +6,11 @@ out/
 .sites-runtime/
 *.tsbuildinfo
 .agent-runs/
+
+# Local desktop files and graphify rebuild state
+.DS_Store
+graphify-out/cache/
+graphify-out/.graphify_root
+graphify-out/.graphify_build_state.json
+graphify-out/.graphify_labels.pending.json
+graphify-out/.graphify_labels.json.sig

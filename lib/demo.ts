@@ -19,10 +19,11 @@ export const clubs: Club[] = [
   },
   {
     id: "hacienda",
-    name: "Club de Golf La Hacienda",
-    city: "Por confirmar",
+    name: "La Hacienda Club de Golf",
+    city: "León",
     verified: false,
-    description: null,
+    description:
+      "Club de golf en León, Guanajuato. Acceso, tarifas y condiciones de membresía pendientes de confirmar.",
     access_info: null,
   },
   {
