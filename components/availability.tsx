@@ -53,7 +53,6 @@ export function Availability({
   return (
     <>
       <SectionHeading
-        eyebrow="ESPONTÁNEO TAMBIÉN ES UN GRAN PLAN"
         title="¿Quién juega hoy?"
         description="Publica tu disponibilidad temporal y encuentra compañía."
         action={

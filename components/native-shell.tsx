@@ -145,7 +145,7 @@ export function NativeEntry({
       </header>
       <div className="native-onboarding-content">
         <NativeEntryPhoto icon={item.icon} />
-        <p className="native-kicker">{step + 1} DE 3 · TU GOLF, A MANO</p>
+        <p className="native-kicker">PASO {step + 1} DE 3</p>
         <h1 ref={heading} tabIndex={-1}>
           {item.title}
         </h1>

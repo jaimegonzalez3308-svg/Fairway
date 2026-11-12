@@ -78,7 +78,6 @@ export function Stats({ data }: { data: FairwayData }) {
           <div className="panel chart">
             <div className="panel-heading">
               <div>
-                <span className="eyebrow">TU JUEGO, EN PERSPECTIVA</span>
                 <h3>Evolución de tus scores</h3>
               </div>
               <span className="badge">Menos es más</span>

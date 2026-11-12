@@ -211,7 +211,6 @@ export function Friends({
   return (
     <>
       <SectionHeading
-        eyebrow="EL GOLF SE COMPARTE"
         title="Tu círculo de golf"
         description="Busca a tus conocidos por nombre y encuentra nuevas personas con quienes compartir una ronda."
         action={

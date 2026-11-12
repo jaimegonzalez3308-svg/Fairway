@@ -370,7 +370,6 @@ export function StoryOptions({
     >
       <div className="story-sheet-heading">
         <div>
-          <span className="eyebrow">UN MOMENTO EN FAIRWAY</span>
           <h3>Sobre esta historia</h3>
         </div>
         <button

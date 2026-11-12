@@ -58,7 +58,6 @@ export function NativeWelcome({
         className="native-welcome-copy"
         aria-labelledby="native-welcome-title"
       >
-        <p className="native-kicker">TU PRÓXIMA RONDA EMPIEZA AQUÍ</p>
         <h1 id="native-welcome-title">
           Buen golf.
           <br />

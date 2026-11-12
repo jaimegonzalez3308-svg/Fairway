@@ -43,7 +43,6 @@ export function ClubDirectory({
   return (
     <>
       <SectionHeading
-        eyebrow="EL PUNTO DE ENCUENTRO"
         title="El golf empieza cerca de ti."
         description="Explora los clubes del directorio y consulta su información de acceso."
       />
@@ -134,7 +133,6 @@ export function PublicPrivacy() {
   return (
     <>
       <SectionHeading
-        eyebrow="TÚ DECIDES QUÉ COMPARTIR"
         title="Tu privacidad también juega."
         description="Conoce cómo se utilizan tus datos antes de formar parte de Fairway."
       />
@@ -194,7 +192,6 @@ export function GuestDiscover({
   return (
     <>
       <SectionHeading
-        eyebrow="MEJOR GOLF. MEJOR COMPAÑÍA."
         title="Tu próximo foursome empieza aquí."
         description="Consulta los clubes de la zona y crea tu perfil para conectar con otros golfistas."
       />
@@ -244,7 +241,6 @@ export function GuestDiscover({
       </div>
       <div className="guest-join">
         <div>
-          <span className="eyebrow">EL SIGUIENTE PASO LO DAS TÚ</span>
           <h2>Encuentra personas con quienes jugar.</h2>
           <p>
             Los perfiles, matches y mensajes están disponibles para miembros con
@@ -272,7 +268,6 @@ export function LockedPreview({
   return (
     <>
       <SectionHeading
-        eyebrow="TU COMUNIDAD TE ESPERA"
         title={copy.title}
         description={copy.description}
       />

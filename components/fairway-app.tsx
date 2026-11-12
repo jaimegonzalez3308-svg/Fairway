@@ -1753,7 +1753,6 @@ export default function FairwayApp() {
                     <h1 className="sr-only">Tus conversaciones</h1>
                   ) : (
                     <SectionHeading
-                      eyebrow="DEL MATCH AL TEE"
                       title="Buenas conversaciones. Mejores rondas."
                       description="Conversa con tus matches y con los participantes de tus partidas."
                     />
@@ -2059,7 +2058,6 @@ export default function FairwayApp() {
               {page === "perfil" && (
                 <>
                   <SectionHeading
-                    eyebrow="ESTE ES TU JUEGO"
                     title="Mi perfil de golfista"
                     action={
                       nativeApp ? undefined : (
@@ -2309,7 +2307,6 @@ export default function FairwayApp() {
                 <>
                   {nativeApp && <NativeOfflinePanel userId={data.user?.id} />}
                   <SectionHeading
-                    eyebrow="CADA GOLPE CUENTA"
                     title={
                       nativeApp ? "Mis scores" : "La historia de tu juego."
                     }
@@ -2334,7 +2331,6 @@ export default function FairwayApp() {
               {page === "estadisticas" && (
                 <>
                   <SectionHeading
-                    eyebrow="UN POCO MEJOR, CADA RONDA"
                     title={
                       nativeApp ? "Mis estadísticas" : "Tu juego en números."
                     }
@@ -2352,7 +2348,6 @@ export default function FairwayApp() {
               {page === "comunidad" && (
                 <>
                   <SectionHeading
-                    eyebrow="MÁS ALLÁ DEL HOYO 18"
                     title={
                       nativeApp ? "Tu comunidad" : "Historias que se comparten."
                     }
@@ -2399,7 +2394,6 @@ export default function FairwayApp() {
               {page === "ajustes" && (
                 <>
                   <SectionHeading
-                    eyebrow="TU ESPACIO"
                     title="Ajustes y privacidad"
                   />
                   <Settings

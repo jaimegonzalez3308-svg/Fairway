@@ -4361,12 +4361,8 @@ button.notification-row {
   gap: 16px;
   margin-bottom: 23px;
 }
-.stories-heading .eyebrow {
-  font-size: 8px;
-  letter-spacing: 1.8px;
-}
 .stories-heading h2 {
-  margin-top: 7px;
+  margin-top: 0;
   font-size: 23px;
   font-weight: 500;
 }
@@ -5189,11 +5185,8 @@ button.notification-row {
   justify-content: space-between;
   gap: 12px;
 }
-.story-sheet-heading .eyebrow {
-  font-size: 8px;
-}
 .story-sheet-heading h3 {
-  margin-top: 7px;
+  margin-top: 0;
   font-size: 21px;
   font-weight: 500;
 }
@@ -5325,9 +5318,6 @@ button.notification-row {
   }
   .stories-heading h2 {
     font-size: 19px;
-  }
-  .stories-heading .eyebrow {
-    font-size: 7px;
   }
   .stories-expiry {
     font-size: 9px;

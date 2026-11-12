@@ -59,7 +59,6 @@ export function ProfileQR({
   return (
     <Modal title="Mi código QR" onClose={onClose} soft>
       <div className="profile-qr">
-        <span className="eyebrow">COMPARTAMOS EL FAIRWAY</span>
         <h3>{profile.name}</h3>
         <p>
           Muéstralo en el club o compártelo para que encuentren tu perfil

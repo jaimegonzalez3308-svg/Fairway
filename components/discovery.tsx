@@ -254,7 +254,6 @@ export function Discovery({
       ) : (
         <>
           <SectionHeading
-            eyebrow="MEJOR GOLF. MEJOR COMPAÑÍA."
             title="Encuentra tu próximo foursome."
             description="Filtra por club, handicap y días disponibles para encontrar con quién jugar."
             action={
@@ -432,7 +431,6 @@ export function Discovery({
           </section>
           <div className="next-section-heading">
             <div>
-              <span className="eyebrow">HAZ ESPACIO EN TU AGENDA</span>
               <h2>El green te está esperando</h2>
             </div>
             <InlineLink onClick={() => onNavigate("partidas")}>
