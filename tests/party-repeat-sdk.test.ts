@@ -16,9 +16,13 @@ function backend(mode: Mode, holdFirstInvite = false) {
   let release!: () => void;
   const gate = new Promise<void>((resolve) => (release = resolve));
   let started!: () => void;
-  const firstInviteStarted = new Promise<void>((resolve) => (started = resolve));
+  const firstInviteStarted = new Promise<void>(
+    (resolve) => (started = resolve),
+  );
   let finished!: () => void;
-  const allInvitesSettled = new Promise<void>((resolve) => (finished = resolve));
+  const allInvitesSettled = new Promise<void>(
+    (resolve) => (finished = resolve),
+  );
   let expected = 0;
   let settled = 0;
   const response = (body: unknown, status = 200) =>
@@ -161,7 +165,9 @@ test("repeat form at the SDK boundary: payload, one invite each, no retries, dis
     const form = document.querySelector("form")!;
     if (!invite) {
       await act(async () => {
-        form.querySelector<HTMLInputElement>(".party-repeat-invite input")!.click();
+        form
+          .querySelector<HTMLInputElement>(".party-repeat-invite input")!
+          .click();
       });
     }
     return {
@@ -193,6 +199,12 @@ test("repeat form at the SDK boundary: payload, one invite each, no retries, dis
     await api.allInvitesSettled;
     await settle();
     assert.equal(api.inserts.length, 1);
+    await view.submit();
+    assert.equal(
+      api.inserts.length,
+      1,
+      "a completed form cannot publish the same group twice",
+    );
     const row = api.inserts[0];
     assert.match(String(row.id), /^[0-9a-f-]{36}$/);
     assert.deepEqual(
@@ -277,7 +289,19 @@ test("repeat form at the SDK boundary: payload, one invite each, no retries, dis
     api.expect(2);
     view = await mount(api);
     view.startSubmit();
+    view.startSubmit();
     await api.firstInviteStarted;
+    await settle();
+    assert.equal(
+      document.querySelector<HTMLButtonElement>(".native-sheet-action")!
+        .textContent,
+      "Enviando invitaciones…",
+    );
+    assert.equal(
+      api.inserts.length,
+      1,
+      "same-tick submissions insert only once",
+    );
     await act(async () => view.root.unmount());
     api.release();
     await api.allInvitesSettled;

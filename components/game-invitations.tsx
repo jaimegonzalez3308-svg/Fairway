@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { Profile } from "@/lib/domain";
 import { invitationStatuses, invitationSummary } from "@/lib/party-repeat";
+import { Button } from "./ui";
 
 type Loaded =
   | { key: string; status: "ready"; invitations: { invitee_id: string }[] }
@@ -31,6 +32,7 @@ export function GameInvitations({
   // shows the previous one.
   const key = `${gameId}:${userId}`;
   const [loaded, setLoaded] = useState<Loaded | null>(null);
+  const [retry, setRetry] = useState(0);
   useEffect(() => {
     if (!client) return;
     let current = true;
@@ -62,23 +64,37 @@ export function GameInvitations({
     return () => {
       current = false;
     };
-  }, [client, gameId, userId, key, refresh]);
+  }, [client, gameId, userId, key, refresh, retry]);
 
   // Until this game's answer arrives, show nothing rather than a stale list.
-  if (!loaded || loaded.key !== key) return null;
+  if (!loaded || loaded.key !== key)
+    return (
+      <p className="party-invite-empty" role="status">
+        Cargando invitados…
+      </p>
+    );
   if (loaded.status === "error")
     return (
-      <p className="party-invite-empty">
-        No pudimos cargar a quién invitaste. Vuelve a abrir la partida.
-      </p>
+      <div className="party-invited">
+        <p className="party-invite-empty" role="status">
+          No pudimos cargar a quién invitaste.
+        </p>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => {
+            setLoaded(null);
+            setRetry((n) => n + 1);
+          }}
+        >
+          Reintentar cargar invitados
+        </Button>
+      </div>
     );
   const rows = invitationStatuses(loaded.invitations, participants, profiles);
   if (!rows.length) return null;
   return (
-    <section
-      className="party-invited"
-      aria-labelledby={`invited-${gameId}`}
-    >
+    <section className="party-invited" aria-labelledby={`invited-${gameId}`}>
       <h3 id={`invited-${gameId}`}>Invitados</h3>
       <p className="party-invite-empty">{invitationSummary(rows)}</p>
       {rows.map((row) => (

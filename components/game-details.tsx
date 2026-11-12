@@ -36,6 +36,8 @@ export function GameDetails({
   onRepeat?: (game: Game) => void;
 }) {
   const inviteRef = useRef<HTMLSelectElement>(null);
+  const invitePending = useRef(false);
+  const [sendingInvite, setSendingInvite] = useState(false);
   const [invitesSent, setInvitesSent] = useState(0);
   const allProfiles = [data.me, ...data.profiles, ...friends];
   const host = currentGame.host_id === data.user?.id;
@@ -133,22 +135,36 @@ export function GameDetails({
             className="form"
             onSubmit={async (e) => {
               e.preventDefault();
+              // The RPC notifies on every call, including duplicate invites.
+              if (invitePending.current) return;
               const fd = new FormData(e.currentTarget);
-              const ok = await data.run(
-                () =>
-                  supabase!.rpc("invite_to_game", {
-                    g: currentGame.id,
-                    invitee: fd.get("invitee"),
-                  }),
-                "Invitación enviada. La persona debe aceptarla y confirmar acceso.",
-              );
-              if (ok) setInvitesSent((n) => n + 1);
+              invitePending.current = true;
+              setSendingInvite(true);
+              try {
+                const ok = await data.run(
+                  () =>
+                    supabase!.rpc("invite_to_game", {
+                      g: currentGame.id,
+                      invitee: fd.get("invitee"),
+                    }),
+                  "Invitación enviada. La persona debe aceptarla y confirmar acceso.",
+                );
+                if (ok) setInvitesSent((n) => n + 1);
+              } finally {
+                invitePending.current = false;
+                setSendingInvite(false);
+              }
             }}
           >
             {canInvite ? (
               <>
                 <Field label="Invitar a un golfista">
-                  <select name="invitee" required ref={inviteRef}>
+                  <select
+                    name="invitee"
+                    required
+                    ref={inviteRef}
+                    disabled={sendingInvite}
+                  >
                     {candidates.friends.length > 0 && (
                       <optgroup label="Tus amigos">
                         {candidates.friends.map((p) => (
@@ -169,7 +185,9 @@ export function GameDetails({
                     )}
                   </select>
                 </Field>
-                <Button variant="outline">Enviar invitación</Button>
+                <Button variant="outline" disabled={sendingInvite}>
+                  {sendingInvite ? "Enviando invitación…" : "Enviar invitación"}
+                </Button>
               </>
             ) : (
               <p className="party-invite-empty">
@@ -262,8 +280,8 @@ export function GameDetails({
           <div>
             <strong>¿Otra vez la próxima semana?</strong>
             <p>
-              Crea la misma partida siete días después y, si quieres, invita al
-              mismo grupo.
+              Conserva el día de la semana y la hora en la próxima fecha futura.
+              Revisa los datos e invita al mismo grupo si quieres.
             </p>
           </div>
           <Button variant="outline" onClick={() => onRepeat(currentGame)}>

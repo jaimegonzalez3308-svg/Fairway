@@ -759,6 +759,8 @@ export function GameForm({
   client?: typeof supabase;
 }) {
   const [busy, setBusy] = useState(false);
+  const publishing = useRef(false);
+  const [sendingInvites, setSendingInvites] = useState(false);
   const [joinMode, setJoinMode] = useState(
     template
       ? template.join_mode === "open" && data.partiesAvailable
@@ -789,7 +791,7 @@ export function GameForm({
       className="form"
       onSubmit={async (e) => {
         e.preventDefault();
-        if (busy) return;
+        if (publishing.current) return;
         const f = new FormData(e.currentTarget);
         const time = new Date(
           f.get("date") + "T" + f.get("time") + ":00-06:00",
@@ -798,6 +800,7 @@ export function GameForm({
           data.notify("Elige una fecha y hora futuras.");
           return;
         }
+        publishing.current = true;
         setBusy(true);
         const gameId = crypto.randomUUID();
         const inviting = inviteChecked && invitees.length > 0;
@@ -824,10 +827,12 @@ export function GameForm({
           inviting ? undefined : published,
         );
         if (!ok) {
+          publishing.current = false;
           setBusy(false);
           return;
         }
         if (inviting) {
+          if (mounted.current) setSendingInvites(true);
           const result = await inviteGroup(
             (name, args) => client!.rpc(name, args),
             gameId,
@@ -838,7 +843,6 @@ export function GameForm({
         // The sheet may have been dismissed (or replaced by another form)
         // while publishing: never close or navigate away from what is open now.
         if (!mounted.current) return;
-        setBusy(false);
         await onDone(date, gameId);
       }}
     >
@@ -1040,7 +1044,7 @@ export function GameForm({
       </div>
       <Button className="native-sheet-action" disabled={busy}>
         {busy
-          ? "Publicando…"
+          ? sendingInvites ? "Enviando invitaciones…" : "Publicando…"
           : joinMode === "open"
             ? "Publicar party abierta"
             : "Publicar partida"}

@@ -383,6 +383,35 @@ test("parties: cupos, incorporación directa, chat, salidas y aprobación en Pos
     },
   );
   await t.test(
+    "el organizador ve sus invitados y sus confirmaciones sin revelar la lista a terceros",
+    async () => {
+      const id = await create("request", "invite");
+      await db.query("select invite_to_game($1,$2)", [id, b]);
+      await db.query("select invite_to_game($1,$2)", [id, c]);
+      const invitations = () => db.query<{ invitee_id: string }>(
+        "select invitee_id from game_invitations where game_id=$1 order by invitee_id", [id],
+      );
+      assert.deepEqual((await invitations()).rows.map((r) => r.invitee_id), [b, c]);
+      await as(b);
+      assert.deepEqual((await invitations()).rows.map((r) => r.invitee_id), [b]);
+      assert.equal(await membership(id, b), undefined, "an invite reserves no seat");
+      await join(id);
+      await as(a);
+      assert.equal(await membership(id, b), "requested");
+      await db.query("select manage_game($1,$2,'confirmed')", [id, b]);
+      assert.equal(await membership(id, b), "confirmed");
+      await as(d);
+      assert.deepEqual((await invitations()).rows, []);
+      assert.equal((await db.query("select id from games where id=$1", [id])).rows.length, 0);
+      await assert.rejects(db.query("select invite_to_game($1,$2)", [id, c]), /Invitación no permitida/);
+      await as(b);
+      await leave(id);
+      await as(a);
+      assert.equal(await membership(id, b), undefined, "leaving is not a declined invitation");
+      assert.equal((await invitations()).rows.length, 2);
+    },
+  );
+  await t.test(
     "no se admiten incorporaciones ni salidas tras empezar, cancelar o finalizar",
     async () => {
       for (const status of ["open", "cancelled", "finished"]) {

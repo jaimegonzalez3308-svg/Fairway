@@ -3,10 +3,7 @@ import assert from "node:assert/strict";
 import { act, createElement } from "react";
 import { JSDOM } from "jsdom";
 import { createClient } from "@supabase/supabase-js";
-import {
-  invitationStatuses,
-  invitationSummary,
-} from "../lib/party-repeat";
+import { invitationStatuses, invitationSummary } from "../lib/party-repeat";
 
 test("invitation statuses: joined with participants, ordered, never 'declined'", () => {
   const rows = invitationStatuses(
@@ -148,9 +145,9 @@ test("invitation list: scoped query, refresh keeps the list, stale and failed an
     // answer for the old game is ignored.
     let lateOld!: () => void;
     answers.g1 = () =>
-      new Promise((resolve) => (lateOld = () => resolve(json([{ invitee_id: "ana" }])))).then(
-        (r) => r as Response,
-      );
+      new Promise(
+        (resolve) => (lateOld = () => resolve(json([{ invitee_id: "ana" }]))),
+      ).then((r) => r as Response);
     await render("g1", 2);
     answers.g2 = () => json([{ invitee_id: "luis" }]);
     await render("g2");
@@ -165,6 +162,13 @@ test("invitation list: scoped query, refresh keeps the list, stale and failed an
     await render("g3");
     await act(async () => {});
     assert.match(text()!, /No pudimos cargar a quién invitaste/);
+    answers.g3 = () => json([{ invitee_id: "ana" }]);
+    await act(async () =>
+      document.querySelector<HTMLButtonElement>("button")!.click(),
+    );
+    await act(async () => {});
+    assert.match(text()!, /AnaSin solicitud activa/);
+    assert.doesNotMatch(text()!, /No pudimos cargar/);
   } finally {
     await act(async () => root.unmount());
     for (const [key, descriptor] of originals) {
